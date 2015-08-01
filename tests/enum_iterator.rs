@@ -1,7 +1,7 @@
 #[macro_use] extern crate custom_derive;
 
 macro_rules! EnumIterator {
-    ($(pub)* enum $name:ident { $($body:tt)* }) => {
+    (() $(pub)* enum $name:ident { $($body:tt)* }) => {
         EnumIterator! {
             @collect_variants ($name),
             ($($body)*,) -> ()

@@ -3,7 +3,7 @@ extern crate rustc_serialize;
 
 macro_rules! StableEncodable {
     (
-        $(pub)* struct $name:ident { $($body:tt)* }
+        () $(pub)* struct $name:ident { $($body:tt)* }
     ) => {
         StableEncodable! {
             @impl $name,
@@ -14,7 +14,7 @@ macro_rules! StableEncodable {
     };
 
     (
-        $(pub)* struct $name:ident < $($tail:tt)*
+        () $(pub)* struct $name:ident < $($tail:tt)*
     ) => {
         StableEncodable! {
             @extract_gen_args $name,

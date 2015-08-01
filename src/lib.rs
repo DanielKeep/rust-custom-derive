@@ -65,7 +65,7 @@ macro_rules! custom_derive {
             @split_attrs
             ($(#[$($attrs)*],)*),
             $non_derives,
-            ($($derives,)* $(#[$new_drv $(($($new_drv_args)*))*],)*),
+            ($($derives,)* $($new_drv $(($($new_drv_args)*))*,)*),
             $it
         }
     };
@@ -111,7 +111,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[Clone], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (Clone, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -122,7 +122,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[RustcEncodable], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (RustcEncodable, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -133,7 +133,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[RustcDecodable], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (RustcDecodable, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -144,7 +144,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[PartialEq], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (PartialEq, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -155,7 +155,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[Eq], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (Eq, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -166,7 +166,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[PartialOrd], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (PartialOrd, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -177,7 +177,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[Ord], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (Ord, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -188,7 +188,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[Debug], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (Debug, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -199,7 +199,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[Default], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (Default, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -210,7 +210,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[Send], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (Send ,$($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -221,7 +221,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[Sync], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (Sync, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -232,7 +232,7 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[Copy], $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+        (Copy, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {
             @split_derive_attrs
@@ -243,21 +243,21 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[$new_user:tt], $($tail:tt)*), $bi_drvs:tt, ($($user_drvs:ident,)*)
+        ($new_user:ident, $($tail:tt)*), $bi_drvs:tt, ($($user_drvs:tt)*)
     ) => {
         custom_derive! {
             @split_derive_attrs
-            $fixed, ($($tail)*), $bi_drvs, ($($user_drvs,)* $new_user(),)
+            $fixed, ($($tail)*), $bi_drvs, ($($user_drvs)* $new_user(),)
         }
     };
 
     (@split_derive_attrs
         $fixed:tt,
-        (#[$new_user:tt ($($new_user_args:tt)*)], $($tail:tt)*), $bi_drvs:tt, ($($user_drvs:ident,)*)
+        ($new_user:ident ($($new_user_args:tt)*), $($tail:tt)*), $bi_drvs:tt, ($($user_drvs:tt)*)
     ) => {
         custom_derive! {
             @split_derive_attrs
-            $fixed, ($($tail)*), $bi_drvs, ($($user_drvs,)* $new_user($($new_user_args)*),)
+            $fixed, ($($tail)*), $bi_drvs, ($($user_drvs)* $new_user($($new_user_args)*),)
         }
     };
 
@@ -266,9 +266,9 @@ macro_rules! custom_derive {
     ) => {};
 
     (@expand_user_drvs
-        ($user_drv:ident $args:tt, $($tail:ident,)*), ($($it:tt)*)
+        ($user_drv:ident $arg:tt, $($tail:tt)*), ($($it:tt)*)
     ) => {
-        $user_drv! { $args $($it)* }
+        $user_drv! { $arg $($it)* }
         custom_derive! {
             @expand_user_drvs
             ($($tail)*), ($($it)*)

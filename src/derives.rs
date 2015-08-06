@@ -31,6 +31,17 @@ macro_rules! TryFrom {
 
     (
         @collect_variants $fixed:tt,
+        (#[$_attr:meta] $($tail:tt)*) -> $var_names:tt
+    ) => {
+        TryFrom! {
+            @skip_meta $fixed,
+            ($($tail)*) -> $var_names
+        }
+    };
+
+
+    (
+        @collect_variants $fixed:tt,
         ($var:ident $(= $_val:expr)*, $($tail:tt)*) -> ($($var_names:tt)*)
     ) => {
         TryFrom! {
@@ -50,6 +61,26 @@ macro_rules! TryFrom {
             stringify!($var),
             "."
         );
+    };
+
+    (
+        @skip_meta $fixed:tt,
+        (#[$_attr:meta] $($tail:tt)*) -> $var_names:tt
+    ) => {
+        TryFrom! {
+            @skip_meta $fixed,
+            ($($tail)*) -> $var_names
+        }
+    };
+
+    (
+        @skip_meta $fixed:tt,
+        ($var:ident $($tail:tt)*) -> $var_names:tt
+    ) => {
+        TryFrom! {
+            @collect_variants $fixed,
+            ($var $($tail)*) -> $var_names
+        }
     };
 }
 

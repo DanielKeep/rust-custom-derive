@@ -3,7 +3,14 @@ use custom_derive::TryFrom;
 
 custom_derive! {
     #[derive(Debug, PartialEq, TryFrom(u8))]
-    enum Get { Up, Down, AllAround }
+    enum Get {
+        /// The +Z direction
+        Up,
+        /// The -Z direction
+        Down,
+        /// Just... everywhere
+        AllAround
+    }
 }
 
 #[test]

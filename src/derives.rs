@@ -1,9 +1,29 @@
+/// Trait for enums that can be constructed from another (usually integral) type
+///
+/// Used with the TryFrom! custom derive macro. Example:
+///
+// FIXME this test can't be run because custom_derive! isn't accessible
+/// ```ignore
+///     #[macro_use] extern crate custom_derive;
+///     use custom_derive::TryFrom;
+///
+///     custom_derive! {
+///         #[derive(Debug, PartialEq, TryFrom(u8))]
+///         enum Get { Up, Down, AllAround }
+///     }
+///
+///     println!("{:?}", Get::try_from(0u8)); // Ok(Get::Up)
+/// ```
 pub trait TryFrom<Src> {
+    /// Error that may be returned from `try_from()`
     type Err;
+
+    /// Convert a value from primitive type to enum variant
     fn try_from(src: Src) -> Result<Self, Self::Err>;
 }
 
 #[macro_export]
+#[doc(hidden)]
 macro_rules! TryFrom {
     (($prim:ty) $(pub)* enum $name:ident { $($body:tt)* }) => {
         TryFrom! {

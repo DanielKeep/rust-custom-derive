@@ -50,8 +50,7 @@
 
 <p>To use it, make sure you link to the crate like so:</p>
 <pre class='rust rust-example-rendered'>
-<span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>custom_derive</span>;
-</pre>
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>custom_derive</span>;</pre>
 
 <blockquote>
 <p><strong>Note</strong>: the <code>custom_derive!</code> macro itself is not documented, as the automatic documentation for it would be uselessly huge and incomprehensible.</p>
@@ -104,8 +103,7 @@
     <span class='kw'>let</span> <span class='ident'>v</span> <span class='op'>=</span> <span class='ident'>foo</span> <span class='kw'>as</span> <span class='op'>&lt;</span><span class='ident'>Foo</span> <span class='kw'>as</span> <span class='ident'>ReprType</span><span class='op'>&gt;</span>::<span class='ident'>Repr</span>;
     <span class='kw'>let</span> <span class='ident'>msg</span> <span class='op'>=</span> <span class='macro'>format</span><span class='macro'>!</span>(<span class='string'>&quot;{}: {:?} ({:?})&quot;</span>, <span class='ident'>Foo</span>::<span class='ident'>type_name</span>(), <span class='ident'>foo</span>, <span class='ident'>v</span>);
     <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>msg</span>, <span class='string'>&quot;Foo: B (1)&quot;</span>);
-}
-</pre>
+}</pre>
 
 <p>First, note that <code>custom_derive!</code> passes any arguments on the derivation attribute to the macro.  In the case of attributes <em>without</em> any arguments, <code>()</code> is passed instead.</p>
 

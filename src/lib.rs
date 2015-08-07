@@ -192,11 +192,27 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         { ($(#[$($non_derives:tt)*],)*), ($($it:tt)*) },
-        (), ($($bi_drvs:ident,)*), ($($user_drvs:tt)*)
+        (), (), ($($user_drvs:tt)*)
     ) => {
         custom_derive! {
             @as_item
-            #[derive($($bi_drvs,)*)]
+            $(#[$($non_derives)*])*
+            $($it)*
+        }
+
+        custom_derive! {
+            @expand_user_drvs
+            ($($user_drvs)*), ($($it)*)
+        }
+    };
+
+    (@split_derive_attrs
+        { ($(#[$($non_derives:tt)*],)*), ($($it:tt)*) },
+        (), ($($bi_drvs:ident,)+), ($($user_drvs:tt)*)
+    ) => {
+        custom_derive! {
+            @as_item
+            #[derive($($bi_drvs,)+)]
             $(#[$($non_derives)*])*
             $($it)*
         }

@@ -1,0 +1,7 @@
+[package]
+name = "newtype_derive"
+version = "0.1.0"
+authors = ["Daniel Keep <daniel.keep@gmail.com>"]
+
+[dev-dependencies]
+custom_derive = "0.1.0"

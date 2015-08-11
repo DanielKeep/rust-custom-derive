@@ -1,3 +1,4 @@
+#![recursion_limit = "128"]
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate newtype_derive;
 
@@ -13,18 +14,15 @@ custom_derive! {
         NewtypeSub, NewtypeSub(ref),
 
         NewtypeShl(), NewtypeShl(ref), NewtypeShl(<_>), NewtypeShl(ref <_>),
-        NewtypeShr(), NewtypeShr(ref), NewtypeShr(<_>), NewtypeShr(ref <_>)
+        NewtypeShr(), NewtypeShr(ref), NewtypeShr(<_>), NewtypeShr(ref <_>),
 
-        // The macro recursion limit gives out beyond this point. :(
+        NewtypeNeg, NewtypeNeg(ref),
+        NewtypeNot, NewtypeNot(ref),
+
+        NewtypeFrom
         )]
     pub struct Dummy(i32);
 }
-
-NewtypeNeg! { ()    pub struct Dummy(i32); }
-NewtypeNeg! { (ref) pub struct Dummy(i32); }
-NewtypeNot! { ()    pub struct Dummy(i32); }
-NewtypeNot! { (ref) pub struct Dummy(i32); }
-NewtypeFrom! { ()   pub struct Dummy(i32); }
 
 #[test]
 fn test_arith() {

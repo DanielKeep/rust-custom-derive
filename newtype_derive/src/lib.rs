@@ -1,3 +1,124 @@
+/*!
+This crate provides several macros for deriving implementations of various traits for "newtype" wrappers (*i.e.* tuple structs with a single element).
+
+All of these macros are designed to be used with the [`custom_derive`](https://crates.io/crates/custom_derive) crate, though they can be used independent of it.
+
+# Example
+
+Create a simple integer wrapper with some arithmetic operators:
+
+```rust
+#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate newtype_derive;
+
+custom_derive! {
+    #[derive(NewtypeFrom, NewtypeAdd, NewtypeMul(i32))]
+    pub struct Happy(i32);
+}
+
+# fn main() {
+// Let's add some happy little ints.
+let a = Happy::from(6);
+let b = Happy::from(7);
+let c = (a + b) * 3;
+let d: i32 = c.into();
+assert_eq!(d, 39);
+# }
+```
+
+Create a "deref-transparent" wrapper around a type:
+
+```rust
+#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate newtype_derive;
+
+custom_derive! {
+    #[derive(NewtypeFrom,
+        NewtypeDeref, NewtypeDerefMut,
+        NewtypeIndex(usize), NewtypeIndexMut(usize)
+        )]
+    pub struct I32Array(Vec<i32>);
+}
+
+# fn main() {
+let mut arr = I32Array::from(vec![1, 2, 3]);
+arr.push(4);
+arr[2] = 5;
+assert_eq!(&**arr, &[1, 2, 5, 4]);
+assert_eq!(arr.len(), 4);
+# }
+```
+
+# Overview
+
+This crate provides macros to derive implementations of the following traits for newtype structs:
+
+- Binary Arithmetic Operators: Add, BitAnd, BitOr, BitXor, Div, Mul, Rem, Sub, Shl, Shr.
+- Unary Arithmetic Operators: Neg, Not.
+- Other Operators: Deref, DerefMut, Index, IndexMut.
+- Miscellaneous: From.
+
+All of these macros are named `Newtype$Trait`.
+
+None of these macros currently support generic newtype structs.
+
+## Binary Arithmetic Operators
+
+Each of the binary arithmetic operators accept several deriving forms.  To use `Add` on a struct `T` as an example:
+
+- `NewtypeAdd`: `impl Add<T, Output=T> for T`
+- `NewtypeAdd(&self)`: `impl<'a> Add<&'a T, Output=T> for &'a T`
+- `NewtypeAdd(U)`: `impl Add<U, Output=T> for T`
+- `NewtypeAdd(&self, U)`: `impl<'a> Add<U, Output=T> for &'a T`
+
+In all cases, the implementation unwraps the newtype (where necessary), forwards to the wrapped value's implementation, then re-wraps the result in the newtype.
+
+## Unary Arithmetic Operators
+
+Each of the binary arithmetic operators accept several deriving forms.  To use `Neg` on a struct `T` as an example:
+
+- `NewtypeNeg`: `impl Neg<Output=T> for T`
+- `NewtypeNeg(&self)`: `impl<'a> Neg<Output=T> for &'a T`
+
+In all cases, the implementation unwraps the newtype, forwards to the wrapped value's implementation, then re-wraps the result in the newtype.
+
+## Other Operators
+
+`NewtypeDeref` and `NewtypeDerefMut` only support the argument-less form, and implements the corresponding trait such that the newtype structure derefs to a pointer to the wrapped value.
+
+`NewtypeIndex` and `NewtypeIndexMut` must be used as `NewtypeIndex(usize)`, where the argument is the type to use for indexing.  The call is forwarded to the wrapped value's implementation.
+
+## Miscellaneous
+
+`NewtypeFrom` implements `std::convert::From` twice: once for converting from the wrapped type to the newtype, and once for converting from the newtype to the wrapped type.
+
+## Using Without `custom_derive!`
+
+Although designed to be used with `custom_derive!`, all of the macros in this crate can be used without it.  The following:
+
+```rust
+# #[macro_use] extern crate custom_derive;
+# #[macro_use] extern crate newtype_derive;
+custom_derive! {
+    #[derive(Copy, Clone, Debug, NewtypeFrom, NewtypeAdd, NewtypeAdd(f32))]
+    pub struct Meters(f32);
+}
+# fn main() {}
+```
+
+Can also be written as:
+
+```rust
+# #[macro_use] extern crate newtype_derive;
+#[derive(Copy, Clone, Debug)]
+pub struct Meters(f32);
+
+NewtypeFrom! { () pub struct Meters(f32); }
+NewtypeAdd! { () pub struct Meters(f32); }
+NewtypeAdd! { (f32) pub struct Meters(f32); }
+# fn main() {}
+```
+*/
 /*
 # `Newtype$binop` Template
 

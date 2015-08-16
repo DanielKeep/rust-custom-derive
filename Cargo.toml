@@ -7,6 +7,7 @@ description = "This crate provides a macro that enables the use of custom derive
 repository = "https://github.com/DanielKeep/rust-custom-derive"
 documentation = "https://danielkeep.github.io/rust-custom-derive/doc/custom_derive/index.html"
 license = "MIT"
+keywords = ["custom", "derive", "macro"]
 
 [dev-dependencies]
 rustc-serialize = "0.3.15"

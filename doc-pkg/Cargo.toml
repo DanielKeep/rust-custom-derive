@@ -1,0 +1,13 @@
+[package]
+name = "doc-pkg"
+version = "0.1.0"
+authors = ["Daniel Keep <daniel.keep@gmail.com>"]
+
+[dependencies]
+custom_derive = { path = ".." }
+newtype_derive = { path = "../newtype_derive" }
+
+[lib]
+name = "doc"
+path = "src.rs"
+doc = false

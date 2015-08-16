@@ -10,4 +10,4 @@ license = "MIT"
 keywords = ["newtype", "wrapper", "struct", "custom_derive", "custom", "derive", "macro"]
 
 [dev-dependencies]
-custom_derive = "0.1.0"
+custom_derive = "0.1.1"

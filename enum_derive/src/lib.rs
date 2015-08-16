@@ -148,30 +148,6 @@ macro_rules! IterVariants {
 #[macro_export]
 macro_rules! IterVariantNames {
     (
-        @expand priv $itername:ident, $name:ident ($($var_names:ident),*)
-    ) => {
-        type $itername = ::std::vec::IntoIter<&'static str>;
-
-        impl $name {
-            #[allow(dead_code)]
-            fn iter_variant_names() -> $itername {
-                vec![$(stringify!($var_names)),*].into_iter()
-            }
-        }
-    };
-
-    (($itername:ident) $(pub)* enum $name:ident { $($body:tt)* }) => {
-        enum_derive_util! {
-            @collect_unitary_variants
-            (IterVariantNames { @expand priv $itername, $name }),
-            ($($body)*,) -> ()
-        }
-    };
-}
-
-#[macro_export]
-macro_rules! IterVariantNames {
-    (
         @expand ($($pub_:tt)*) $itername:ident, $name:ident ()
     ) => {
         enum_derive_util! { @as_item $($pub_)* struct $itername; }

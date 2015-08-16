@@ -20,7 +20,7 @@ custom_derive! {
         NewtypeShr(), NewtypeShr(&self), NewtypeShr(usize), NewtypeShr(&self, usize),
 
         NewtypeNeg, NewtypeNeg(&self),
-        NewtypeNot, NewtypeNot(ref),
+        NewtypeNot, NewtypeNot(&self),
 
         NewtypeFrom
         )]

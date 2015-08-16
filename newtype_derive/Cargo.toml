@@ -7,7 +7,7 @@ description = "This crate provides macros for deriving common traits for newtype
 repository = "https://github.com/DanielKeep/rust-custom-derive"
 documentation = "https://danielkeep.github.io/rust-custom-derive/doc/newtype_derive/index.html"
 license = "MIT"
-keywords = ["newtype", "wrapper", "struct", "custom_derive", "custom", "derive", "macro"]
+keywords = ["newtype", "derive", "wrapper", "custom_derive", "macro"]
 
 [dev-dependencies]
 custom_derive = "0.1.1"

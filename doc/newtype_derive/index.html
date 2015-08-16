@@ -46,7 +46,7 @@
                 [<span class='inner'>&#x2212;</span>]
             </a>
         </span><a id='src-0' class='srclink' href='../src/newtype_derive/lib.rs.html#1-520' title='goto source code'>[src]</a></span></h1>
-<div class='docblock'><p>This crate provides several macros for deriving implementations of various traits for &quot;newtype&quot; wrappers (<em>i.e.</em> tuple structs with a single element).</p>
+<div class='docblock'><p>This crate provides several macros for deriving implementations of various traits for &quot;newtype&quot; wrappers (<em>i.e.</em> tuple structs with a single element).  That is, given a tuple struct with exactly one field (<em>e.g.</em> <code>struct Buckets(i32)</code>), these macros will derive &quot;obvious&quot; implementations of traits such as <code>Add</code>, <code>Neg</code>, <code>Index</code>, <code>Deref</code>, <code>From</code>, etc.</p>
 
 <p>All of these macros are designed to be used with the <a href="https://crates.io/crates/custom_derive"><code>custom_derive</code></a> crate, though they can be used independent of it.</p>
 

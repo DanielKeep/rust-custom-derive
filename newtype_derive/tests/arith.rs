@@ -1,22 +1,25 @@
+#![feature(trace_macros)]
 #![recursion_limit = "128"]
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate newtype_derive;
 
+// trace_macros!(true);
+
 custom_derive! {
     #[derive(Copy, Clone, Eq, PartialEq, Debug,
-        NewtypeAdd, NewtypeAdd(ref),
-        NewtypeBitAnd, NewtypeBitAnd(ref),
-        NewtypeBitOr, NewtypeBitOr(ref),
-        NewtypeBitXor, NewtypeBitXor(ref),
-        NewtypeDiv, NewtypeDiv(ref),
-        NewtypeMul, NewtypeMul(ref),
-        NewtypeRem, NewtypeRem(ref),
-        NewtypeSub, NewtypeSub(ref),
+        NewtypeAdd, NewtypeAdd(&self), NewtypeAdd(i32), NewtypeAdd(&self, i32),
+        NewtypeBitAnd, NewtypeBitAnd(&self),
+        NewtypeBitOr, NewtypeBitOr(&self),
+        NewtypeBitXor, NewtypeBitXor(&self),
+        NewtypeDiv, NewtypeDiv(&self),
+        NewtypeMul, NewtypeMul(&self),
+        NewtypeRem, NewtypeRem(&self),
+        NewtypeSub, NewtypeSub(&self),
 
-        NewtypeShl(), NewtypeShl(ref), NewtypeShl(<_>), NewtypeShl(ref <_>),
-        NewtypeShr(), NewtypeShr(ref), NewtypeShr(<_>), NewtypeShr(ref <_>),
+        NewtypeShl(), NewtypeShl(&self), NewtypeShl(usize), NewtypeShl(&self, usize),
+        NewtypeShr(), NewtypeShr(&self), NewtypeShr(usize), NewtypeShr(&self, usize),
 
-        NewtypeNeg, NewtypeNeg(ref),
+        NewtypeNeg, NewtypeNeg(&self),
         NewtypeNot, NewtypeNot(ref),
 
         NewtypeFrom
@@ -31,6 +34,8 @@ fn test_arith() {
 
     assert_eq!(a + b, Dummy::from(4 + 7));
     assert_eq!(&a + &b, Dummy::from(4 + 7));
+    assert_eq!(a + 7, Dummy::from(4 + 7));
+    assert_eq!(&a + 7, Dummy::from(4 + 7));
     assert_eq!(a & b, Dummy::from(4 & 7));
     assert_eq!(&a & &b, Dummy::from(4 & 7));
     assert_eq!(a | b, Dummy::from(4 | 7));

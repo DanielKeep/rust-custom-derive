@@ -5,6 +5,7 @@ authors = ["Daniel Keep <daniel.keep@gmail.com>"]
 
 [dependencies]
 custom_derive = { path = ".." }
+enum_derive = { path = "../enum_derive" }
 newtype_derive = { path = "../newtype_derive" }
 
 [lib]

@@ -1,0 +1,1 @@
+initSidebarItems({"macro":[["NewtypeAdd!",""],["NewtypeBitAnd!",""],["NewtypeBitOr!",""],["NewtypeBitXor!",""],["NewtypeDeref!",""],["NewtypeDerefMut!",""],["NewtypeDiv!",""],["NewtypeFrom!",""],["NewtypeIndex!",""],["NewtypeIndexMut!",""],["NewtypeMul!",""],["NewtypeNeg!",""],["NewtypeNot!",""],["NewtypeRem!",""],["NewtypeShl!",""],["NewtypeShr!",""],["NewtypeSub!",""]]});

@@ -9,5 +9,11 @@ documentation = "https://danielkeep.github.io/rust-custom-derive/doc/custom_deri
 license = "MIT"
 keywords = ["custom", "derive", "macro"]
 
+exclude = [
+    ".cargo/*",
+    "doc-pkg/*",
+    "update-docs.py",
+]
+
 [dev-dependencies]
 rustc-serialize = "0.3.15"

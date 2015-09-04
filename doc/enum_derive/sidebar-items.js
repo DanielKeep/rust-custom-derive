@@ -1,1 +1,1 @@
-initSidebarItems({"macro":[["IterVariantNames!",""],["IterVariants!",""]]});
+initSidebarItems({"macro":[["IterVariantNames!",""],["IterVariants!",""],["NextVariant!",""],["PrevVariant!",""]]});

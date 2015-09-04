@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/enum_derive/lib.rs.html#1-332' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/enum_derive/lib.rs.html#1-502' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This crate provides several macros for deriving some useful methods for unitary enums (<em>i.e.</em> enums where variants do not have payloads).</p>
 
 <p>All of these macros are designed to be used with the <a href="https://crates.io/crates/custom_derive"><code>custom_derive</code></a> crate, though they can be used independent of it.</p>
@@ -76,6 +76,26 @@
     (<span class='ident'>Candy</span>::<span class='ident'>LemonSherbert</span>, <span class='string'>&quot;LemonSherbert&quot;</span>),
 ]);</pre>
 
+<p>Alternately, derive <code>next_variant</code> and <code>prev_variant</code> methods.</p>
+<pre class='rust rust-example-rendered'>
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>custom_derive</span>;
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>enum_derive</span>;
+
+<span class='kw'>use</span> <span class='ident'>Hanagami</span>::<span class='op'>*</span>;
+
+<span class='macro'>custom_derive</span><span class='macro'>!</span> {
+    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>Eq</span>, <span class='ident'>NextVariant</span>, <span class='ident'>PrevVariant</span>)]</span>
+    <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>Hanagami</span> { <span class='ident'>Sakigami</span>, <span class='ident'>Hasugami</span>, <span class='ident'>Tsutagami</span> }
+}
+
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Sakigami</span>.<span class='ident'>next_variant</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>Hasugami</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Hasugami</span>.<span class='ident'>next_variant</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>Tsutagami</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Tsutagami</span>.<span class='ident'>next_variant</span>(), <span class='prelude-val'>None</span>);
+
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Sakigami</span>.<span class='ident'>prev_variant</span>(), <span class='prelude-val'>None</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Hasugami</span>.<span class='ident'>prev_variant</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>Sakigami</span>));
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Tsutagami</span>.<span class='ident'>prev_variant</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>Hasugami</span>));</pre>
+
 <h1 id="overview" class='section-header'><a
                            href="#overview">Overview</a></h1>
 <p>This crate provides macros to derive the following methods for unitary variant enums:</p>
@@ -83,9 +103,11 @@
 <ul>
 <li><code>IterVariants</code> derives <code>iter_variants()</code>, which returns an iterator over the variants of the enum in lexical order.</li>
 <li><code>IterVariantNames</code> derives <code>iter_variant_names()</code>, which returns an iterator over the string names of the variants of the enum in lexical order.</li>
+<li><code>NextVariant</code> derives <code>next_variant(&amp;self)</code>, which returns the next variant, or <code>None</code> when called for the last.</li>
+<li><code>PrevVariant</code> derives <code>prev_variant(&amp;self)</code>, which returns the previous variant, or <code>None</code> when called for the first.</li>
 </ul>
 
-<p>Both of these accept a single deriving form.  Taking <code>IterVariants</code> as an example, it must be invoked like so:</p>
+<p>Both of the <code>IterVariant*</code> macros accept a single deriving form.  Taking <code>IterVariants</code> as an example, it must be invoked like so:</p>
 <pre class='rust rust-example-rendered'>
 <span class='macro'>custom_derive</span><span class='macro'>!</span> {
     <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>IterVariants</span>(<span class='ident'>GetVariants</span>))]</span>
@@ -93,6 +115,8 @@
 }</pre>
 
 <p>The argument is the name of the iterator type that will be generated.  Neither macro imposes any naming requirements, save the obvious: the name must not conflict with any other types.</p>
+
+<p><code>NextVariant</code> and <code>PrevVariant</code> take no arguments.</p>
 
 <p>The methods and iterator types generated will be public if the enum itself is public; otherwise, they will be private.</p>
 
@@ -124,6 +148,22 @@
                     <tr class=' module-item'>
                         <td><a class='macro' href='macro.IterVariants!.html'
                                title='enum_derive::IterVariants!'>IterVariants!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.NextVariant!.html'
+                               title='enum_derive::NextVariant!'>NextVariant!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.PrevVariant!.html'
+                               title='enum_derive::PrevVariant!'>PrevVariant!</a></td>
                         <td class='docblock short'>
                              
                         </td>

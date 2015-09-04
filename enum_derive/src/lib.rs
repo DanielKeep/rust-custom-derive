@@ -31,14 +31,40 @@ assert_eq!(&*vars.zip(names).collect::<Vec<_>>(), &[
 # }
 ```
 
+Alternately, derive `next_variant` and `prev_variant` methods.
+
+```rust
+#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate enum_derive;
+
+use Hanagami::*;
+
+custom_derive! {
+    #[derive(Debug, PartialEq, Eq, NextVariant, PrevVariant)]
+    pub enum Hanagami { Sakigami, Hasugami, Tsutagami }
+}
+
+# fn main() {
+assert_eq!(Sakigami.next_variant(), Some(Hasugami));
+assert_eq!(Hasugami.next_variant(), Some(Tsutagami));
+assert_eq!(Tsutagami.next_variant(), None);
+
+assert_eq!(Sakigami.prev_variant(), None);
+assert_eq!(Hasugami.prev_variant(), Some(Sakigami));
+assert_eq!(Tsutagami.prev_variant(), Some(Hasugami));
+# }
+```
+
 # Overview
 
 This crate provides macros to derive the following methods for unitary variant enums:
 
 - `IterVariants` derives `iter_variants()`, which returns an iterator over the variants of the enum in lexical order.
 - `IterVariantNames` derives `iter_variant_names()`, which returns an iterator over the string names of the variants of the enum in lexical order.
+- `NextVariant` derives `next_variant(&self)`, which returns the next variant, or `None` when called for the last.
+- `PrevVariant` derives `prev_variant(&self)`, which returns the previous variant, or `None` when called for the first.
 
-Both of these accept a single deriving form.  Taking `IterVariants` as an example, it must be invoked like so:
+Both of the `IterVariant*` macros accept a single deriving form.  Taking `IterVariants` as an example, it must be invoked like so:
 
 ```rust
 # #[macro_use] extern crate custom_derive;
@@ -51,6 +77,8 @@ custom_derive! {
 ```
 
 The argument is the name of the iterator type that will be generated.  Neither macro imposes any naming requirements, save the obvious: the name must not conflict with any other types.
+
+`NextVariant` and `PrevVariant` take no arguments.
 
 The methods and iterator types generated will be public if the enum itself is public; otherwise, they will be private.
 
@@ -326,6 +354,148 @@ macro_rules! IterVariantNames {
         enum_derive_util! {
             @collect_unitary_variants
             (IterVariantNames { @expand () $itername, $name }),
+            ($($body)*,) -> ()
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! NextVariant {
+    (
+        @expand ($($pub_:tt)*) $name:ident ()
+    ) => {
+        enum_derive_util! {
+            @as_item
+            impl $name {
+                #[allow(dead_code)]
+                $($pub_)* fn next_variant(&self) -> Option<$name> {
+                    loop {} // unreachable
+                }
+            }
+        }
+    };
+
+    (
+        @expand ($($pub_:tt)*) $name:ident ($($var_names:ident),*)
+    ) => {
+        enum_derive_util! {
+            @as_item
+            impl $name {
+                #[allow(dead_code)]
+                $($pub_)* fn next_variant(&self) -> Option<$name> {
+                    NextVariant!(@arms ($name, self), ($($var_names)*) -> ())
+                }
+            }
+        }
+    };
+
+    (
+        @arms ($name:ident, $self_:expr), ($a:ident) -> ($($body:tt)*)
+    ) => {
+        enum_derive_util! {
+            @as_expr
+            match *$self_ {
+                $($body)*
+                $name::$a => None
+            }
+        }
+    };
+
+    (
+        @arms ($name:ident, $self_:expr), ($a:ident $b:ident $($rest:tt)*) -> ($($body:tt)*)
+    ) => {
+        NextVariant! {
+            @arms ($name, $self_), ($b $($rest)*)
+            -> (
+                $($body)*
+                $name::$a => Some($name::$b),
+            )
+        }
+    };
+
+    (() pub enum $name:ident { $($body:tt)* }) => {
+        enum_derive_util! {
+            @collect_unitary_variants
+            (NextVariant { @expand (pub) $name }),
+            ($($body)*,) -> ()
+        }
+    };
+
+    (() enum $name:ident { $($body:tt)* }) => {
+        enum_derive_util! {
+            @collect_unitary_variants
+            (NextVariant { @expand () $name }),
+            ($($body)*,) -> ()
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! PrevVariant {
+    (
+        @expand ($($pub_:tt)*) $name:ident ()
+    ) => {
+        enum_derive_util! {
+            @as_item
+            impl $name {
+                #[allow(dead_code)]
+                $($pub_)* fn prev_variant(&self) -> Option<$name> {
+                    loop {} // unreachable
+                }
+            }
+        }
+    };
+
+    (
+        @expand ($($pub_:tt)*) $name:ident ($($var_names:ident),*)
+    ) => {
+        enum_derive_util! {
+            @as_item
+            impl $name {
+                #[allow(dead_code)]
+                $($pub_)* fn prev_variant(&self) -> Option<$name> {
+                    PrevVariant!(@arms ($name, self), (None, $($var_names)*) -> ())
+                }
+            }
+        }
+    };
+
+    (
+        @arms ($name:ident, $self_:expr), ($prev:expr, $a:ident) -> ($($body:tt)*)
+    ) => {
+        enum_derive_util! {
+            @as_expr
+            match *$self_ {
+                $($body)*
+                $name::$a => $prev
+            }
+        }
+    };
+
+    (
+        @arms ($name:ident, $self_:expr), ($prev:expr, $a:ident $($rest:tt)*) -> ($($body:tt)*)
+    ) => {
+        PrevVariant! {
+            @arms ($name, $self_), (Some($name::$a), $($rest)*)
+            -> (
+                $($body)*
+                $name::$a => $prev,
+            )
+        }
+    };
+
+    (() pub enum $name:ident { $($body:tt)* }) => {
+        enum_derive_util! {
+            @collect_unitary_variants
+            (PrevVariant { @expand (pub) $name }),
+            ($($body)*,) -> ()
+        }
+    };
+
+    (() enum $name:ident { $($body:tt)* }) => {
+        enum_derive_util! {
+            @collect_unitary_variants
+            (PrevVariant { @expand () $name }),
             ($($body)*,) -> ()
         }
     };

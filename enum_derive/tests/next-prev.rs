@@ -1,8 +1,5 @@
-#![feature(trace_macros)]
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate enum_derive;
-
-// trace_macros!(true);
 
 custom_derive! {
     #[derive(Debug, PartialEq, NextVariant, PrevVariant)]

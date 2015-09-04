@@ -1,9 +1,6 @@
-#![feature(trace_macros)]
 #![recursion_limit = "128"]
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate newtype_derive;
-
-// trace_macros!(true);
 
 custom_derive! {
     #[derive(Copy, Clone, Eq, PartialEq, Debug,

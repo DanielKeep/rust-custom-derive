@@ -72,6 +72,9 @@ Third, each derivation macro is expected to result in zero or more items, not in
 Finally, `@impl` is merely a trick to pack multiple, different functions into a single macro.  The sequence has no special meaning; it is simply *distinct* from the usual invocation syntax.
 */
 
+#[macro_use] mod derives;
+pub use derives::*;
+
 #[doc(hidden)]
 #[macro_export]
 macro_rules! custom_derive {
@@ -414,3 +417,4 @@ macro_rules! custom_derive {
     */
     (@as_item $($i:item)*) => {$($i)*};
 }
+

@@ -225,6 +225,17 @@ macro_rules! custom_derive {
 
     (@split_derive_attrs
         $fixed:tt,
+        (Hash, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
+    ) => {
+        custom_derive! {
+            @split_derive_attrs
+            $fixed,
+            ($($tail)*), ($($bi_drvs,)* Hash,), $user_drvs
+        }
+    };
+
+    (@split_derive_attrs
+        $fixed:tt,
         (Clone, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
     ) => {
         custom_derive! {

@@ -1,6 +1,6 @@
 [package]
 name = "enum_derive"
-version = "0.1.2"
+version = "0.1.3"
 authors = ["Daniel Keep <daniel.keep@gmail.com>"]
 
 description = "This crate provides macros for deriving additional functionality for enums."

@@ -108,7 +108,8 @@ def gen_doc_pkg(tmp1, tmp2, doc_pkg):
         msg_trace('doc_pkg = %r' % doc_pkg)
         msg_trace('os.chdir(%r)' % doc_pkg)
         os.chdir(doc_pkg)
-        manifest_str = sh_eval('cargo read-manifest --manifest-path "%s"' % doc_pkg)
+        manifest_str = sh_eval('cargo read-manifest --manifest-path "%s"'
+            % os.path.join(doc_pkg, 'Cargo.toml'))
         manifest = json.loads(manifest_str)
         for dep in (d['name'] for d in manifest['dependencies']):
             sh('cargo doc --package %s' % dep)

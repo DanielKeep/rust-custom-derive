@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\users\drk\appdata\local\temp\gh-pages-post-commit-checkout-km7g3g\src\lib.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\users\drk\appdata\local\temp\gh-pages-post-commit-checkout-zs7aq6\src\lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -456,6 +456,17 @@
 <span id="414">414</span>
 <span id="415">415</span>
 <span id="416">416</span>
+<span id="417">417</span>
+<span id="418">418</span>
+<span id="419">419</span>
+<span id="420">420</span>
+<span id="421">421</span>
+<span id="422">422</span>
+<span id="423">423</span>
+<span id="424">424</span>
+<span id="425">425</span>
+<span id="426">426</span>
+<span id="427">427</span>
 </pre><pre class='rust '>
 <span class='doccomment'>/*!
 This crate provides a macro that enables the use of custom `derive` attributes.
@@ -679,6 +690,17 @@ Finally, `@impl` is merely a trick to pack multiple, different functions into a 
         <span class='macro'>custom_derive</span><span class='macro'>!</span> {
             <span class='kw-2'>@</span><span class='ident'>expand_user_drvs</span>
             ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>user_drvs</span>)<span class='op'>*</span>), ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>it</span>)<span class='op'>*</span>)
+        }
+    };
+
+    (<span class='kw-2'>@</span><span class='ident'>split_derive_attrs</span>
+        <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>fixed</span>:<span class='ident'>tt</span>,
+        (<span class='ident'>Hash</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tail</span>:<span class='ident'>tt</span>)<span class='op'>*</span>), ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>bi_drvs</span>:<span class='ident'>ident</span>,)<span class='op'>*</span>), <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>user_drvs</span>:<span class='ident'>tt</span>
+    ) <span class='op'>=&gt;</span> {
+        <span class='macro'>custom_derive</span><span class='macro'>!</span> {
+            <span class='kw-2'>@</span><span class='ident'>split_derive_attrs</span>
+            <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>fixed</span>,
+            ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tail</span>)<span class='op'>*</span>), ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>bi_drvs</span>,)<span class='op'>*</span> <span class='ident'>Hash</span>,), <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>user_drvs</span>
         }
     };
 

@@ -1,6 +1,6 @@
 #[macro_use] extern crate custom_derive;
 
-trait TryFrom<Src> {
+trait TryFrom<Src>: Sized {
     type Err;
     fn try_from(src: Src) -> Result<Self, Self::Err>;
 }

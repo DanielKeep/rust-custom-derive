@@ -129,6 +129,28 @@ assert_eq!(format!("{}", Get::Down), "Down");
 assert_eq!(format!("{}", Get::AllAround), "AllAround");
 # }
 ```
+
+# FromStr
+
+FromStr implements std::str::FromStr for your enum.
+
+```rust
+#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate enum_derive;
+
+use ::std::str::FromStr;
+
+custom_derive! {
+    #[derive(Debug, PartialEq, FromStr)]
+    pub enum Get { Up, Down, AllAround }
+}
+
+# fn main() {
+assert_eq!(Get::from_str("Up").unwrap(), Get::Up);
+assert_eq!(Get::from_str("Down").unwrap(), Get::Down);
+assert_eq!(Get::from_str("AllAround").unwrap(), Get::AllAround);
+# }
+```
 */
 #[doc(hidden)]
 #[macro_export]
@@ -590,6 +612,81 @@ macro_rules! Fmt {
         enum_derive_util! {
             @collect_unitary_variants
             (Fmt { @expand () $name }),
+            ($($body)*,) -> ()
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! FromStr {
+    (
+        @expand ($($pub_:tt)*) $name:ident ()
+    ) => {
+        enum_derive_util! {
+            @as_item
+            impl FromStr for $name {
+                type Err = ();
+                #[allow(dead_code)]
+                #[allow(unused_variables)]
+                fn from_str(s: &str) -> Result<Self, Self::Err> {
+                    Err( () )
+                }
+            }
+        }
+    };
+
+    (
+        @expand ($($pub_:tt)*) $name:ident ($($var_names:ident),*)
+    ) => {
+        enum_derive_util! {
+            @as_item
+            impl FromStr for $name {
+                type Err = ();
+                #[allow(dead_code)]
+                fn from_str(s: &str) -> Result<Self, Self::Err> {
+                    FromStr!(@arms ($name, s), ($($var_names)*) -> ())
+                }
+            }
+        }
+    };
+
+    (
+        @arms ($name:ident, $s:ident), ($a:ident) -> ($($body:tt)*)
+    ) => {
+        enum_derive_util! {
+            @as_expr
+            match $s {
+                $($body)*
+                stringify!($a) => Ok($name::$a),
+                _ => Err( () )
+            }
+        }
+    };
+
+    (
+        @arms ($name:ident, $s:ident), ($a:ident $b:ident $($rest:tt)*) -> ($($body:tt)*)
+    ) => {
+        FromStr! {
+            @arms ($name, $s), ($b $($rest)*)
+            -> (
+                $($body)*
+                stringify!($a) => Ok($name::$a),
+            )
+        }
+    };
+
+    (() pub enum $name:ident { $($body:tt)* }) => {
+        enum_derive_util! {
+            @collect_unitary_variants
+            (FromStr { @expand (pub) $name }),
+            ($($body)*,) -> ()
+        }
+    };
+
+    (() enum $name:ident { $($body:tt)* }) => {
+        enum_derive_util! {
+            @collect_unitary_variants
+            (FromStr { @expand () $name }),
             ($($body)*,) -> ()
         }
     };

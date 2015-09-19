@@ -107,6 +107,28 @@ enum ItAintRight { BabeNo, NoNo, BoyBoy }
 IterVariants! { (Vars) enum ItAintRight { BabeNo, NoNo, BoyBoy } }
 # fn main() {}
 ```
+
+# Fmt
+
+Fmt implements fmt::Display for your enum.
+
+```rust
+#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate enum_derive;
+
+use ::std::fmt;
+
+custom_derive! {
+    #[derive(Debug, PartialEq, Fmt)]
+    pub enum Get { Up, Down, AllAround }
+}
+
+# fn main() {
+assert_eq!(format!("{}", Get::Up), "Up");
+assert_eq!(format!("{}", Get::Down), "Down");
+assert_eq!(format!("{}", Get::AllAround), "AllAround");
+# }
+```
 */
 #[doc(hidden)]
 #[macro_export]
@@ -496,6 +518,78 @@ macro_rules! PrevVariant {
         enum_derive_util! {
             @collect_unitary_variants
             (PrevVariant { @expand () $name }),
+            ($($body)*,) -> ()
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! Fmt {
+    (
+        @expand ($($pub_:tt)*) $name:ident ()
+    ) => {
+        enum_derive_util! {
+            @as_item
+            impl $name {
+                #[allow(dead_code)]
+                #[allow(unused_variables)]
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    loop {} // unreachable
+                }
+            }
+        }
+    };
+
+    (
+        @expand ($($pub_:tt)*) $name:ident ($($var_names:ident),*)
+    ) => {
+        enum_derive_util! {
+            @as_item
+            impl fmt::Display for $name {
+                #[allow(dead_code)]
+                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+                    Fmt!(@arms ($name, self, f), ($($var_names)*) -> ())
+                }
+            }
+        }
+    };
+
+    (
+        @arms ($name:ident, $self_:expr, $f:ident), ($a:ident) -> ($($body:tt)*)
+    ) => {
+        enum_derive_util! {
+            @as_expr
+            match *$self_ {
+                $($body)*
+                $name::$a => write!($f, stringify!($a)),
+            }
+        }
+    };
+
+    (
+        @arms ($name:ident, $self_:expr, $f:ident), ($a:ident $b:ident $($rest:tt)*) -> ($($body:tt)*)
+    ) => {
+        Fmt! {
+            @arms ($name, $self_, $f), ($b $($rest)*)
+            -> (
+                $($body)*
+                $name::$a =>  write!($f, stringify!($a)),
+            )
+        }
+    };
+
+    (() pub enum $name:ident { $($body:tt)* }) => {
+        enum_derive_util! {
+            @collect_unitary_variants
+            (Fmt { @expand (pub) $name }),
+            ($($body)*,) -> ()
+        }
+    };
+
+    (() enum $name:ident { $($body:tt)* }) => {
+        enum_derive_util! {
+            @collect_unitary_variants
+            (Fmt { @expand () $name }),
             ($($body)*,) -> ()
         }
     };

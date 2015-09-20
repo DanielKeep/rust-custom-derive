@@ -231,7 +231,7 @@ macro_rules! IterVariants {
 
         impl ::std::iter::Iterator for $itername {
             type Item = $name;
-            fn next(&mut self) -> Option<Self::Item> {
+            fn next(&mut self) -> ::std::option::Option<Self::Item> {
                 None
             }
         }
@@ -250,7 +250,7 @@ macro_rules! IterVariants {
     (
         @expand ($($pub_:tt)*) $itername:ident, $name:ident ($($var_names:ident),*)
     ) => {
-        enum_derive_util! { @as_item $($pub_)* struct $itername(Option<$name>); }
+        enum_derive_util! { @as_item $($pub_)* struct $itername(::std::option::Option<$name>); }
 
         IterVariants! { @iter ($itername, $name), ($($var_names,)*) -> () }
 
@@ -259,7 +259,7 @@ macro_rules! IterVariants {
             impl $name {
                 #[allow(dead_code)]
                 $($pub_)* fn iter_variants() -> $itername {
-                    $itername(Some(enum_derive_util!(@first_expr $($name::$var_names),+)))
+                    $itername(::std::option::Option::Some(enum_derive_util!(@first_expr $($name::$var_names),+)))
                 }
             }
         }
@@ -272,7 +272,7 @@ macro_rules! IterVariants {
             @as_item
             impl ::std::iter::Iterator for $itername {
                 type Item = $name;
-                fn next(&mut self) -> Option<Self::Item> {
+                fn next(&mut self) -> ::std::option::Option<Self::Item> {
                     let next_item = match self.0 {
                         $($body)*
                         None => None
@@ -290,7 +290,7 @@ macro_rules! IterVariants {
             @iter ($itername, $name), ($b, $($rest)*)
             -> (
                 $($body)*
-                Some($name::$a) => Some($name::$b),
+                ::std::option::Option::Some($name::$a) => ::std::option::Option::Some($name::$b),
             )
         }
     };
@@ -302,7 +302,7 @@ macro_rules! IterVariants {
             @iter ($itername, $name), ()
             -> (
                 $($body)*
-                Some($name::$a) => None,
+                ::std::option::Option::Some($name::$a) => ::std::option::Option::None,
             )
         }
     };
@@ -333,7 +333,7 @@ macro_rules! IterVariantNames {
 
         impl ::std::iter::Iterator for $itername {
             type Item = &'static str;
-            fn next(&mut self) -> Option<Self::Item> {
+            fn next(&mut self) -> ::std::option::Option<Self::Item> {
                 None
             }
         }
@@ -352,7 +352,7 @@ macro_rules! IterVariantNames {
     (
         @expand ($($pub_:tt)*) $itername:ident, $name:ident ($($var_names:ident),*)
     ) => {
-        enum_derive_util! { @as_item $($pub_)* struct $itername(Option<$name>); }
+        enum_derive_util! { @as_item $($pub_)* struct $itername(::std::option::Option<$name>); }
 
         IterVariantNames! { @iter ($itername, $name), ($($var_names,)*) -> () }
 
@@ -361,7 +361,7 @@ macro_rules! IterVariantNames {
             impl $name {
                 #[allow(dead_code)]
                 $($pub_)* fn iter_variant_names() -> $itername {
-                    $itername(Some(enum_derive_util!(@first_expr $($name::$var_names),+)))
+                    $itername(::std::option::Option::Some(enum_derive_util!(@first_expr $($name::$var_names),+)))
                 }
             }
         }
@@ -374,10 +374,10 @@ macro_rules! IterVariantNames {
             @as_item
             impl ::std::iter::Iterator for $itername {
                 type Item = &'static str;
-                fn next(&mut self) -> Option<Self::Item> {
+                fn next(&mut self) -> ::std::option::Option<Self::Item> {
                     let (next_state, result) = match self.0 {
                         $($body)*
-                        None => (None, None)
+                        ::std::option::Option::None => (::std::option::Option::None, ::std::option::Option::None)
                     };
                     self.0 = next_state;
                     result
@@ -393,7 +393,8 @@ macro_rules! IterVariantNames {
             @iter ($itername, $name), ($b, $($rest)*)
             -> (
                 $($body)*
-                Some($name::$a) => (Some($name::$b), Some(stringify!($a))),
+                ::std::option::Option::Some($name::$a)
+                    => (::std::option::Option::Some($name::$b), ::std::option::Option::Some(stringify!($a))),
             )
         }
     };
@@ -405,7 +406,8 @@ macro_rules! IterVariantNames {
             @iter ($itername, $name), ()
             -> (
                 $($body)*
-                Some($name::$a) => (None, Some(stringify!($a))),
+                ::std::option::Option::Some($name::$a)
+                    => (::std::option::Option::None, ::std::option::Option::Some(stringify!($a))),
             )
         }
     };
@@ -436,7 +438,7 @@ macro_rules! NextVariant {
             @as_item
             impl $name {
                 #[allow(dead_code)]
-                $($pub_)* fn next_variant(&self) -> Option<$name> {
+                $($pub_)* fn next_variant(&self) -> ::std::option::Option<$name> {
                     loop {} // unreachable
                 }
             }
@@ -450,7 +452,7 @@ macro_rules! NextVariant {
             @as_item
             impl $name {
                 #[allow(dead_code)]
-                $($pub_)* fn next_variant(&self) -> Option<$name> {
+                $($pub_)* fn next_variant(&self) -> ::std::option::Option<$name> {
                     NextVariant!(@arms ($name, self), ($($var_names)*) -> ())
                 }
             }
@@ -464,7 +466,7 @@ macro_rules! NextVariant {
             @as_expr
             match *$self_ {
                 $($body)*
-                $name::$a => None
+                $name::$a => ::std::option::Option::None
             }
         }
     };
@@ -476,7 +478,7 @@ macro_rules! NextVariant {
             @arms ($name, $self_), ($b $($rest)*)
             -> (
                 $($body)*
-                $name::$a => Some($name::$b),
+                $name::$a => ::std::option::Option::Some($name::$b),
             )
         }
     };
@@ -507,7 +509,7 @@ macro_rules! PrevVariant {
             @as_item
             impl $name {
                 #[allow(dead_code)]
-                $($pub_)* fn prev_variant(&self) -> Option<$name> {
+                $($pub_)* fn prev_variant(&self) -> ::std::option::Option<$name> {
                     loop {} // unreachable
                 }
             }
@@ -521,8 +523,8 @@ macro_rules! PrevVariant {
             @as_item
             impl $name {
                 #[allow(dead_code)]
-                $($pub_)* fn prev_variant(&self) -> Option<$name> {
-                    PrevVariant!(@arms ($name, self), (None, $($var_names)*) -> ())
+                $($pub_)* fn prev_variant(&self) -> ::std::option::Option<$name> {
+                    PrevVariant!(@arms ($name, self), (::std::option::Option::None, $($var_names)*) -> ())
                 }
             }
         }
@@ -544,7 +546,7 @@ macro_rules! PrevVariant {
         @arms ($name:ident, $self_:expr), ($prev:expr, $a:ident $($rest:tt)*) -> ($($body:tt)*)
     ) => {
         PrevVariant! {
-            @arms ($name, $self_), (Some($name::$a), $($rest)*)
+            @arms ($name, $self_), (::std::option::Option::Some($name::$a), $($rest)*)
             -> (
                 $($body)*
                 $name::$a => $prev,
@@ -648,7 +650,7 @@ macro_rules! EnumFromStr {
             impl ::std::str::FromStr for $name {
                 type Err = $crate::ParseEnumError;
 
-                fn from_str(_: &str) -> Result<Self, Self::Err> {
+                fn from_str(_: &str) -> ::std::result::Result<Self, Self::Err> {
                     Err($crate::ParseEnumError)
                 }
             }
@@ -677,8 +679,8 @@ macro_rules! EnumFromStr {
             @as_expr
             match $s {
                 $($body)*
-                stringify!($a) => Ok($name::$a),
-                _ => Err($crate::ParseEnumError)
+                stringify!($a) => ::std::result::Result::Ok($name::$a),
+                _ => ::std::result::Result::Err($crate::ParseEnumError)
             }
         }
     };
@@ -690,7 +692,7 @@ macro_rules! EnumFromStr {
             @arms ($name, $s), ($b $($rest)*)
             -> (
                 $($body)*
-                stringify!($a) => Ok($name::$a),
+                stringify!($a) => ::std::result::Result::Ok($name::$a),
             )
         }
     };

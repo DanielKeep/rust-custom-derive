@@ -1,10 +1,8 @@
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate enum_derive;
 
-use ::std::fmt;
-
 custom_derive! {
-    #[derive(Debug, PartialEq, Fmt)]
+    #[derive(EnumDisplay)]
     pub enum Get {
         Up,
         /// And
@@ -15,10 +13,8 @@ custom_derive! {
 }
 
 custom_derive! {
-    #[derive(Debug, PartialEq, Fmt)]
-    pub enum Degenerate {
-
-    }
+    #[derive(EnumDisplay)]
+    pub enum Degenerate {}
 }
 
 #[test]

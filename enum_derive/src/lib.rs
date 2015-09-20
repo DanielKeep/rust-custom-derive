@@ -59,6 +59,8 @@ assert_eq!(Tsutagami.prev_variant(), Some(Hasugami));
 
 This crate provides macros to derive the following methods for unitary variant enums:
 
+- `EnumDisplay` derives `Display`, which outputs the name of the variant.  Note that for unitary variants, this is identical to the behaviour of a derived `Debug` implementation.
+- `EnumFromStr` derives `FromStr`, allowing `str::parse` to be used.  It requires an exact match of the variant name.
 - `IterVariants` derives `iter_variants()`, which returns an iterator over the variants of the enum in lexical order.
 - `IterVariantNames` derives `iter_variant_names()`, which returns an iterator over the string names of the variants of the enum in lexical order.
 - `NextVariant` derives `next_variant(&self)`, which returns the next variant, or `None` when called for the last.
@@ -78,7 +80,7 @@ custom_derive! {
 
 The argument is the name of the iterator type that will be generated.  Neither macro imposes any naming requirements, save the obvious: the name must not conflict with any other types.
 
-`NextVariant` and `PrevVariant` take no arguments.
+The other macros take no arguments.
 
 The methods and iterator types generated will be public if the enum itself is public; otherwise, they will be private.
 
@@ -108,55 +110,77 @@ IterVariants! { (Vars) enum ItAintRight { BabeNo, NoNo, BoyBoy } }
 # fn main() {}
 ```
 
-# Fmt
+## Other Examples
 
-Fmt implements fmt::Display for your enum.
-
-```rust
-#[macro_use] extern crate custom_derive;
-#[macro_use] extern crate enum_derive;
-
-use ::std::fmt;
-
-custom_derive! {
-    #[derive(Debug, PartialEq, Fmt)]
-    pub enum Get { Up, Down, AllAround }
-}
-
-# fn main() {
-assert_eq!(format!("{}", Get::Up), "Up");
-assert_eq!(format!("{}", Get::Down), "Down");
-assert_eq!(format!("{}", Get::AllAround), "AllAround");
-# }
-```
-
-# FromStr
-
-FromStr implements std::str::FromStr for your enum.
+This shows how to use `Display` and `FromStr` to perform string round-tripping of enums.
 
 ```rust
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate enum_derive;
 
-use ::std::str::FromStr;
-
 custom_derive! {
-    #[derive(Debug, PartialEq, FromStr)]
-    pub enum Get { Up, Down, AllAround }
+    #[derive(Debug, PartialEq, EnumDisplay, EnumFromStr)]
+    pub enum TrollDigit { One, Two, Three, Many, Lots }
+}
+
+fn to_troll(mut n: u32) -> String {
+    use std::fmt::Write;
+    let mut s = String::new();
+
+    if n == 0 {
+        panic!("I dun' see nuffin'; how's I s'posed to count it?!");
+    }
+
+    while n > 0 {
+        let (del, dig) = match n {
+            n if n >= 16 => (16, TrollDigit::Lots),
+            n if n >= 4 => (4, TrollDigit::Many),
+            n if n >= 3 => (3, TrollDigit::Three),
+            n if n >= 2 => (2, TrollDigit::Two),
+            _ => (1, TrollDigit::One),
+        };
+        n -= del;
+        if s.len() > 0 { s.push_str(" "); }
+        write!(&mut s, "{}", dig).unwrap();
+    }
+
+    s
+}
+
+fn from_troll(s: &str) -> Result<u32, enum_derive::ParseEnumError> {
+    let mut n = 0;
+    for word in s.split_whitespace() {
+        n += match try!(word.parse()) {
+            TrollDigit::One => 1,
+            TrollDigit::Two => 2,
+            TrollDigit::Three => 3,
+            TrollDigit::Many => 4,
+            TrollDigit::Lots => 16,
+        };
+    }
+    if n == 0 {
+        Err(enum_derive::ParseEnumError)
+    } else {
+        Ok(n)
+    }
 }
 
 # fn main() {
-assert_eq!(Get::from_str("Up").unwrap(), Get::Up);
-assert_eq!(Get::from_str("Down").unwrap(), Get::Down);
-assert_eq!(Get::from_str("AllAround").unwrap(), Get::AllAround);
+let number = 42;
+let troll_number = to_troll(number);
+assert_eq!(troll_number, "Lots Lots Many Many Two");
+assert_eq!(from_troll(&troll_number), Ok(number));
 # }
 ```
 */
+
+use std::fmt;
+
 #[doc(hidden)]
 #[macro_export]
 macro_rules! enum_derive_util {
     (@as_expr $e:expr) => {$e};
-    (@as_item $i:item) => {$i};
+    (@as_item $($i:item)+) => {$($i)+};
     (@first_expr $head:expr, $($tail:expr),*) => {$head};
     (@first_expr $head:expr) => {$head};
 
@@ -546,16 +570,14 @@ macro_rules! PrevVariant {
 }
 
 #[macro_export]
-macro_rules! Fmt {
+macro_rules! EnumDisplay {
     (
-        @expand ($($pub_:tt)*) $name:ident ()
+        @expand $name:ident ()
     ) => {
         enum_derive_util! {
             @as_item
-            impl $name {
-                #[allow(dead_code)]
-                #[allow(unused_variables)]
-                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+            impl ::std::fmt::Display for $name {
+                fn fmt(&self, _: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
                     loop {} // unreachable
                 }
             }
@@ -563,14 +585,13 @@ macro_rules! Fmt {
     };
 
     (
-        @expand ($($pub_:tt)*) $name:ident ($($var_names:ident),*)
+        @expand $name:ident ($($var_names:ident),*)
     ) => {
         enum_derive_util! {
             @as_item
-            impl fmt::Display for $name {
-                #[allow(dead_code)]
-                fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-                    Fmt!(@arms ($name, self, f), ($($var_names)*) -> ())
+            impl ::std::fmt::Display for $name {
+                fn fmt(&self, f: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                    EnumDisplay!(@arms ($name, self, f), ($($var_names)*) -> ())
                 }
             }
         }
@@ -591,11 +612,11 @@ macro_rules! Fmt {
     (
         @arms ($name:ident, $self_:expr, $f:ident), ($a:ident $b:ident $($rest:tt)*) -> ($($body:tt)*)
     ) => {
-        Fmt! {
+        EnumDisplay! {
             @arms ($name, $self_, $f), ($b $($rest)*)
             -> (
                 $($body)*
-                $name::$a =>  write!($f, stringify!($a)),
+                $name::$a => write!($f, stringify!($a)),
             )
         }
     };
@@ -603,7 +624,7 @@ macro_rules! Fmt {
     (() pub enum $name:ident { $($body:tt)* }) => {
         enum_derive_util! {
             @collect_unitary_variants
-            (Fmt { @expand (pub) $name }),
+            (EnumDisplay { @expand $name }),
             ($($body)*,) -> ()
         }
     };
@@ -611,25 +632,24 @@ macro_rules! Fmt {
     (() enum $name:ident { $($body:tt)* }) => {
         enum_derive_util! {
             @collect_unitary_variants
-            (Fmt { @expand () $name }),
+            (EnumDisplay { @expand $name }),
             ($($body)*,) -> ()
         }
     };
 }
 
 #[macro_export]
-macro_rules! FromStr {
+macro_rules! EnumFromStr {
     (
         @expand ($($pub_:tt)*) $name:ident ()
     ) => {
         enum_derive_util! {
             @as_item
-            impl FromStr for $name {
-                type Err = ();
-                #[allow(dead_code)]
-                #[allow(unused_variables)]
-                fn from_str(s: &str) -> Result<Self, Self::Err> {
-                    Err( () )
+            impl ::std::str::FromStr for $name {
+                type Err = $crate::ParseEnumError;
+
+                fn from_str(_: &str) -> Result<Self, Self::Err> {
+                    Err($crate::ParseEnumError)
                 }
             }
         }
@@ -640,11 +660,11 @@ macro_rules! FromStr {
     ) => {
         enum_derive_util! {
             @as_item
-            impl FromStr for $name {
-                type Err = ();
-                #[allow(dead_code)]
+            impl ::std::str::FromStr for $name {
+                type Err = $crate::ParseEnumError;
+
                 fn from_str(s: &str) -> Result<Self, Self::Err> {
-                    FromStr!(@arms ($name, s), ($($var_names)*) -> ())
+                    EnumFromStr!(@arms ($name, s), ($($var_names)*) -> ())
                 }
             }
         }
@@ -658,7 +678,7 @@ macro_rules! FromStr {
             match $s {
                 $($body)*
                 stringify!($a) => Ok($name::$a),
-                _ => Err( () )
+                _ => Err($crate::ParseEnumError)
             }
         }
     };
@@ -666,7 +686,7 @@ macro_rules! FromStr {
     (
         @arms ($name:ident, $s:ident), ($a:ident $b:ident $($rest:tt)*) -> ($($body:tt)*)
     ) => {
-        FromStr! {
+        EnumFromStr! {
             @arms ($name, $s), ($b $($rest)*)
             -> (
                 $($body)*
@@ -678,7 +698,7 @@ macro_rules! FromStr {
     (() pub enum $name:ident { $($body:tt)* }) => {
         enum_derive_util! {
             @collect_unitary_variants
-            (FromStr { @expand (pub) $name }),
+            (EnumFromStr { @expand (pub) $name }),
             ($($body)*,) -> ()
         }
     };
@@ -686,8 +706,28 @@ macro_rules! FromStr {
     (() enum $name:ident { $($body:tt)* }) => {
         enum_derive_util! {
             @collect_unitary_variants
-            (FromStr { @expand () $name }),
+            (EnumFromStr { @expand () $name }),
             ($($body)*,) -> ()
         }
     };
+}
+
+/**
+This is the error type used for derived implementations of `FromStr` for unitary enums.
+
+See the crate documentation for the `EnumFromStr!` macro.
+*/
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ParseEnumError;
+
+impl fmt::Display for ParseEnumError {
+    fn fmt(&self, fmt: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+        write!(fmt, "provided string did not match any enum variant")
+    }
+}
+
+impl ::std::error::Error for ParseEnumError {
+    fn description(&self) -> &str {
+        "provided string did not match any enum variant"
+    }
 }

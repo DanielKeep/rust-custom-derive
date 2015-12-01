@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'></p><script>window.sidebarCurrent = {name: 'custom_derive', ty: 'mod', relpath: '../'};</script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -56,8 +56,7 @@
 <p><strong>Note</strong>: the <code>custom_derive!</code> macro itself is not documented, as the automatic documentation for it would be uselessly huge and incomprehensible.</p>
 </blockquote>
 
-<h1 id="usage" class='section-header'><a
-                           href="#usage">Usage</a></h1>
+<h1 id='usage' class='section-header'><a href='#usage'>Usage</a></h1>
 <p>The macro should be used to wrap an entire <em>single</em> <code>enum</code> or <code>struct</code> declaration, including its attributes (both <code>derive</code> and others).  All derivation attributes which the macro does <em>not</em> recognise will be assumed to be custom, and treated accordingly.</p>
 
 <p><code>custom_derive!</code> assumes that custom derivations are implemented as macros (of the same name).  For example, here is a simple derivation macro:</p>
@@ -117,10 +116,12 @@
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -137,7 +138,7 @@
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -157,7 +158,7 @@
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 
@@ -169,6 +170,6 @@
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
     
-    <script async src="../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

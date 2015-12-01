@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="generator" content="rustdoc">
-    <meta name="description" content="Source to the Rust file `C:\users\drk\appdata\local\temp\gh-pages-post-commit-checkout-6zv0rf\newtype_derive\src\lib.rs`.">
+    <meta name="description" content="Source to the Rust file `C:\users\drk\appdata\local\temp\gh-pages-post-commit-checkout-bshtpn\newtype_derive\src\lib.rs`.">
     <meta name="keywords" content="rust, rustlang, rust-lang">
 
     <title>lib.rs.html -- source</title>
@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -560,6 +560,88 @@
 <span id="518">518</span>
 <span id="519">519</span>
 <span id="520">520</span>
+<span id="521">521</span>
+<span id="522">522</span>
+<span id="523">523</span>
+<span id="524">524</span>
+<span id="525">525</span>
+<span id="526">526</span>
+<span id="527">527</span>
+<span id="528">528</span>
+<span id="529">529</span>
+<span id="530">530</span>
+<span id="531">531</span>
+<span id="532">532</span>
+<span id="533">533</span>
+<span id="534">534</span>
+<span id="535">535</span>
+<span id="536">536</span>
+<span id="537">537</span>
+<span id="538">538</span>
+<span id="539">539</span>
+<span id="540">540</span>
+<span id="541">541</span>
+<span id="542">542</span>
+<span id="543">543</span>
+<span id="544">544</span>
+<span id="545">545</span>
+<span id="546">546</span>
+<span id="547">547</span>
+<span id="548">548</span>
+<span id="549">549</span>
+<span id="550">550</span>
+<span id="551">551</span>
+<span id="552">552</span>
+<span id="553">553</span>
+<span id="554">554</span>
+<span id="555">555</span>
+<span id="556">556</span>
+<span id="557">557</span>
+<span id="558">558</span>
+<span id="559">559</span>
+<span id="560">560</span>
+<span id="561">561</span>
+<span id="562">562</span>
+<span id="563">563</span>
+<span id="564">564</span>
+<span id="565">565</span>
+<span id="566">566</span>
+<span id="567">567</span>
+<span id="568">568</span>
+<span id="569">569</span>
+<span id="570">570</span>
+<span id="571">571</span>
+<span id="572">572</span>
+<span id="573">573</span>
+<span id="574">574</span>
+<span id="575">575</span>
+<span id="576">576</span>
+<span id="577">577</span>
+<span id="578">578</span>
+<span id="579">579</span>
+<span id="580">580</span>
+<span id="581">581</span>
+<span id="582">582</span>
+<span id="583">583</span>
+<span id="584">584</span>
+<span id="585">585</span>
+<span id="586">586</span>
+<span id="587">587</span>
+<span id="588">588</span>
+<span id="589">589</span>
+<span id="590">590</span>
+<span id="591">591</span>
+<span id="592">592</span>
+<span id="593">593</span>
+<span id="594">594</span>
+<span id="595">595</span>
+<span id="596">596</span>
+<span id="597">597</span>
+<span id="598">598</span>
+<span id="599">599</span>
+<span id="600">600</span>
+<span id="601">601</span>
+<span id="602">602</span>
 </pre><pre class='rust '>
 <span class='doccomment'>/*!
 This crate provides several macros for deriving implementations of various traits for &quot;newtype&quot; wrappers (*i.e.* tuple structs with a single element).  That is, given a tuple struct with exactly one field (*e.g.* `struct Buckets(i32)`), these macros will derive &quot;obvious&quot; implementations of traits such as `Add`, `Neg`, `Index`, `Deref`, `From`, etc.
@@ -619,6 +701,7 @@ This crate provides macros to derive implementations of the following traits for
 - Binary Arithmetic Operators: Add, BitAnd, BitOr, BitXor, Div, Mul, Rem, Sub, Shl, Shr.
 - Unary Arithmetic Operators: Neg, Not.
 - Other Operators: Deref, DerefMut, Index, IndexMut.
+- Formatting: Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex.
 - Miscellaneous: From.
 
 All of these macros are named `Newtype$Trait`.
@@ -650,6 +733,12 @@ In all cases, the implementation unwraps the newtype, forwards to the wrapped va
 `NewtypeDeref` and `NewtypeDerefMut` only support the argument-less form, and implements the corresponding trait such that the newtype structure derefs to a pointer to the wrapped value.
 
 `NewtypeIndex` and `NewtypeIndexMut` must be used as `NewtypeIndex(usize)`, where the argument is the type to use for indexing.  The call is forwarded to the wrapped value&#39;s implementation.
+
+## Formatting
+
+The deriving macros for the formatting traits in [`std::fmt`][] forward to the wrapped value&#39;s implementation.
+
+[`std::fmt`]: http://doc.rust-lang.org/std/fmt/index.html
 
 ## Miscellaneous
 
@@ -1081,16 +1170,93 @@ macro_rules! Newtype\2 {
         }
     };
 }
+
+<span class='attribute'>#[<span class='ident'>doc</span>(<span class='ident'>hidden</span>)]</span>
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>newtype_fmt</span> {
+    (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>fmt_trait</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>) <span class='op'>=&gt;</span> {
+        <span class='kw'>impl</span> ::<span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>fmt_trait</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> {
+            <span class='kw'>fn</span> <span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>, <span class='ident'>fmt</span>: <span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> ::<span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='ident'>Formatter</span>) <span class='op'>-&gt;</span> ::<span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='prelude-ty'>Result</span> {
+                ::<span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>fmt_trait</span>::<span class='ident'>fmt</span>(<span class='kw-2'>&amp;</span><span class='self'>self</span>.<span class='number'>0</span>, <span class='ident'>fmt</span>)
+            }
+        }
+    };
+}
+
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>NewtypeBinary</span> {
+    (() $(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>($(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>_t0</span>:<span class='ident'>ty</span>);) <span class='op'>=&gt;</span> {
+        <span class='macro'>newtype_fmt</span><span class='macro'>!</span> { <span class='ident'>Binary</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }
+    };
+}
+
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>NewtypeDebug</span> {
+    (() $(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>($(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>_t0</span>:<span class='ident'>ty</span>);) <span class='op'>=&gt;</span> {
+        <span class='macro'>newtype_fmt</span><span class='macro'>!</span> { <span class='ident'>Debug</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }
+    };
+}
+
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>NewtypeDisplay</span> {
+    (() $(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>($(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>_t0</span>:<span class='ident'>ty</span>);) <span class='op'>=&gt;</span> {
+        <span class='macro'>newtype_fmt</span><span class='macro'>!</span> { <span class='ident'>Display</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }
+    };
+}
+
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>NewtypeLowerExp</span> {
+    (() $(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>($(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>_t0</span>:<span class='ident'>ty</span>);) <span class='op'>=&gt;</span> {
+        <span class='macro'>newtype_fmt</span><span class='macro'>!</span> { <span class='ident'>LowerExp</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }
+    };
+}
+
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>NewtypeLowerHex</span> {
+    (() $(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>($(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>_t0</span>:<span class='ident'>ty</span>);) <span class='op'>=&gt;</span> {
+        <span class='macro'>newtype_fmt</span><span class='macro'>!</span> { <span class='ident'>LowerHex</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }
+    };
+}
+
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>NewtypeOctal</span> {
+    (() $(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>($(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>_t0</span>:<span class='ident'>ty</span>);) <span class='op'>=&gt;</span> {
+        <span class='macro'>newtype_fmt</span><span class='macro'>!</span> { <span class='ident'>Octal</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }
+    };
+}
+
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>NewtypePointer</span> {
+    (() $(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>($(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>_t0</span>:<span class='ident'>ty</span>);) <span class='op'>=&gt;</span> {
+        <span class='macro'>newtype_fmt</span><span class='macro'>!</span> { <span class='ident'>Pointer</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }
+    };
+}
+
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>NewtypeUpperExp</span> {
+    (() $(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>($(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>_t0</span>:<span class='ident'>ty</span>);) <span class='op'>=&gt;</span> {
+        <span class='macro'>newtype_fmt</span><span class='macro'>!</span> { <span class='ident'>UpperExp</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }
+    };
+}
+
+<span class='attribute'>#[<span class='ident'>macro_export</span>]</span>
+<span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>NewtypeUpperHex</span> {
+    (() $(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>($(<span class='kw'>pub</span>)<span class='op'>*</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>_t0</span>:<span class='ident'>ty</span>);) <span class='op'>=&gt;</span> {
+        <span class='macro'>newtype_fmt</span><span class='macro'>!</span> { <span class='ident'>UpperHex</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }
+    };
+}
 </pre>
 </section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -1107,7 +1273,7 @@ macro_rules! Newtype\2 {
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -1127,7 +1293,7 @@ macro_rules! Newtype\2 {
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 
@@ -1139,6 +1305,6 @@ macro_rules! Newtype\2 {
     <script src="../../jquery.js"></script>
     <script src="../../main.js"></script>
     
-    <script async src="../../search-index.js"></script>
+    <script defer src="../../search-index.js"></script>
 </body>
 </html>

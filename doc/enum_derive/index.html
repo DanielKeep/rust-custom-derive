@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'></p><script>window.sidebarCurrent = {name: 'enum_derive', ty: 'mod', relpath: '../'};</script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -45,7 +45,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/enum_derive/lib.rs.html#1-502' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/enum_derive/lib.rs.html#1-735' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This crate provides several macros for deriving some useful methods for unitary enums (<em>i.e.</em> enums where variants do not have payloads).</p>
 
 <p>All of these macros are designed to be used with the <a href="https://crates.io/crates/custom_derive"><code>custom_derive</code></a> crate, though they can be used independent of it.</p>
@@ -54,8 +54,7 @@
 <p><strong>Note</strong>: see also the <code>TryFrom!</code> macro provided by the <a href="https://crates.io/crates/conv"><code>conv</code></a> crate to derive a function for creating enum values from integer values.</p>
 </blockquote>
 
-<h1 id="example" class='section-header'><a
-                           href="#example">Example</a></h1>
+<h1 id='example' class='section-header'><a href='#example'>Example</a></h1>
 <p>Derive iterators that yield all variants of an enum.</p>
 <pre class='rust rust-example-rendered'>
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>custom_derive</span>;
@@ -96,11 +95,12 @@
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Hasugami</span>.<span class='ident'>prev_variant</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>Sakigami</span>));
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>Tsutagami</span>.<span class='ident'>prev_variant</span>(), <span class='prelude-val'>Some</span>(<span class='ident'>Hasugami</span>));</pre>
 
-<h1 id="overview" class='section-header'><a
-                           href="#overview">Overview</a></h1>
+<h1 id='overview' class='section-header'><a href='#overview'>Overview</a></h1>
 <p>This crate provides macros to derive the following methods for unitary variant enums:</p>
 
 <ul>
+<li><code>EnumDisplay</code> derives <code>Display</code>, which outputs the name of the variant.  Note that for unitary variants, this is identical to the behaviour of a derived <code>Debug</code> implementation.</li>
+<li><code>EnumFromStr</code> derives <code>FromStr</code>, allowing <code>str::parse</code> to be used.  It requires an exact match of the variant name.</li>
 <li><code>IterVariants</code> derives <code>iter_variants()</code>, which returns an iterator over the variants of the enum in lexical order.</li>
 <li><code>IterVariantNames</code> derives <code>iter_variant_names()</code>, which returns an iterator over the string names of the variants of the enum in lexical order.</li>
 <li><code>NextVariant</code> derives <code>next_variant(&amp;self)</code>, which returns the next variant, or <code>None</code> when called for the last.</li>
@@ -116,12 +116,11 @@
 
 <p>The argument is the name of the iterator type that will be generated.  Neither macro imposes any naming requirements, save the obvious: the name must not conflict with any other types.</p>
 
-<p><code>NextVariant</code> and <code>PrevVariant</code> take no arguments.</p>
+<p>The other macros take no arguments.</p>
 
 <p>The methods and iterator types generated will be public if the enum itself is public; otherwise, they will be private.</p>
 
-<h2 id="using-without-custom_derive!" class='section-header'><a
-                           href="#using-without-custom_derive!">Using Without <code>custom_derive!</code></a></h2>
+<h2 id='using-without-custom_derive' class='section-header'><a href='#using-without-custom_derive'>Using Without <code>custom_derive!</code></a></h2>
 <p>Although designed to be used with <code>custom_derive!</code>, all of the macros in this crate can be used without it.  The following:</p>
 <pre class='rust rust-example-rendered'>
 <span class='macro'>custom_derive</span><span class='macro'>!</span> {
@@ -135,8 +134,82 @@
 <span class='kw'>enum</span> <span class='ident'>ItAintRight</span> { <span class='ident'>BabeNo</span>, <span class='ident'>NoNo</span>, <span class='ident'>BoyBoy</span> }
 
 <span class='macro'>IterVariants</span><span class='macro'>!</span> { (<span class='ident'>Vars</span>) <span class='kw'>enum</span> <span class='ident'>ItAintRight</span> { <span class='ident'>BabeNo</span>, <span class='ident'>NoNo</span>, <span class='ident'>BoyBoy</span> } }</pre>
+
+<h2 id='other-examples' class='section-header'><a href='#other-examples'>Other Examples</a></h2>
+<p>This shows how to use <code>Display</code> and <code>FromStr</code> to perform string round-tripping of enums.</p>
+<pre class='rust rust-example-rendered'>
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>custom_derive</span>;
+<span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>enum_derive</span>;
+
+<span class='macro'>custom_derive</span><span class='macro'>!</span> {
+    <span class='attribute'>#[<span class='ident'>derive</span>(<span class='ident'>Debug</span>, <span class='ident'>PartialEq</span>, <span class='ident'>EnumDisplay</span>, <span class='ident'>EnumFromStr</span>)]</span>
+    <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='ident'>TrollDigit</span> { <span class='ident'>One</span>, <span class='ident'>Two</span>, <span class='ident'>Three</span>, <span class='ident'>Many</span>, <span class='ident'>Lots</span> }
+}
+
+<span class='kw'>fn</span> <span class='ident'>to_troll</span>(<span class='kw-2'>mut</span> <span class='ident'>n</span>: <span class='ident'>u32</span>) <span class='op'>-&gt;</span> <span class='ident'>String</span> {
+    <span class='kw'>use</span> <span class='ident'>std</span>::<span class='ident'>fmt</span>::<span class='ident'>Write</span>;
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>s</span> <span class='op'>=</span> <span class='ident'>String</span>::<span class='ident'>new</span>();
+
+    <span class='kw'>if</span> <span class='ident'>n</span> <span class='op'>==</span> <span class='number'>0</span> {
+        <span class='macro'>panic</span><span class='macro'>!</span>(<span class='string'>&quot;I dun&#39; see nuffin&#39;; how&#39;s I s&#39;posed to count it?!&quot;</span>);
+    }
+
+    <span class='kw'>while</span> <span class='ident'>n</span> <span class='op'>&gt;</span> <span class='number'>0</span> {
+        <span class='kw'>let</span> (<span class='ident'>del</span>, <span class='ident'>dig</span>) <span class='op'>=</span> <span class='kw'>match</span> <span class='ident'>n</span> {
+            <span class='ident'>n</span> <span class='kw'>if</span> <span class='ident'>n</span> <span class='op'>&gt;=</span> <span class='number'>16</span> <span class='op'>=&gt;</span> (<span class='number'>16</span>, <span class='ident'>TrollDigit</span>::<span class='ident'>Lots</span>),
+            <span class='ident'>n</span> <span class='kw'>if</span> <span class='ident'>n</span> <span class='op'>&gt;=</span> <span class='number'>4</span> <span class='op'>=&gt;</span> (<span class='number'>4</span>, <span class='ident'>TrollDigit</span>::<span class='ident'>Many</span>),
+            <span class='ident'>n</span> <span class='kw'>if</span> <span class='ident'>n</span> <span class='op'>&gt;=</span> <span class='number'>3</span> <span class='op'>=&gt;</span> (<span class='number'>3</span>, <span class='ident'>TrollDigit</span>::<span class='ident'>Three</span>),
+            <span class='ident'>n</span> <span class='kw'>if</span> <span class='ident'>n</span> <span class='op'>&gt;=</span> <span class='number'>2</span> <span class='op'>=&gt;</span> (<span class='number'>2</span>, <span class='ident'>TrollDigit</span>::<span class='ident'>Two</span>),
+            _ <span class='op'>=&gt;</span> (<span class='number'>1</span>, <span class='ident'>TrollDigit</span>::<span class='ident'>One</span>),
+        };
+        <span class='ident'>n</span> <span class='op'>-=</span> <span class='ident'>del</span>;
+        <span class='kw'>if</span> <span class='ident'>s</span>.<span class='ident'>len</span>() <span class='op'>&gt;</span> <span class='number'>0</span> { <span class='ident'>s</span>.<span class='ident'>push_str</span>(<span class='string'>&quot; &quot;</span>); }
+        <span class='macro'>write</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='ident'>s</span>, <span class='string'>&quot;{}&quot;</span>, <span class='ident'>dig</span>).<span class='ident'>unwrap</span>();
+    }
+
+    <span class='ident'>s</span>
+}
+
+<span class='kw'>fn</span> <span class='ident'>from_troll</span>(<span class='ident'>s</span>: <span class='kw-2'>&amp;</span><span class='ident'>str</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Result</span><span class='op'>&lt;</span><span class='ident'>u32</span>, <span class='ident'>enum_derive</span>::<span class='ident'>ParseEnumError</span><span class='op'>&gt;</span> {
+    <span class='kw'>let</span> <span class='kw-2'>mut</span> <span class='ident'>n</span> <span class='op'>=</span> <span class='number'>0</span>;
+    <span class='kw'>for</span> <span class='ident'>word</span> <span class='kw'>in</span> <span class='ident'>s</span>.<span class='ident'>split_whitespace</span>() {
+        <span class='ident'>n</span> <span class='op'>+=</span> <span class='kw'>match</span> <span class='macro'>try</span><span class='macro'>!</span>(<span class='ident'>word</span>.<span class='ident'>parse</span>()) {
+            <span class='ident'>TrollDigit</span>::<span class='ident'>One</span> <span class='op'>=&gt;</span> <span class='number'>1</span>,
+            <span class='ident'>TrollDigit</span>::<span class='ident'>Two</span> <span class='op'>=&gt;</span> <span class='number'>2</span>,
+            <span class='ident'>TrollDigit</span>::<span class='ident'>Three</span> <span class='op'>=&gt;</span> <span class='number'>3</span>,
+            <span class='ident'>TrollDigit</span>::<span class='ident'>Many</span> <span class='op'>=&gt;</span> <span class='number'>4</span>,
+            <span class='ident'>TrollDigit</span>::<span class='ident'>Lots</span> <span class='op'>=&gt;</span> <span class='number'>16</span>,
+        };
+    }
+    <span class='kw'>if</span> <span class='ident'>n</span> <span class='op'>==</span> <span class='number'>0</span> {
+        <span class='prelude-val'>Err</span>(<span class='ident'>enum_derive</span>::<span class='ident'>ParseEnumError</span>)
+    } <span class='kw'>else</span> {
+        <span class='prelude-val'>Ok</span>(<span class='ident'>n</span>)
+    }
+}
+
+<span class='kw'>let</span> <span class='ident'>number</span> <span class='op'>=</span> <span class='number'>42</span>;
+<span class='kw'>let</span> <span class='ident'>troll_number</span> <span class='op'>=</span> <span class='ident'>to_troll</span>(<span class='ident'>number</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>troll_number</span>, <span class='string'>&quot;Lots Lots Many Many Two&quot;</span>);
+<span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>from_troll</span>(<span class='kw-2'>&amp;</span><span class='ident'>troll_number</span>), <span class='prelude-val'>Ok</span>(<span class='ident'>number</span>));</pre>
 </div><h2 id='macros' class='section-header'><a href="#macros">Macros</a></h2>
 <table>
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.EnumDisplay!.html'
+                               title='enum_derive::EnumDisplay!'>EnumDisplay!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.EnumFromStr!.html'
+                               title='enum_derive::EnumFromStr!'>EnumFromStr!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
                     <tr class=' module-item'>
                         <td><a class='macro' href='macro.IterVariantNames!.html'
                                title='enum_derive::IterVariantNames!'>IterVariantNames!</a></td>
@@ -168,15 +241,27 @@
                              
                         </td>
                     </tr>
+                </table><h2 id='structs' class='section-header'><a href="#structs">Structs</a></h2>
+<table>
+                    <tr class=' module-item'>
+                        <td><a class='struct' href='struct.ParseEnumError.html'
+                               title='enum_derive::ParseEnumError'>ParseEnumError</a></td>
+                        <td class='docblock short'>
+                             <p>This is the error type used for derived implementations of <code>FromStr</code> for unitary enums.</p>
+
+                        </td>
+                    </tr>
                 </table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -193,7 +278,7 @@
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -213,7 +298,7 @@
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 
@@ -225,6 +310,6 @@
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
     
-    <script async src="../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'><a href='index.html'>enum_derive</a></p><script>window.sidebarCurrent = {name: 'IterVariants!', ty: 'macro', relpath: ''};</script><script defer src="sidebar-items.js"></script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -45,117 +45,38 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-5' class='srclink' href='../src/enum_derive/lib.rs.html#158-257' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-34' class='srclink' href='../src/enum_derive/lib.rs.html#226-325' title='goto source code'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>IterVariants</span> {
     (
         <span class='kw-2'>@</span><span class='ident'>expand</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>pub_</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span> ()
-    ) <span class='op'>=&gt;</span> {
-        <span class='macro'>enum_derive_util</span><span class='macro'>!</span> { <span class='kw-2'>@</span><span class='ident'>as_item</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>pub_</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>; }
-
-        <span class='kw'>impl</span> ::<span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span> {
-            <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>;
-            <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span> {
-                <span class='prelude-val'>None</span>
-            }
-        }
-
-        <span class='macro'>enum_derive_util</span><span class='macro'>!</span> {
-            <span class='kw-2'>@</span><span class='ident'>as_item</span>
-            <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> {
-                <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
-                $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>pub_</span>)<span class='op'>*</span> <span class='kw'>fn</span> <span class='ident'>iter_variants</span>() <span class='op'>-&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span> {
-                    <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>
-                }
-            }
-        }
-    };
-
+    ) <span class='op'>=&gt;</span> { ... };
     (
         <span class='kw-2'>@</span><span class='ident'>expand</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>pub_</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>var_names</span>:<span class='ident'>ident</span>),<span class='op'>*</span>)
-    ) <span class='op'>=&gt;</span> {
-        <span class='macro'>enum_derive_util</span><span class='macro'>!</span> { <span class='kw-2'>@</span><span class='ident'>as_item</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>pub_</span>)<span class='op'>*</span> <span class='kw'>struct</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>(<span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span><span class='op'>&gt;</span>); }
-
-        <span class='macro'>IterVariants</span><span class='macro'>!</span> { <span class='kw-2'>@</span><span class='ident'>iter</span> (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>), ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>var_names</span>,)<span class='op'>*</span>) <span class='op'>-&gt;</span> () }
-
-        <span class='macro'>enum_derive_util</span><span class='macro'>!</span> {
-            <span class='kw-2'>@</span><span class='ident'>as_item</span>
-            <span class='kw'>impl</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> {
-                <span class='attribute'>#[<span class='ident'>allow</span>(<span class='ident'>dead_code</span>)]</span>
-                $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>pub_</span>)<span class='op'>*</span> <span class='kw'>fn</span> <span class='ident'>iter_variants</span>() <span class='op'>-&gt;</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span> {
-                    <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>(<span class='prelude-val'>Some</span>(<span class='macro'>enum_derive_util</span><span class='macro'>!</span>(<span class='kw-2'>@</span><span class='ident'>first_expr</span> $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>var_names</span>),<span class='op'>+</span>)))
-                }
-            }
-        }
-    };
-
+    ) <span class='op'>=&gt;</span> { ... };
     (
         <span class='kw-2'>@</span><span class='ident'>iter</span> (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>), () <span class='op'>-&gt;</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>:<span class='ident'>tt</span>)<span class='op'>*</span>)
-    ) <span class='op'>=&gt;</span> {
-        <span class='macro'>enum_derive_util</span><span class='macro'>!</span> {
-            <span class='kw-2'>@</span><span class='ident'>as_item</span>
-            <span class='kw'>impl</span> ::<span class='ident'>std</span>::<span class='ident'>iter</span>::<span class='ident'>Iterator</span> <span class='kw'>for</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span> {
-                <span class='kw'>type</span> <span class='ident'>Item</span> <span class='op'>=</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>;
-                <span class='kw'>fn</span> <span class='ident'>next</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>) <span class='op'>-&gt;</span> <span class='prelude-ty'>Option</span><span class='op'>&lt;</span><span class='ident'>Self</span>::<span class='ident'>Item</span><span class='op'>&gt;</span> {
-                    <span class='kw'>let</span> <span class='ident'>next_item</span> <span class='op'>=</span> <span class='kw'>match</span> <span class='self'>self</span>.<span class='number'>0</span> {
-                        $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>)<span class='op'>*</span>
-                        <span class='prelude-val'>None</span> <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>
-                    };
-                    ::<span class='ident'>std</span>::<span class='ident'>mem</span>::<span class='ident'>replace</span>(<span class='kw-2'>&amp;</span><span class='kw-2'>mut</span> <span class='self'>self</span>.<span class='number'>0</span>, <span class='ident'>next_item</span>)
-                }
-            }
-        }
-    };
-
+    ) <span class='op'>=&gt;</span> { ... };
     (
         <span class='kw-2'>@</span><span class='ident'>iter</span> (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>), (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>b</span>:<span class='ident'>ident</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rest</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>-&gt;</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>:<span class='ident'>tt</span>)<span class='op'>*</span>)
-    ) <span class='op'>=&gt;</span> {
-        <span class='macro'>IterVariants</span><span class='macro'>!</span> {
-            <span class='kw-2'>@</span><span class='ident'>iter</span> (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>), (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>b</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rest</span>)<span class='op'>*</span>)
-            <span class='op'>-&gt;</span> (
-                $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>)<span class='op'>*</span>
-                <span class='prelude-val'>Some</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>Some</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>b</span>),
-            )
-        }
-    };
-
+    ) <span class='op'>=&gt;</span> { ... };
     (
         <span class='kw-2'>@</span><span class='ident'>iter</span> (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>:<span class='ident'>ident</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span>), (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span>:<span class='ident'>ident</span>,) <span class='op'>-&gt;</span> ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>:<span class='ident'>tt</span>)<span class='op'>*</span>)
-    ) <span class='op'>=&gt;</span> {
-        <span class='macro'>IterVariants</span><span class='macro'>!</span> {
-            <span class='kw-2'>@</span><span class='ident'>iter</span> (<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>), ()
-            <span class='op'>-&gt;</span> (
-                $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>)<span class='op'>*</span>
-                <span class='prelude-val'>Some</span>(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>::<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>a</span>) <span class='op'>=&gt;</span> <span class='prelude-val'>None</span>,
-            )
-        }
-    };
-
-    ((<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>:<span class='ident'>ident</span>) <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span> { $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>:<span class='ident'>tt</span>)<span class='op'>*</span> }) <span class='op'>=&gt;</span> {
-        <span class='macro'>enum_derive_util</span><span class='macro'>!</span> {
-            <span class='kw-2'>@</span><span class='ident'>collect_unitary_variants</span>
-            (<span class='ident'>IterVariants</span> { <span class='kw-2'>@</span><span class='ident'>expand</span> (<span class='kw'>pub</span>) <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }),
-            ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>)<span class='op'>*</span>,) <span class='op'>-&gt;</span> ()
-        }
-    };
-
-    ((<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>:<span class='ident'>ident</span>) <span class='kw'>enum</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span> { $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>:<span class='ident'>tt</span>)<span class='op'>*</span> }) <span class='op'>=&gt;</span> {
-        <span class='macro'>enum_derive_util</span><span class='macro'>!</span> {
-            <span class='kw-2'>@</span><span class='ident'>collect_unitary_variants</span>
-            (<span class='ident'>IterVariants</span> { <span class='kw-2'>@</span><span class='ident'>expand</span> () <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>, <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span> }),
-            ($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>)<span class='op'>*</span>,) <span class='op'>-&gt;</span> ()
-        }
-    };
+    ) <span class='op'>=&gt;</span> { ... };
+    ((<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>:<span class='ident'>ident</span>) <span class='kw'>pub</span> <span class='kw'>enum</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span> { $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>:<span class='ident'>tt</span>)<span class='op'>*</span> }) <span class='op'>=&gt;</span> { ... };
+    ((<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>itername</span>:<span class='ident'>ident</span>) <span class='kw'>enum</span> <span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>name</span>:<span class='ident'>ident</span> { $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>body</span>:<span class='ident'>tt</span>)<span class='op'>*</span> }) <span class='op'>=&gt;</span> { ... };
 }</pre>
 </section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -172,7 +93,7 @@
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -192,7 +113,7 @@
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 
@@ -204,6 +125,6 @@
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
     
-    <script async src="../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

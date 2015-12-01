@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'><a href='index.html'>newtype_derive</a></p><script>window.sidebarCurrent = {name: 'NewtypeAdd!', ty: 'macro', relpath: ''};</script><script defer src="sidebar-items.js"></script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -45,31 +45,25 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-7' class='srclink' href='../src/newtype_derive/lib.rs.html#270-283' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-7' class='srclink' href='../src/newtype_derive/lib.rs.html#277-290' title='goto source code'>[src]</a></span></h1>
 <pre class='rust macro'>
 <span class='macro'>macro_rules</span><span class='macro'>!</span> <span class='ident'>NewtypeAdd</span> {
-    (() $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> {
-        <span class='macro'>newtype_wrap_bin_op</span><span class='macro'>!</span> { <span class='kw'>trait</span>: (::<span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Add</span>)::<span class='ident'>add</span>, <span class='ident'>kind</span>: <span class='ident'>simple</span>, <span class='ident'>item</span>: $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>)<span class='op'>*</span> }
-    };
-    ((<span class='kw-2'>&amp;</span><span class='self'>self</span>) $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> {
-        <span class='macro'>newtype_wrap_bin_op</span><span class='macro'>!</span> { <span class='kw'>trait</span>: (::<span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Add</span>)::<span class='ident'>add</span>, <span class='ident'>kind</span>: <span class='ident'>simple_ref</span>, <span class='ident'>item</span>: $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>)<span class='op'>*</span> }
-    };
-    ((<span class='kw-2'>&amp;</span><span class='self'>self</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rhs</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> {
-        <span class='macro'>newtype_wrap_bin_op</span><span class='macro'>!</span> { <span class='kw'>trait</span>: (::<span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Add</span>)::<span class='ident'>add</span>, <span class='ident'>kind</span>: <span class='ident'>ref_rhs_rewrap</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rhs</span>)<span class='op'>*</span>), <span class='ident'>item</span>: $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>)<span class='op'>*</span> }
-    };
-    (($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rhs</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> {
-        <span class='macro'>newtype_wrap_bin_op</span><span class='macro'>!</span> { <span class='kw'>trait</span>: (::<span class='ident'>std</span>::<span class='ident'>ops</span>::<span class='ident'>Add</span>)::<span class='ident'>add</span>, <span class='ident'>kind</span>: <span class='ident'>rhs_rewrap</span>($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rhs</span>)<span class='op'>*</span>), <span class='ident'>item</span>: $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>)<span class='op'>*</span> }
-    };
+    (() $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> { ... };
+    ((<span class='kw-2'>&amp;</span><span class='self'>self</span>) $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> { ... };
+    ((<span class='kw-2'>&amp;</span><span class='self'>self</span>, $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rhs</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> { ... };
+    (($(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>rhs</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) $(<span class='macro-nonterminal'>$</span><span class='macro-nonterminal'>tts</span>:<span class='ident'>tt</span>)<span class='op'>*</span>) <span class='op'>=&gt;</span> { ... };
 }</pre>
 </section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -86,7 +80,7 @@
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -106,7 +100,7 @@
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 
@@ -118,6 +112,6 @@
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
     
-    <script async src="../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

@@ -24,10 +24,10 @@
 
     
 
-    <section class="sidebar">
+    <nav class="sidebar">
         
         <p class='location'></p><script>window.sidebarCurrent = {name: 'newtype_derive', ty: 'mod', relpath: '../'};</script>
-    </section>
+    </nav>
 
     <nav class="sub">
         <form class="search-form js-only">
@@ -45,13 +45,12 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/newtype_derive/lib.rs.html#1-520' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/newtype_derive/lib.rs.html#1-602' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This crate provides several macros for deriving implementations of various traits for &quot;newtype&quot; wrappers (<em>i.e.</em> tuple structs with a single element).  That is, given a tuple struct with exactly one field (<em>e.g.</em> <code>struct Buckets(i32)</code>), these macros will derive &quot;obvious&quot; implementations of traits such as <code>Add</code>, <code>Neg</code>, <code>Index</code>, <code>Deref</code>, <code>From</code>, etc.</p>
 
 <p>All of these macros are designed to be used with the <a href="https://crates.io/crates/custom_derive"><code>custom_derive</code></a> crate, though they can be used independent of it.</p>
 
-<h1 id="example" class='section-header'><a
-                           href="#example">Example</a></h1>
+<h1 id='example' class='section-header'><a href='#example'>Example</a></h1>
 <p>Create a simple integer wrapper with some arithmetic operators:</p>
 <pre class='rust rust-example-rendered'>
 <span class='attribute'>#[<span class='ident'>macro_use</span>]</span> <span class='kw'>extern</span> <span class='kw'>crate</span> <span class='ident'>custom_derive</span>;
@@ -88,14 +87,14 @@
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='kw-2'>&amp;</span><span class='op'>*</span><span class='op'>*</span><span class='ident'>arr</span>, <span class='kw-2'>&amp;</span>[<span class='number'>1</span>, <span class='number'>2</span>, <span class='number'>5</span>, <span class='number'>4</span>]);
 <span class='macro'>assert_eq</span><span class='macro'>!</span>(<span class='ident'>arr</span>.<span class='ident'>len</span>(), <span class='number'>4</span>);</pre>
 
-<h1 id="overview" class='section-header'><a
-                           href="#overview">Overview</a></h1>
+<h1 id='overview' class='section-header'><a href='#overview'>Overview</a></h1>
 <p>This crate provides macros to derive implementations of the following traits for newtype structs:</p>
 
 <ul>
 <li>Binary Arithmetic Operators: Add, BitAnd, BitOr, BitXor, Div, Mul, Rem, Sub, Shl, Shr.</li>
 <li>Unary Arithmetic Operators: Neg, Not.</li>
 <li>Other Operators: Deref, DerefMut, Index, IndexMut.</li>
+<li>Formatting: Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex.</li>
 <li>Miscellaneous: From.</li>
 </ul>
 
@@ -103,8 +102,7 @@
 
 <p>None of these macros currently support generic newtype structs.</p>
 
-<h2 id="binary-arithmetic-operators" class='section-header'><a
-                           href="#binary-arithmetic-operators">Binary Arithmetic Operators</a></h2>
+<h2 id='binary-arithmetic-operators' class='section-header'><a href='#binary-arithmetic-operators'>Binary Arithmetic Operators</a></h2>
 <p>Each of the binary arithmetic operators accept several deriving forms.  To use <code>Add</code> on a struct <code>T</code> as an example:</p>
 
 <ul>
@@ -116,8 +114,7 @@
 
 <p>In all cases, the implementation unwraps the newtype (where necessary), forwards to the wrapped value&#39;s implementation, then re-wraps the result in the newtype.</p>
 
-<h2 id="unary-arithmetic-operators" class='section-header'><a
-                           href="#unary-arithmetic-operators">Unary Arithmetic Operators</a></h2>
+<h2 id='unary-arithmetic-operators' class='section-header'><a href='#unary-arithmetic-operators'>Unary Arithmetic Operators</a></h2>
 <p>Each of the binary arithmetic operators accept several deriving forms.  To use <code>Neg</code> on a struct <code>T</code> as an example:</p>
 
 <ul>
@@ -127,18 +124,18 @@
 
 <p>In all cases, the implementation unwraps the newtype, forwards to the wrapped value&#39;s implementation, then re-wraps the result in the newtype.</p>
 
-<h2 id="other-operators" class='section-header'><a
-                           href="#other-operators">Other Operators</a></h2>
+<h2 id='other-operators' class='section-header'><a href='#other-operators'>Other Operators</a></h2>
 <p><code>NewtypeDeref</code> and <code>NewtypeDerefMut</code> only support the argument-less form, and implements the corresponding trait such that the newtype structure derefs to a pointer to the wrapped value.</p>
 
 <p><code>NewtypeIndex</code> and <code>NewtypeIndexMut</code> must be used as <code>NewtypeIndex(usize)</code>, where the argument is the type to use for indexing.  The call is forwarded to the wrapped value&#39;s implementation.</p>
 
-<h2 id="miscellaneous" class='section-header'><a
-                           href="#miscellaneous">Miscellaneous</a></h2>
+<h2 id='formatting' class='section-header'><a href='#formatting'>Formatting</a></h2>
+<p>The deriving macros for the formatting traits in <a href="http://doc.rust-lang.org/std/fmt/index.html"><code>std::fmt</code></a> forward to the wrapped value&#39;s implementation.</p>
+
+<h2 id='miscellaneous' class='section-header'><a href='#miscellaneous'>Miscellaneous</a></h2>
 <p><code>NewtypeFrom</code> implements <code>std::convert::From</code> twice: once for converting from the wrapped type to the newtype, and once for converting from the newtype to the wrapped type.</p>
 
-<h2 id="using-without-custom_derive!" class='section-header'><a
-                           href="#using-without-custom_derive!">Using Without <code>custom_derive!</code></a></h2>
+<h2 id='using-without-custom_derive' class='section-header'><a href='#using-without-custom_derive'>Using Without <code>custom_derive!</code></a></h2>
 <p>Although designed to be used with <code>custom_derive!</code>, all of the macros in this crate can be used without it.  The following:</p>
 <pre class='rust rust-example-rendered'>
 <span class='macro'>custom_derive</span><span class='macro'>!</span> {
@@ -159,6 +156,14 @@
                     <tr class=' module-item'>
                         <td><a class='macro' href='macro.NewtypeAdd!.html'
                                title='newtype_derive::NewtypeAdd!'>NewtypeAdd!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.NewtypeBinary!.html'
+                               title='newtype_derive::NewtypeBinary!'>NewtypeBinary!</a></td>
                         <td class='docblock short'>
                              
                         </td>
@@ -189,6 +194,14 @@
                     </tr>
                 
                     <tr class=' module-item'>
+                        <td><a class='macro' href='macro.NewtypeDebug!.html'
+                               title='newtype_derive::NewtypeDebug!'>NewtypeDebug!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
                         <td><a class='macro' href='macro.NewtypeDeref!.html'
                                title='newtype_derive::NewtypeDeref!'>NewtypeDeref!</a></td>
                         <td class='docblock short'>
@@ -199,6 +212,14 @@
                     <tr class=' module-item'>
                         <td><a class='macro' href='macro.NewtypeDerefMut!.html'
                                title='newtype_derive::NewtypeDerefMut!'>NewtypeDerefMut!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.NewtypeDisplay!.html'
+                               title='newtype_derive::NewtypeDisplay!'>NewtypeDisplay!</a></td>
                         <td class='docblock short'>
                              
                         </td>
@@ -237,6 +258,22 @@
                     </tr>
                 
                     <tr class=' module-item'>
+                        <td><a class='macro' href='macro.NewtypeLowerExp!.html'
+                               title='newtype_derive::NewtypeLowerExp!'>NewtypeLowerExp!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.NewtypeLowerHex!.html'
+                               title='newtype_derive::NewtypeLowerHex!'>NewtypeLowerHex!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
                         <td><a class='macro' href='macro.NewtypeMul!.html'
                                title='newtype_derive::NewtypeMul!'>NewtypeMul!</a></td>
                         <td class='docblock short'>
@@ -255,6 +292,22 @@
                     <tr class=' module-item'>
                         <td><a class='macro' href='macro.NewtypeNot!.html'
                                title='newtype_derive::NewtypeNot!'>NewtypeNot!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.NewtypeOctal!.html'
+                               title='newtype_derive::NewtypeOctal!'>NewtypeOctal!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.NewtypePointer!.html'
+                               title='newtype_derive::NewtypePointer!'>NewtypePointer!</a></td>
                         <td class='docblock short'>
                              
                         </td>
@@ -291,15 +344,33 @@
                              
                         </td>
                     </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.NewtypeUpperExp!.html'
+                               title='newtype_derive::NewtypeUpperExp!'>NewtypeUpperExp!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
+                
+                    <tr class=' module-item'>
+                        <td><a class='macro' href='macro.NewtypeUpperHex!.html'
+                               title='newtype_derive::NewtypeUpperHex!'>NewtypeUpperHex!</a></td>
+                        <td class='docblock short'>
+                             
+                        </td>
+                    </tr>
                 </table></section>
     <section id='search' class="content hidden"></section>
 
     <section class="footer"></section>
 
-    <div id="help" class="hidden">
+    <aside id="help" class="hidden">
         <div>
+            <h1 class="hidden">Help</h1>
+
             <div class="shortcuts">
-                <h1>Keyboard Shortcuts</h1>
+                <h2>Keyboard Shortcuts</h2>
 
                 <dl>
                     <dt>?</dt>
@@ -316,7 +387,7 @@
             </div>
 
             <div class="infos">
-                <h1>Search Tricks</h1>
+                <h2>Search Tricks</h2>
 
                 <p>
                     Prefix searches with a type followed by a colon (e.g.
@@ -336,7 +407,7 @@
                 </p>
             </div>
         </div>
-    </div>
+    </aside>
 
     
 
@@ -348,6 +419,6 @@
     <script src="../jquery.js"></script>
     <script src="../main.js"></script>
     
-    <script async src="../search-index.js"></script>
+    <script defer src="../search-index.js"></script>
 </body>
 </html>

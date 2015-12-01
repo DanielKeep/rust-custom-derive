@@ -1,6 +1,6 @@
 [package]
 name = "custom_derive"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["Daniel Keep <daniel.keep@gmail.com>"]
 
 description = "This crate provides a macro that enables the use of custom derive attributes."

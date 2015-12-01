@@ -56,6 +56,7 @@ This crate provides macros to derive implementations of the following traits for
 - Binary Arithmetic Operators: Add, BitAnd, BitOr, BitXor, Div, Mul, Rem, Sub, Shl, Shr.
 - Unary Arithmetic Operators: Neg, Not.
 - Other Operators: Deref, DerefMut, Index, IndexMut.
+- Formatting: Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex.
 - Miscellaneous: From.
 
 All of these macros are named `Newtype$Trait`.
@@ -87,6 +88,12 @@ In all cases, the implementation unwraps the newtype, forwards to the wrapped va
 `NewtypeDeref` and `NewtypeDerefMut` only support the argument-less form, and implements the corresponding trait such that the newtype structure derefs to a pointer to the wrapped value.
 
 `NewtypeIndex` and `NewtypeIndexMut` must be used as `NewtypeIndex(usize)`, where the argument is the type to use for indexing.  The call is forwarded to the wrapped value's implementation.
+
+## Formatting
+
+The deriving macros for the formatting traits in [`std::fmt`][] forward to the wrapped value's implementation.
+
+[`std::fmt`]: http://doc.rust-lang.org/std/fmt/index.html
 
 ## Miscellaneous
 
@@ -516,5 +523,80 @@ macro_rules! NewtypeFrom {
                 v.0
             }
         }
+    };
+}
+
+#[doc(hidden)]
+#[macro_export]
+macro_rules! newtype_fmt {
+    ($fmt_trait:ident, $name:ident) => {
+        impl ::std::fmt::$fmt_trait for $name {
+            fn fmt(&self, fmt: &mut ::std::fmt::Formatter) -> ::std::fmt::Result {
+                ::std::fmt::$fmt_trait::fmt(&self.0, fmt)
+            }
+        }
+    };
+}
+
+#[macro_export]
+macro_rules! NewtypeBinary {
+    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+        newtype_fmt! { Binary, $name }
+    };
+}
+
+#[macro_export]
+macro_rules! NewtypeDebug {
+    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+        newtype_fmt! { Debug, $name }
+    };
+}
+
+#[macro_export]
+macro_rules! NewtypeDisplay {
+    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+        newtype_fmt! { Display, $name }
+    };
+}
+
+#[macro_export]
+macro_rules! NewtypeLowerExp {
+    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+        newtype_fmt! { LowerExp, $name }
+    };
+}
+
+#[macro_export]
+macro_rules! NewtypeLowerHex {
+    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+        newtype_fmt! { LowerHex, $name }
+    };
+}
+
+#[macro_export]
+macro_rules! NewtypeOctal {
+    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+        newtype_fmt! { Octal, $name }
+    };
+}
+
+#[macro_export]
+macro_rules! NewtypePointer {
+    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+        newtype_fmt! { Pointer, $name }
+    };
+}
+
+#[macro_export]
+macro_rules! NewtypeUpperExp {
+    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+        newtype_fmt! { UpperExp, $name }
+    };
+}
+
+#[macro_export]
+macro_rules! NewtypeUpperHex {
+    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+        newtype_fmt! { UpperHex, $name }
     };
 }

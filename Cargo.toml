@@ -11,6 +11,7 @@ keywords = ["custom", "derive", "macro"]
 
 exclude = [
     ".cargo/*",
+    "local/*",
     "doc-pkg/*",
     "update-docs.py",
 ]

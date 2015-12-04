@@ -58,6 +58,7 @@ This crate provides macros to derive implementations of the following traits for
 - Other Operators: Deref, DerefMut, Index, IndexMut.
 - Formatting: Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex.
 - Miscellaneous: From.
+- Unstable: One, Zero.
 
 All of these macros are named `Newtype$Trait`.
 
@@ -167,6 +168,8 @@ macro_rules! Newtype\2 {
 }
 ```
 */
+
+mod std_unstable;
 
 #[doc(hidden)]
 #[macro_export]

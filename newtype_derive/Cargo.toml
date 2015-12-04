@@ -9,5 +9,8 @@ documentation = "https://danielkeep.github.io/rust-custom-derive/doc/newtype_der
 license = "MIT"
 keywords = ["newtype", "derive", "wrapper", "custom_derive", "macro"]
 
+[features]
+std-unstable = []
+
 [dev-dependencies]
 custom_derive = "0.1.1"

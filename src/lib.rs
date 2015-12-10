@@ -147,7 +147,7 @@ macro_rules! custom_derive {
 
     (
         @split_attrs
-        (#[derive($($new_drv:ident $(($($new_drv_args:tt)*))*),*)], $(#[$($attrs:tt)*],)*),
+        (#[derive($($new_drv:ident $(($($new_drv_args:tt)*))*),* $(,)*)], $(#[$($attrs:tt)*],)*),
         $non_derives:tt,
         ($($derives:ident,)*),
         $it:tt

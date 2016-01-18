@@ -183,7 +183,22 @@ macro_rules! newtype_wrap_bin_op {
     (
         trait: ($($tr:tt)*)::$meth:ident,
         kind: simple,
-        item: $(pub)* struct $name:ident($(pub)* $t:ty);
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl $($tr)*<$name> for $name {
+                type Output = $name;
+                fn $meth(self, rhs: Self) -> $name {
+                    $name((self.0).$meth(rhs.0))
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: simple,
+        item: $(pub)* struct $name:ident($t:ty);
     ) => {
         newtype_as_item! {
             impl $($tr)*<$name> for $name {
@@ -198,7 +213,22 @@ macro_rules! newtype_wrap_bin_op {
     (
         trait: ($($tr:tt)*)::$meth:ident,
         kind: simple_ref,
-        item: $(pub)* struct $name:ident($(pub)* $t:ty);
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl<'a> $($tr)*<&'a $name> for &'a $name {
+                type Output = $name;
+                fn $meth(self, rhs: Self) -> $name {
+                    $name((self.0).$meth(rhs.0))
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: simple_ref,
+        item: $(pub)* struct $name:ident($t:ty);
     ) => {
         newtype_as_item! {
             impl<'a> $($tr)*<&'a $name> for &'a $name {
@@ -213,7 +243,22 @@ macro_rules! newtype_wrap_bin_op {
     (
         trait: ($($tr:tt)*)::$meth:ident,
         kind: rhs_rewrap($rhs:ty),
-        item: $(pub)* struct $name:ident($(pub)* $t:ty);
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl $($tr)*<$rhs> for $name {
+                type Output = $name;
+                fn $meth(self, rhs: $rhs) -> $name {
+                    $name((self.0).$meth(rhs))
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: rhs_rewrap($rhs:ty),
+        item: $(pub)* struct $name:ident($t:ty);
     ) => {
         newtype_as_item! {
             impl $($tr)*<$rhs> for $name {
@@ -228,7 +273,22 @@ macro_rules! newtype_wrap_bin_op {
     (
         trait: ($($tr:tt)*)::$meth:ident,
         kind: ref_rhs_rewrap($rhs:ty),
-        item: $(pub)* struct $name:ident($(pub)* $t:ty);
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl<'a> $($tr)*<$rhs> for &'a $name {
+                type Output = $name;
+                fn $meth(self, rhs: $rhs) -> $name {
+                    $name((self.0).$meth(rhs))
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: ref_rhs_rewrap($rhs:ty),
+        item: $(pub)* struct $name:ident($t:ty);
     ) => {
         newtype_as_item! {
             impl<'a> $($tr)*<$rhs> for &'a $name {
@@ -247,7 +307,22 @@ macro_rules! newtype_wrap_un_op {
     (
         trait: ($($tr:tt)*)::$meth:ident,
         kind: simple,
-        item: $(pub)* struct $name:ident($(pub)* $t:ty);
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl $($tr)* for $name {
+                type Output = $name;
+                fn $meth(self) -> $name {
+                    $name((self.0).$meth())
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: simple,
+        item: $(pub)* struct $name:ident($t:ty);
     ) => {
         newtype_as_item! {
             impl $($tr)* for $name {
@@ -262,7 +337,22 @@ macro_rules! newtype_wrap_un_op {
     (
         trait: ($($tr:tt)*)::$meth:ident,
         kind: simple_ref,
-        item: $(pub)* struct $name:ident($(pub)* $t:ty);
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl<'a> $($tr)* for &'a $name {
+                type Output = $name;
+                fn $meth(self) -> $name {
+                    $name((self.0).$meth())
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: simple_ref,
+        item: $(pub)* struct $name:ident($t:ty);
     ) => {
         newtype_as_item! {
             impl<'a> $($tr)* for &'a $name {
@@ -469,7 +559,16 @@ macro_rules! NewtypeNot {
 
 #[macro_export]
 macro_rules! NewtypeDeref {
-    (() $(pub)* struct $name:ident($(pub)* $t0:ty);) => {
+    (() $(pub)* struct $name:ident(pub $t0:ty);) => {
+        impl ::std::ops::Deref for $name {
+            type Target = $t0;
+            fn deref(&self) -> &Self::Target {
+                &self.0
+            }
+        }
+    };
+
+    (() $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::ops::Deref for $name {
             type Target = $t0;
             fn deref(&self) -> &Self::Target {
@@ -481,7 +580,15 @@ macro_rules! NewtypeDeref {
 
 #[macro_export]
 macro_rules! NewtypeDerefMut {
-    (() $(pub)* struct $name:ident($(pub)* $t0:ty);) => {
+    (() $(pub)* struct $name:ident(pub $t0:ty);) => {
+        impl ::std::ops::DerefMut for $name {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.0
+            }
+        }
+    };
+
+    (() $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::ops::DerefMut for $name {
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.0
@@ -492,7 +599,16 @@ macro_rules! NewtypeDerefMut {
 
 #[macro_export]
 macro_rules! NewtypeIndex {
-    (($index_ty:ty) $(pub)* struct $name:ident($(pub)* $t0:ty);) => {
+    (($index_ty:ty) $(pub)* struct $name:ident(pub $t0:ty);) => {
+        impl ::std::ops::Index<$index_ty> for $name {
+            type Output = <$t0 as ::std::ops::Index<$index_ty>>::Output;
+            fn index(&self, index: $index_ty) -> &Self::Output {
+                (&self.0).index(index)
+            }
+        }
+    };
+
+    (($index_ty:ty) $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::ops::Index<$index_ty> for $name {
             type Output = <$t0 as ::std::ops::Index<$index_ty>>::Output;
             fn index(&self, index: $index_ty) -> &Self::Output {
@@ -504,7 +620,15 @@ macro_rules! NewtypeIndex {
 
 #[macro_export]
 macro_rules! NewtypeIndexMut {
-    (($index_ty:ty) $(pub)* struct $name:ident($(pub)* $t0:ty);) => {
+    (($index_ty:ty) $(pub)* struct $name:ident(pub $t0:ty);) => {
+        impl ::std::ops::IndexMut<$index_ty> for $name {
+            fn index_mut(&mut self, index: $index_ty) -> &mut Self::Output {
+                (&mut self.0).index_mut(index)
+            }
+        }
+    };
+
+    (($index_ty:ty) $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::ops::IndexMut<$index_ty> for $name {
             fn index_mut(&mut self, index: $index_ty) -> &mut Self::Output {
                 (&mut self.0).index_mut(index)
@@ -515,7 +639,20 @@ macro_rules! NewtypeIndexMut {
 
 #[macro_export]
 macro_rules! NewtypeFrom {
-    (() $(pub)* struct $name:ident($(pub)* $t0:ty);) => {
+    (() $(pub)* struct $name:ident(pub $t0:ty);) => {
+        impl ::std::convert::From<$t0> for $name {
+            fn from(v: $t0) -> Self {
+                $name(v)
+            }
+        }
+        impl ::std::convert::From<$name> for $t0 {
+            fn from(v: $name) -> Self {
+                v.0
+            }
+        }
+    };
+
+    (() $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::convert::From<$t0> for $name {
             fn from(v: $t0) -> Self {
                 $name(v)
@@ -543,63 +680,63 @@ macro_rules! newtype_fmt {
 
 #[macro_export]
 macro_rules! NewtypeBinary {
-    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+    (() $(pub)* struct $name:ident $_field:tt;) => {
         newtype_fmt! { Binary, $name }
     };
 }
 
 #[macro_export]
 macro_rules! NewtypeDebug {
-    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+    (() $(pub)* struct $name:ident $_field:tt;) => {
         newtype_fmt! { Debug, $name }
     };
 }
 
 #[macro_export]
 macro_rules! NewtypeDisplay {
-    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+    (() $(pub)* struct $name:ident $_field:tt;) => {
         newtype_fmt! { Display, $name }
     };
 }
 
 #[macro_export]
 macro_rules! NewtypeLowerExp {
-    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+    (() $(pub)* struct $name:ident $_field:tt;) => {
         newtype_fmt! { LowerExp, $name }
     };
 }
 
 #[macro_export]
 macro_rules! NewtypeLowerHex {
-    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+    (() $(pub)* struct $name:ident $_field:tt;) => {
         newtype_fmt! { LowerHex, $name }
     };
 }
 
 #[macro_export]
 macro_rules! NewtypeOctal {
-    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+    (() $(pub)* struct $name:ident $_field:tt;) => {
         newtype_fmt! { Octal, $name }
     };
 }
 
 #[macro_export]
 macro_rules! NewtypePointer {
-    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+    (() $(pub)* struct $name:ident $_field:tt;) => {
         newtype_fmt! { Pointer, $name }
     };
 }
 
 #[macro_export]
 macro_rules! NewtypeUpperExp {
-    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+    (() $(pub)* struct $name:ident $_field:tt;) => {
         newtype_fmt! { UpperExp, $name }
     };
 }
 
 #[macro_export]
 macro_rules! NewtypeUpperHex {
-    (() $(pub)* struct $name:ident($(pub)* $_t0:ty);) => {
+    (() $(pub)* struct $name:ident $_field:tt;) => {
         newtype_fmt! { UpperHex, $name }
     };
 }

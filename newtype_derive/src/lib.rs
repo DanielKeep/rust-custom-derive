@@ -72,6 +72,7 @@ Each of the binary arithmetic operators accept several deriving forms.  To use `
 - `NewtypeAdd(&self)`: `impl<'a> Add<&'a T, Output=T> for &'a T`
 - `NewtypeAdd(U)`: `impl Add<U, Output=T> for T`
 - `NewtypeAdd(&self, U)`: `impl<'a> Add<U, Output=T> for &'a T`
+- `NewtypeAdd(*)`: All four combinations of `T` and `&T`
 
 In all cases, the implementation unwraps the newtype (where necessary), forwards to the wrapped value's implementation, then re-wraps the result in the newtype.
 
@@ -81,6 +82,7 @@ Each of the binary arithmetic operators accept several deriving forms.  To use `
 
 - `NewtypeNeg`: `impl Neg<Output=T> for T`
 - `NewtypeNeg(&self)`: `impl<'a> Neg<Output=T> for &'a T`
+- `NewtypeNeg(*)`: both of the above
 
 In all cases, the implementation unwraps the newtype, forwards to the wrapped value's implementation, then re-wraps the result in the newtype.
 
@@ -136,6 +138,12 @@ Given `/\/\/\s*(ntbop\s+([A-Za-z0-9]+),\s*([a-z_]+))\n(^#\[.+?\]$\n)*^macro_rule
 // \1
 #[macro_export]
 macro_rules! Newtype\2 {
+    ((*) $($tts:tt)*) => {
+        Newtype\2! { () $($tts)* }
+        Newtype\2! { (&self) $($tts)* }
+        Newtype\2! { (&Self) $($tts)* }
+        Newtype\2! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::\2)::\3, kind: simple, item: $($tts)* }
     };
@@ -159,6 +167,10 @@ Given `/\/\/\s*(ntuop\s+([A-Za-z0-9]+),\s*([a-z_]+))\n(^#\[.+?\]$\n)*^macro_rule
 // \1
 #[macro_export]
 macro_rules! Newtype\2 {
+    ((*) $($tts:tt)*) => {
+        Newtype\2! { () $($tts)* }
+        Newtype\2! { (&self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_un_op! { trait: (::std::ops::\2)::\3, kind: simple, item: $($tts)* }
     };
@@ -242,6 +254,36 @@ macro_rules! newtype_wrap_bin_op {
 
     (
         trait: ($($tr:tt)*)::$meth:ident,
+        kind: rhs_rewrap(&Self),
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl<'a> $($tr)*<&'a $name> for $name {
+                type Output = $name;
+                fn $meth(self, rhs: &'a $name) -> $name {
+                    $name((self.0).$meth(&rhs.0))
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: rhs_rewrap(&Self),
+        item: $(pub)* struct $name:ident($t:ty);
+    ) => {
+        newtype_as_item! {
+            impl<'a> $($tr)*<&'a $name> for $name {
+                type Output = $name;
+                fn $meth(self, rhs: &'a $name) -> $name {
+                    $name((self.0).$meth(&rhs.0))
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
         kind: rhs_rewrap($rhs:ty),
         item: $(pub)* struct $name:ident(pub $t:ty);
     ) => {
@@ -265,6 +307,36 @@ macro_rules! newtype_wrap_bin_op {
                 type Output = $name;
                 fn $meth(self, rhs: $rhs) -> $name {
                     $name((self.0).$meth(rhs))
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: ref_rhs_rewrap(Self),
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl<'a> $($tr)*<$name> for &'a $name {
+                type Output = $name;
+                fn $meth(self, rhs: $name) -> $name {
+                    $name((self.0).$meth(rhs.0))
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: ref_rhs_rewrap(Self),
+        item: $(pub)* struct $name:ident($t:ty);
+    ) => {
+        newtype_as_item! {
+            impl<'a> $($tr)*<$name> for &'a $name {
+                type Output = $name;
+                fn $meth(self, rhs: $name) -> $name {
+                    $name((self.0).$meth(rhs.0))
                 }
             }
         }
@@ -368,6 +440,12 @@ macro_rules! newtype_wrap_un_op {
 // ntbop Add,      add
 #[macro_export]
 macro_rules! NewtypeAdd {
+    ((*) $($tts:tt)*) => {
+        NewtypeAdd! { () $($tts)* }
+        NewtypeAdd! { (&self) $($tts)* }
+        NewtypeAdd! { (&Self) $($tts)* }
+        NewtypeAdd! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::Add)::add, kind: simple, item: $($tts)* }
     };
@@ -385,6 +463,12 @@ macro_rules! NewtypeAdd {
 // ntbop BitAnd,   bitand
 #[macro_export]
 macro_rules! NewtypeBitAnd {
+    ((*) $($tts:tt)*) => {
+        NewtypeBitAnd! { () $($tts)* }
+        NewtypeBitAnd! { (&self) $($tts)* }
+        NewtypeBitAnd! { (&Self) $($tts)* }
+        NewtypeBitAnd! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::BitAnd)::bitand, kind: simple, item: $($tts)* }
     };
@@ -402,6 +486,12 @@ macro_rules! NewtypeBitAnd {
 // ntbop BitOr,    bitor
 #[macro_export]
 macro_rules! NewtypeBitOr {
+    ((*) $($tts:tt)*) => {
+        NewtypeBitOr! { () $($tts)* }
+        NewtypeBitOr! { (&self) $($tts)* }
+        NewtypeBitOr! { (&Self) $($tts)* }
+        NewtypeBitOr! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::BitOr)::bitor, kind: simple, item: $($tts)* }
     };
@@ -419,6 +509,12 @@ macro_rules! NewtypeBitOr {
 // ntbop BitXor,   bitxor
 #[macro_export]
 macro_rules! NewtypeBitXor {
+    ((*) $($tts:tt)*) => {
+        NewtypeBitXor! { () $($tts)* }
+        NewtypeBitXor! { (&self) $($tts)* }
+        NewtypeBitXor! { (&Self) $($tts)* }
+        NewtypeBitXor! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::BitXor)::bitxor, kind: simple, item: $($tts)* }
     };
@@ -436,6 +532,12 @@ macro_rules! NewtypeBitXor {
 // ntbop Div,      div
 #[macro_export]
 macro_rules! NewtypeDiv {
+    ((*) $($tts:tt)*) => {
+        NewtypeDiv! { () $($tts)* }
+        NewtypeDiv! { (&self) $($tts)* }
+        NewtypeDiv! { (&Self) $($tts)* }
+        NewtypeDiv! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::Div)::div, kind: simple, item: $($tts)* }
     };
@@ -453,6 +555,12 @@ macro_rules! NewtypeDiv {
 // ntbop Mul,      mul
 #[macro_export]
 macro_rules! NewtypeMul {
+    ((*) $($tts:tt)*) => {
+        NewtypeMul! { () $($tts)* }
+        NewtypeMul! { (&self) $($tts)* }
+        NewtypeMul! { (&Self) $($tts)* }
+        NewtypeMul! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::Mul)::mul, kind: simple, item: $($tts)* }
     };
@@ -470,6 +578,12 @@ macro_rules! NewtypeMul {
 // ntbop Rem,      rem
 #[macro_export]
 macro_rules! NewtypeRem {
+    ((*) $($tts:tt)*) => {
+        NewtypeRem! { () $($tts)* }
+        NewtypeRem! { (&self) $($tts)* }
+        NewtypeRem! { (&Self) $($tts)* }
+        NewtypeRem! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::Rem)::rem, kind: simple, item: $($tts)* }
     };
@@ -487,6 +601,12 @@ macro_rules! NewtypeRem {
 // ntbop Sub,      sub
 #[macro_export]
 macro_rules! NewtypeSub {
+    ((*) $($tts:tt)*) => {
+        NewtypeSub! { () $($tts)* }
+        NewtypeSub! { (&self) $($tts)* }
+        NewtypeSub! { (&Self) $($tts)* }
+        NewtypeSub! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::Sub)::sub, kind: simple, item: $($tts)* }
     };
@@ -504,6 +624,12 @@ macro_rules! NewtypeSub {
 // ntbop Shl,      shl
 #[macro_export]
 macro_rules! NewtypeShl {
+    ((*) $($tts:tt)*) => {
+        NewtypeShl! { () $($tts)* }
+        NewtypeShl! { (&self) $($tts)* }
+        NewtypeShl! { (&Self) $($tts)* }
+        NewtypeShl! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::Shl)::shl, kind: simple, item: $($tts)* }
     };
@@ -521,6 +647,12 @@ macro_rules! NewtypeShl {
 // ntbop Shr,      shr
 #[macro_export]
 macro_rules! NewtypeShr {
+    ((*) $($tts:tt)*) => {
+        NewtypeShr! { () $($tts)* }
+        NewtypeShr! { (&self) $($tts)* }
+        NewtypeShr! { (&Self) $($tts)* }
+        NewtypeShr! { (&self, Self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::Shr)::shr, kind: simple, item: $($tts)* }
     };
@@ -538,6 +670,10 @@ macro_rules! NewtypeShr {
 // ntuop Neg,      neg
 #[macro_export]
 macro_rules! NewtypeNeg {
+    ((*) $($tts:tt)*) => {
+        NewtypeNeg! { () $($tts)* }
+        NewtypeNeg! { (&self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_un_op! { trait: (::std::ops::Neg)::neg, kind: simple, item: $($tts)* }
     };
@@ -549,6 +685,10 @@ macro_rules! NewtypeNeg {
 // ntuop Not,      not
 #[macro_export]
 macro_rules! NewtypeNot {
+    ((*) $($tts:tt)*) => {
+        NewtypeNot! { () $($tts)* }
+        NewtypeNot! { (&self) $($tts)* }
+    };
     (() $($tts:tt)*) => {
         newtype_wrap_un_op! { trait: (::std::ops::Not)::not, kind: simple, item: $($tts)* }
     };

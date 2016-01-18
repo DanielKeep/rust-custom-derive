@@ -9,6 +9,7 @@
 
     <title>newtype_derive - Rust</title>
 
+    <link rel="stylesheet" type="text/css" href="../rustdoc.css">
     <link rel="stylesheet" type="text/css" href="../main.css">
 
     
@@ -45,7 +46,7 @@
             <a id="toggle-all-docs" href="javascript:void(0)" title="collapse all docs">
                 [<span class='inner'>&#x2212;</span>]
             </a>
-        </span><a id='src-0' class='srclink' href='../src/newtype_derive/lib.rs.html#1-602' title='goto source code'>[src]</a></span></h1>
+        </span><a id='src-0' class='srclink' href='../src/newtype_derive/lib.rs.html#1-882' title='goto source code'>[src]</a></span></h1>
 <div class='docblock'><p>This crate provides several macros for deriving implementations of various traits for &quot;newtype&quot; wrappers (<em>i.e.</em> tuple structs with a single element).  That is, given a tuple struct with exactly one field (<em>e.g.</em> <code>struct Buckets(i32)</code>), these macros will derive &quot;obvious&quot; implementations of traits such as <code>Add</code>, <code>Neg</code>, <code>Index</code>, <code>Deref</code>, <code>From</code>, etc.</p>
 
 <p>All of these macros are designed to be used with the <a href="https://crates.io/crates/custom_derive"><code>custom_derive</code></a> crate, though they can be used independent of it.</p>
@@ -96,6 +97,7 @@
 <li>Other Operators: Deref, DerefMut, Index, IndexMut.</li>
 <li>Formatting: Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex.</li>
 <li>Miscellaneous: From.</li>
+<li>Unstable: One, Zero.</li>
 </ul>
 
 <p>All of these macros are named <code>Newtype$Trait</code>.</p>
@@ -110,6 +112,7 @@
 <li><code>NewtypeAdd(&amp;self)</code>: <code>impl&lt;&#39;a&gt; Add&lt;&amp;&#39;a T, Output=T&gt; for &amp;&#39;a T</code></li>
 <li><code>NewtypeAdd(U)</code>: <code>impl Add&lt;U, Output=T&gt; for T</code></li>
 <li><code>NewtypeAdd(&amp;self, U)</code>: <code>impl&lt;&#39;a&gt; Add&lt;U, Output=T&gt; for &amp;&#39;a T</code></li>
+<li><code>NewtypeAdd(*)</code>: All four combinations of <code>T</code> and <code>&amp;T</code></li>
 </ul>
 
 <p>In all cases, the implementation unwraps the newtype (where necessary), forwards to the wrapped value&#39;s implementation, then re-wraps the result in the newtype.</p>
@@ -120,6 +123,7 @@
 <ul>
 <li><code>NewtypeNeg</code>: <code>impl Neg&lt;Output=T&gt; for T</code></li>
 <li><code>NewtypeNeg(&amp;self)</code>: <code>impl&lt;&#39;a&gt; Neg&lt;Output=T&gt; for &amp;&#39;a T</code></li>
+<li><code>NewtypeNeg(*)</code>: both of the above</li>
 </ul>
 
 <p>In all cases, the implementation unwraps the newtype, forwards to the wrapped value&#39;s implementation, then re-wraps the result in the newtype.</p>

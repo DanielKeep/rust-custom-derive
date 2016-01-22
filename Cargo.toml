@@ -6,7 +6,7 @@ authors = ["Daniel Keep <daniel.keep@gmail.com>"]
 description = "This crate provides a macro that enables the use of custom derive attributes."
 repository = "https://github.com/DanielKeep/rust-custom-derive"
 documentation = "https://danielkeep.github.io/rust-custom-derive/doc/custom_derive/index.html"
-license = "MIT"
+license = "MIT/Apache-2.0"
 keywords = ["custom", "derive", "macro"]
 
 exclude = [

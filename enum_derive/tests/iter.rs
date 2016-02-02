@@ -26,10 +26,26 @@ custom_derive! {
     enum Nada {}
 }
 
+#[cfg(test)]
+fn test_size<I, T: Iterator<Item=I> + ExactSizeIterator>(mut iter: T, size: usize) {
+    for i in 0..size {
+        assert_eq!(iter.size_hint(), (size - i, Some(size - i)));
+        assert!(iter.next().is_some());
+    }
+
+    assert_eq!(iter.size_hint(), (0, Some(0)));
+    assert!(iter.next().is_none());
+}
+
 #[test]
 fn test_enum_iterator() {
     let vs: Vec<_> = Get::iter_variant_names().zip(Get::iter_variants()).collect();
     assert_eq!(&*vs, &[("Up", Get::Up), ("Down", Get::Down), ("AllAround", Get::AllAround)]);
+
+    test_size(Nada::iter_variants(), 0);
+    test_size(Nada::iter_variant_names(), 0);
+    test_size(Get::iter_variants(), 3);
+    test_size(Get::iter_variant_names(), 3);
 
     assert_eq!(Nada::iter_variants().collect::<Vec<_>>().len(), 0);
     assert_eq!(Nada::iter_variant_names().collect::<Vec<_>>().len(), 0);

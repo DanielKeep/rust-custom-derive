@@ -243,7 +243,13 @@ macro_rules! IterVariants {
             fn next(&mut self) -> ::std::option::Option<Self::Item> {
                 None
             }
+
+            fn size_hint(&self) -> (usize, ::std::option::Option<usize>) {
+                (0, Some(0))
+            }
         }
+
+        impl ::std::iter::ExactSizeIterator for $itername { }
 
         enum_derive_util! {
             @as_item
@@ -261,7 +267,7 @@ macro_rules! IterVariants {
     ) => {
         enum_derive_util! { @as_item $($pub_)* struct $itername(::std::option::Option<$name>); }
 
-        IterVariants! { @iter ($itername, $name), ($($var_names,)*) -> () }
+        IterVariants! { @iter ($itername, $name), ($($var_names,)*) -> () () (0usize) }
 
         enum_derive_util! {
             @as_item
@@ -275,7 +281,7 @@ macro_rules! IterVariants {
     };
 
     (
-        @iter ($itername:ident, $name:ident), () -> ($($body:tt)*)
+        @iter ($itername:ident, $name:ident), () -> ($($next_body:tt)*) ($($size_body:tt)*) ($($count:tt)*)
     ) => {
         enum_derive_util! {
             @as_item
@@ -283,36 +289,57 @@ macro_rules! IterVariants {
                 type Item = $name;
                 fn next(&mut self) -> ::std::option::Option<Self::Item> {
                     let next_item = match self.0 {
-                        $($body)*
+                        $($next_body)*
                         None => None
                     };
                     ::std::mem::replace(&mut self.0, next_item)
                 }
+
+                fn size_hint(&self) -> (usize, ::std::option::Option<usize>) {
+                    let variants = $($count)*;
+                    let progress = match self.0 {
+                        $($size_body)*
+                        None => variants
+                    };
+                    (variants - progress, ::std::option::Option::Some(variants - progress))
+                }
             }
+
+            impl ::std::iter::ExactSizeIterator for $itername { }
         }
     };
 
     (
-        @iter ($itername:ident, $name:ident), ($a:ident, $b:ident, $($rest:tt)*) -> ($($body:tt)*)
+        @iter ($itername:ident, $name:ident), ($a:ident, $b:ident, $($rest:tt)*) -> ($($next_body:tt)*) ($($size_body:tt)*) ($($count:tt)*)
     ) => {
         IterVariants! {
             @iter ($itername, $name), ($b, $($rest)*)
             -> (
-                $($body)*
+                $($next_body)*
                 ::std::option::Option::Some($name::$a) => ::std::option::Option::Some($name::$b),
             )
+            (
+                $($size_body)*
+                ::std::option::Option::Some($name::$a) => $($count)*,
+            )
+            ($($count)* + 1usize)
         }
     };
 
     (
-        @iter ($itername:ident, $name:ident), ($a:ident,) -> ($($body:tt)*)
+        @iter ($itername:ident, $name:ident), ($a:ident,) -> ($($next_body:tt)*) ($($size_body:tt)*) ($($count:tt)*)
     ) => {
         IterVariants! {
             @iter ($itername, $name), ()
             -> (
-                $($body)*
+                $($next_body)*
                 ::std::option::Option::Some($name::$a) => ::std::option::Option::None,
             )
+            (
+                $($size_body)*
+                ::std::option::Option::Some($name::$a) => $($count)*,
+            )
+            ($($count)* + 1usize)
         }
     };
 
@@ -345,7 +372,13 @@ macro_rules! IterVariantNames {
             fn next(&mut self) -> ::std::option::Option<Self::Item> {
                 None
             }
+
+            fn size_hint(&self) -> (usize, ::std::option::Option<usize>) {
+                (0, Some(0))
+            }
         }
+
+        impl ::std::iter::ExactSizeIterator for $itername { }
 
         enum_derive_util! {
             @as_item
@@ -363,7 +396,7 @@ macro_rules! IterVariantNames {
     ) => {
         enum_derive_util! { @as_item $($pub_)* struct $itername(::std::option::Option<$name>); }
 
-        IterVariantNames! { @iter ($itername, $name), ($($var_names,)*) -> () }
+        IterVariantNames! { @iter ($itername, $name), ($($var_names,)*) -> () () (0usize) }
 
         enum_derive_util! {
             @as_item
@@ -377,7 +410,7 @@ macro_rules! IterVariantNames {
     };
 
     (
-        @iter ($itername:ident, $name:ident), () -> ($($body:tt)*)
+        @iter ($itername:ident, $name:ident), () -> ($($next_body:tt)*) ($($size_body:tt)*) ($($count:tt)*)
     ) => {
         enum_derive_util! {
             @as_item
@@ -385,39 +418,60 @@ macro_rules! IterVariantNames {
                 type Item = &'static str;
                 fn next(&mut self) -> ::std::option::Option<Self::Item> {
                     let (next_state, result) = match self.0 {
-                        $($body)*
+                        $($next_body)*
                         ::std::option::Option::None => (::std::option::Option::None, ::std::option::Option::None)
                     };
                     self.0 = next_state;
                     result
                 }
+
+                fn size_hint(&self) -> (usize, ::std::option::Option<usize>) {
+                    let variants = $($count)*;
+                    let progress = match self.0 {
+                        $($size_body)*
+                        None => variants
+                    };
+                    (variants - progress, ::std::option::Option::Some(variants - progress))
+                }
             }
+
+            impl ::std::iter::ExactSizeIterator for $itername { }
         }
     };
 
     (
-        @iter ($itername:ident, $name:ident), ($a:ident, $b:ident, $($rest:tt)*) -> ($($body:tt)*)
+        @iter ($itername:ident, $name:ident), ($a:ident, $b:ident, $($rest:tt)*) -> ($($next_body:tt)*) ($($size_body:tt)*) ($($count:tt)*)
     ) => {
         IterVariantNames! {
             @iter ($itername, $name), ($b, $($rest)*)
             -> (
-                $($body)*
+                $($next_body)*
                 ::std::option::Option::Some($name::$a)
                     => (::std::option::Option::Some($name::$b), ::std::option::Option::Some(stringify!($a))),
             )
+            (
+                $($size_body)*
+                ::std::option::Option::Some($name::$a) => $($count)*,
+            )
+            ($($count)* + 1usize)
         }
     };
 
     (
-        @iter ($itername:ident, $name:ident), ($a:ident,) -> ($($body:tt)*)
+        @iter ($itername:ident, $name:ident), ($a:ident,) -> ($($next_body:tt)*) ($($size_body:tt)*) ($($count:tt)*)
     ) => {
         IterVariantNames! {
             @iter ($itername, $name), ()
             -> (
-                $($body)*
+                $($next_body)*
                 ::std::option::Option::Some($name::$a)
                     => (::std::option::Option::None, ::std::option::Option::Some(stringify!($a))),
             )
+            (
+                $($size_body)*
+                ::std::option::Option::Some($name::$a) => $($count)*,
+            )
+            ($($count)* + 1usize)
         }
     };
 

@@ -190,6 +190,8 @@ macro_rules! Newtype\2 {
 ```
 */
 
+#![cfg_attr(feature = "no_std", no_std)]
+
 mod std_unstable;
 
 #[doc(hidden)]

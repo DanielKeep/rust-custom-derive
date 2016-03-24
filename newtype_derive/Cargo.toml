@@ -11,6 +11,7 @@ keywords = ["newtype", "derive", "wrapper", "custom_derive", "macro"]
 
 [features]
 std-unstable = []
+no_std = []
 
 [dev-dependencies]
 custom_derive = "0.1.1"

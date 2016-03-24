@@ -9,5 +9,8 @@ documentation = "https://danielkeep.github.io/rust-custom-derive/doc/enum_derive
 license = "MIT/Apache-2.0"
 keywords = ["enum", "derive", "custom_derive", "macro"]
 
+[features]
+no_std = []
+
 [dev-dependencies]
 custom_derive = "0.1.1"

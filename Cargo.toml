@@ -16,5 +16,8 @@ exclude = [
     "update-docs.py",
 ]
 
+[features]
+no_std = []
+
 [dev-dependencies]
 rustc-serialize = "0.3.15"

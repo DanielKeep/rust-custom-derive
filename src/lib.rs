@@ -81,6 +81,8 @@ Third, each derivation macro is expected to result in zero or more items, not in
 Finally, `@impl` is merely a trick to pack multiple, different functions into a single macro.  The sequence has no special meaning; it is simply *distinct* from the usual invocation syntax.
 */
 
+#![cfg_attr(feature = "no_std", no_std)]
+
 #[doc(hidden)]
 #[macro_export]
 macro_rules! custom_derive {

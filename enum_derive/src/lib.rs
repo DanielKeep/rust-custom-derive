@@ -183,6 +183,9 @@ assert_eq!(from_troll(&troll_number), Ok(number));
 ```
 */
 
+#![cfg_attr(feature = "no_std", no_std)]
+#[cfg(feature = "no_std")] extern crate core as std;
+
 use std::fmt;
 
 #[doc(hidden)]
@@ -791,6 +794,7 @@ impl fmt::Display for ParseEnumError {
     }
 }
 
+#[cfg(not(feature = "no_std"))] 
 impl ::std::error::Error for ParseEnumError {
     fn description(&self) -> &str {
         "provided string did not match any enum variant"

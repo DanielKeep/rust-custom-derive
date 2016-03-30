@@ -10,8 +10,9 @@ license = "MIT/Apache-2.0"
 keywords = ["newtype", "derive", "wrapper", "custom_derive", "macro"]
 
 [features]
+default = ["std"]
+std = []
 std-unstable = []
-no_std = []
 
 [dev-dependencies]
 custom_derive = "0.1.1"

@@ -10,7 +10,8 @@ license = "MIT/Apache-2.0"
 keywords = ["enum", "derive", "custom_derive", "macro"]
 
 [features]
-no_std = []
+default = ["std"]
+std = []
 
 [dev-dependencies]
 custom_derive = "0.1.1"

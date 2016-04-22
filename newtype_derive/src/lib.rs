@@ -62,7 +62,7 @@ assert_eq!(arr.len(), 4);
 
 This crate provides macros to derive implementations of the following traits for newtype structs:
 
-- Binary Arithmetic Operators: Add, BitAnd, BitOr, BitXor, Div, Mul, Rem, Sub, Shl, Shr.
+- Binary Arithmetic Operators: Add, BitAnd, BitOr, BitXor, Div, Mul, Rem, Sub, Shl, Shr, plus the corresponding *Assign traits.
 - Unary Arithmetic Operators: Neg, Not.
 - Other Operators: Deref, DerefMut, Index, IndexMut.
 - Formatting: Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex.
@@ -82,6 +82,13 @@ Each of the binary arithmetic operators accept several deriving forms.  To use `
 - `NewtypeAdd(U)`: `impl Add<U, Output=T> for T`
 - `NewtypeAdd(&self, U)`: `impl<'a> Add<U, Output=T> for &'a T`
 - `NewtypeAdd(*)`: All four combinations of `T` and `&T`
+
+The `*Assign` variants accept zero or one argument only.  For example:
+
+- `NewtypeAddAssign`: `impl AddAssign<T> for T`
+- `NewtypeAddAssign(&Self)`: `impl<'a> Add<&'a T> for &'a T`
+- `NewtypeAddAssign(U)`: `impl Add<U> for T`
+- `NewtypeAddAssign(*)`: Implements for `T` and `&T`.
 
 In all cases, the implementation unwraps the newtype (where necessary), forwards to the wrapped value's implementation, then re-wraps the result in the newtype.
 
@@ -164,6 +171,28 @@ macro_rules! Newtype\2 {
     };
     (($($rhs:tt)*) $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::\2)::\3, kind: rhs_rewrap($($rhs)*), item: $($tts)* }
+    };
+}
+```
+
+# `Newtype$binopass` Template
+
+Given `/\/\/\s*(ntbopass\s+([A-Za-z0-9]+),\s*([a-z_]+))\n(^#\[.+?\]$\n)*^macro_rules!.*?\{$\n(^ +.*?$\n)*^\}$/`,
+
+```
+// \1
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! Newtype\2 {
+    ((*) $($tts:tt)*) => {
+        Newtype\2! { () $($tts)* }
+        Newtype\2! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::\2)::\3, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::\2)::\3, kind: rhs($($rhs)*), item: $($tts)* }
     };
 }
 ```
@@ -385,6 +414,94 @@ macro_rules! newtype_wrap_bin_op {
 
 #[doc(hidden)]
 #[macro_export]
+macro_rules! newtype_wrap_bin_op_assign {
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: simple,
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl $($tr)*<$name> for $name {
+                fn $meth(&mut self, rhs: Self) {
+                    (self.0).$meth(rhs.0)
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: simple,
+        item: $(pub)* struct $name:ident($t:ty);
+    ) => {
+        newtype_as_item! {
+            impl $($tr)*<$name> for $name {
+                fn $meth(&mut self, rhs: Self) {
+                    (self.0).$meth(rhs.0)
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: rhs(&Self),
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl<'a> $($tr)*<&'a $name> for $name {
+                fn $meth(&mut self, rhs: &'a $name) {
+                    (self.0).$meth(rhs.0)
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: rhs(&Self),
+        item: $(pub)* struct $name:ident($t:ty);
+    ) => {
+        newtype_as_item! {
+            impl<'a> $($tr)*<&'a $name> for $name {
+                fn $meth(&mut self, rhs: &'a $name) {
+                    (self.0).$meth(rhs.0)
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: rhs($rhs:ty),
+        item: $(pub)* struct $name:ident(pub $t:ty);
+    ) => {
+        newtype_as_item! {
+            impl $($tr)*<$rhs> for $name {
+                fn $meth(&mut self, rhs: $rhs) {
+                    (self.0).$meth(rhs)
+                }
+            }
+        }
+    };
+
+    (
+        trait: ($($tr:tt)*)::$meth:ident,
+        kind: rhs($rhs:ty),
+        item: $(pub)* struct $name:ident($t:ty);
+    ) => {
+        newtype_as_item! {
+            impl $($tr)*<$rhs> for $name {
+                fn $meth(&mut self, rhs: $rhs) {
+                    (self.0).$meth(rhs)
+                }
+            }
+        }
+    };
+}
+
+#[doc(hidden)]
+#[macro_export]
 macro_rules! newtype_wrap_un_op {
     (
         trait: ($($tr:tt)*)::$meth:ident,
@@ -470,6 +587,22 @@ macro_rules! NewtypeAdd {
     };
 }
 
+// ntbopass AddAssign, add_assign
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! NewtypeAddAssign {
+    ((*) $($tts:tt)*) => {
+        NewtypeAddAssign! { () $($tts)* }
+        NewtypeAddAssign! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::AddAssign)::add_assign, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::AddAssign)::add_assign, kind: rhs($($rhs)*), item: $($tts)* }
+    };
+}
+
 // ntbop BitAnd,   bitand
 #[macro_export]
 macro_rules! NewtypeBitAnd {
@@ -490,6 +623,22 @@ macro_rules! NewtypeBitAnd {
     };
     (($($rhs:tt)*) $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::BitAnd)::bitand, kind: rhs_rewrap($($rhs)*), item: $($tts)* }
+    };
+}
+
+// ntbopass BitAndAssign, bitand_assign
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! NewtypeBitAndAssign {
+    ((*) $($tts:tt)*) => {
+        NewtypeBitAndAssign! { () $($tts)* }
+        NewtypeBitAndAssign! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::BitAndAssign)::bitand_assign, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::BitAndAssign)::bitand_assign, kind: rhs($($rhs)*), item: $($tts)* }
     };
 }
 
@@ -516,6 +665,22 @@ macro_rules! NewtypeBitOr {
     };
 }
 
+// ntbopass BitOrAssign, bitor_assign
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! NewtypeBitOrAssign {
+    ((*) $($tts:tt)*) => {
+        NewtypeBitOrAssign! { () $($tts)* }
+        NewtypeBitOrAssign! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::BitOrAssign)::bitor_assign, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::BitOrAssign)::bitor_assign, kind: rhs($($rhs)*), item: $($tts)* }
+    };
+}
+
 // ntbop BitXor,   bitxor
 #[macro_export]
 macro_rules! NewtypeBitXor {
@@ -536,6 +701,22 @@ macro_rules! NewtypeBitXor {
     };
     (($($rhs:tt)*) $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::BitXor)::bitxor, kind: rhs_rewrap($($rhs)*), item: $($tts)* }
+    };
+}
+
+// ntbopass BitXorAssign, bitxor_assign
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! NewtypeBitXorAssign {
+    ((*) $($tts:tt)*) => {
+        NewtypeBitXorAssign! { () $($tts)* }
+        NewtypeBitXorAssign! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::BitXorAssign)::bitxor_assign, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::BitXorAssign)::bitxor_assign, kind: rhs($($rhs)*), item: $($tts)* }
     };
 }
 
@@ -562,6 +743,22 @@ macro_rules! NewtypeDiv {
     };
 }
 
+// ntbopass DivAssign, div_assign
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! NewtypeDivAssign {
+    ((*) $($tts:tt)*) => {
+        NewtypeDivAssign! { () $($tts)* }
+        NewtypeDivAssign! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::DivAssign)::div_assign, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::DivAssign)::div_assign, kind: rhs($($rhs)*), item: $($tts)* }
+    };
+}
+
 // ntbop Mul,      mul
 #[macro_export]
 macro_rules! NewtypeMul {
@@ -582,6 +779,22 @@ macro_rules! NewtypeMul {
     };
     (($($rhs:tt)*) $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::Mul)::mul, kind: rhs_rewrap($($rhs)*), item: $($tts)* }
+    };
+}
+
+// ntbopass MulAssign, mul_assign
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! NewtypeMulAssign {
+    ((*) $($tts:tt)*) => {
+        NewtypeMulAssign! { () $($tts)* }
+        NewtypeMulAssign! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::MulAssign)::mul_assign, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::MulAssign)::mul_assign, kind: rhs($($rhs)*), item: $($tts)* }
     };
 }
 
@@ -608,6 +821,22 @@ macro_rules! NewtypeRem {
     };
 }
 
+// ntbopass RemAssign, rem_assign
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! NewtypeRemAssign {
+    ((*) $($tts:tt)*) => {
+        NewtypeRemAssign! { () $($tts)* }
+        NewtypeRemAssign! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::RemAssign)::rem_assign, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::RemAssign)::rem_assign, kind: rhs($($rhs)*), item: $($tts)* }
+    };
+}
+
 // ntbop Sub,      sub
 #[macro_export]
 macro_rules! NewtypeSub {
@@ -628,6 +857,22 @@ macro_rules! NewtypeSub {
     };
     (($($rhs:tt)*) $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::Sub)::sub, kind: rhs_rewrap($($rhs)*), item: $($tts)* }
+    };
+}
+
+// ntbopass SubAssign, sub_assign
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! NewtypeSubAssign {
+    ((*) $($tts:tt)*) => {
+        NewtypeSubAssign! { () $($tts)* }
+        NewtypeSubAssign! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::SubAssign)::sub_assign, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::SubAssign)::sub_assign, kind: rhs($($rhs)*), item: $($tts)* }
     };
 }
 
@@ -654,6 +899,22 @@ macro_rules! NewtypeShl {
     };
 }
 
+// ntbopass ShlAssign, shl_assign
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! NewtypeShlAssign {
+    ((*) $($tts:tt)*) => {
+        NewtypeShlAssign! { () $($tts)* }
+        NewtypeShlAssign! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::ShlAssign)::shl_assign, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::ShlAssign)::shl_assign, kind: rhs($($rhs)*), item: $($tts)* }
+    };
+}
+
 // ntbop Shr,      shr
 #[macro_export]
 macro_rules! NewtypeShr {
@@ -674,6 +935,22 @@ macro_rules! NewtypeShr {
     };
     (($($rhs:tt)*) $($tts:tt)*) => {
         newtype_wrap_bin_op! { trait: (::std::ops::Shr)::shr, kind: rhs_rewrap($($rhs)*), item: $($tts)* }
+    };
+}
+
+// ntbopass ShrAssign, shr_assign
+#[macro_export]
+#[cfg(op_assign)]
+macro_rules! NewtypeShrAssign {
+    ((*) $($tts:tt)*) => {
+        NewtypeShrAssign! { () $($tts)* }
+        NewtypeShrAssign! { (&self) $($tts)* }
+    };
+    (() $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::ShrAssign)::shr_assign, kind: simple, item: $($tts)* }
+    };
+    (($($rhs:tt)*) $($tts:tt)*) => {
+        newtype_wrap_bin_op_assign! { trait: (::std::ops::ShrAssign)::shr_assign, kind: rhs($($rhs)*), item: $($tts)* }
     };
 }
 

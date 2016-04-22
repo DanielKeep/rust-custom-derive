@@ -9,10 +9,15 @@ documentation = "https://danielkeep.github.io/rust-custom-derive/doc/newtype_der
 license = "MIT/Apache-2.0"
 keywords = ["newtype", "derive", "wrapper", "custom_derive", "macro"]
 
+build = "build.rs"
+
 [features]
 default = ["std"]
 std = []
 std-unstable = []
+
+[build-dependencies]
+rustc_version = "0.1.7"
 
 [dev-dependencies]
 custom_derive = "0.1.1"

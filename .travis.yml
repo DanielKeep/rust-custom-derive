@@ -1,0 +1,34 @@
+language: rust
+script: >
+  cargo build $CARGO_FLAGS --features "$CARGO_FEATURES"
+  && cargo build $CARGO_FLAGS --features "$CARGO_FEATURES" --manifest-path enum_derive/Cargo.toml
+  && cargo build $CARGO_FLAGS --features "$CARGO_FEATURES $CARGO_NEWTYPE_FEATURES" --manifest-path newtype_derive/Cargo.toml
+  && cargo test $CARGO_FLAGS --features "$CARGO_FEATURES"
+  && cargo test $CARGO_FLAGS --features "$CARGO_FEATURES" --manifest-path enum_derive/Cargo.toml
+  && cargo test $CARGO_FLAGS --features "$CARGO_FEATURES $CARGO_NEWTYPE_FEATURES" --manifest-path newtype_derive/Cargo.toml
+rust:
+  - 1.2.0
+  - 1.3.0
+  - 1.4.0
+  - 1.5.0
+  - 1.6.0
+  - stable
+  - beta
+  - nightly
+env:
+  - >
+    CARGO_FLAGS="--verbose --no-default-features"
+    CARGO_FEATURES=std
+    CARGO_NEWTYPE_FEATURES=
+matrix:
+  allow_failures:
+    - rust: nightly
+  include:
+    - rust: stable
+      env: CARGO_FEATURES=
+    - rust: beta
+      env: CARGO_FEATURES=
+    - rust: nightly
+      env: CARGO_FEATURES=
+    - rust: nightly
+      env: CARGO_FEATURES=std CARGO_NEWTYPE_FEATURES=std-unstable

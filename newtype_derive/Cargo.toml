@@ -1,6 +1,6 @@
 [package]
 name = "newtype_derive"
-version = "0.1.6"
+version = "0.1.7"
 authors = ["Daniel Keep <daniel.keep@gmail.com>"]
 
 description = "This crate provides macros for deriving common traits for newtype structures."

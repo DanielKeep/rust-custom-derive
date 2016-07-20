@@ -9,8 +9,8 @@ or distributed except according to those terms.
 */
 #![cfg(feature="std-unstable")]
 #![allow(deprecated)]
-#![feature(zero_one)]
-#![feature(iter_arith_traits)]
+#![cfg_attr(feature="std-unstable", feature(zero_one))]
+#![cfg_attr(feature="std-unstable", feature(iter_arith_traits))]
 
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate newtype_derive;

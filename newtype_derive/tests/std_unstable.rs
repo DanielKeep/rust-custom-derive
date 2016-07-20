@@ -9,6 +9,7 @@ or distributed except according to those terms.
 */
 #![cfg(feature="std-unstable")]
 #![feature(zero_one)]
+#![feature(iter_arith_traits)]
 
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate newtype_derive;
@@ -16,7 +17,12 @@ or distributed except according to those terms.
 use std::num::{One, Zero};
 
 custom_derive! {
-    #[derive(Eq, PartialEq, Debug, NewtypeOne, NewtypeZero)]
+    #[derive(
+        Clone, Eq, PartialEq, Debug,
+        NewtypeOne, NewtypeZero,
+        NewtypeSum, NewtypeSum(&Self),
+        NewtypeProduct, NewtypeProduct(&Self),
+    )]
     struct Dummy(i32);
 }
 
@@ -24,4 +30,13 @@ custom_derive! {
 fn test_one_zero() {
     assert_eq!(Dummy::zero(), Dummy(0));
     assert_eq!(Dummy::one(), Dummy(1));
+}
+
+#[test]
+fn test_sum_product() {
+    let dummies = &[Dummy(2), Dummy(3)];
+    assert_eq!(dummies.into_iter().sum::<Dummy>(), Dummy(5));
+    assert_eq!(dummies.into_iter().cloned().sum::<Dummy>(), Dummy(5));
+    assert_eq!(dummies.into_iter().product::<Dummy>(), Dummy(6));
+    assert_eq!(dummies.into_iter().cloned().product::<Dummy>(), Dummy(6));
 }

@@ -67,7 +67,7 @@ This crate provides macros to derive implementations of the following traits for
 - Other Operators: Deref, DerefMut, Index, IndexMut.
 - Formatting: Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex.
 - Miscellaneous: From.
-- Unstable: One, Zero.
+- Unstable: One, Product, Sum, Zero (requires the `std-unstable` feature).
 
 All of these macros are named `Newtype$Trait`.
 
@@ -117,6 +117,8 @@ The deriving macros for the formatting traits in [`std::fmt`][] forward to the w
 ## Miscellaneous
 
 `NewtypeFrom` implements `std::convert::From` twice: once for converting from the wrapped type to the newtype, and once for converting from the newtype to the wrapped type.
+
+`NewtypeProduct` and `NewtypeSum` optionally support specifying `&Self` as an argument to generate an implementation that accepts an iterator of borrowed pointers (*e.g.* `NewtypeSum(&Self)`).
 
 ## Using Without `custom_derive!`
 

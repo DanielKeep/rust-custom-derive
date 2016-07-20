@@ -9,6 +9,7 @@ or distributed except according to those terms.
 */
 #![recursion_limit = "128"]
 #![cfg_attr(feature = "std-unstable", feature(zero_one))]
+#![allow(deprecated)]
 #[macro_use] extern crate custom_derive;
 #[macro_use] extern crate newtype_derive;
 

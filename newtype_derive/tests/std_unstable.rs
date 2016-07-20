@@ -8,6 +8,7 @@ files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
 #![cfg(feature="std-unstable")]
+#![allow(deprecated)]
 #![feature(zero_one)]
 #![feature(iter_arith_traits)]
 

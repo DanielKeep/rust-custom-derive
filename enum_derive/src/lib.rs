@@ -232,6 +232,53 @@ macro_rules! enum_derive_util {
     ) => {
         const _error: () = "cannot parse unitary variants from enum with non-unitary variants";
     };
+
+    (
+        @collect_unary_variants ($callback:ident { $($args:tt)* }),
+        ($(,)*) -> ($($out:tt)*)
+    ) => {
+        enum_derive_util! {
+            @as_item
+            $callback!{ $($args)* ($($out)*) }
+        }
+    };
+
+    (
+        @collect_unary_variants $fixed:tt,
+        (#[$_attr:meta] $($tail:tt)*) -> ($($out:tt)*)
+    ) => {
+        enum_derive_util! {
+            @collect_unary_variants $fixed,
+            ($($tail)*) -> ($($out)*)
+        }
+    };
+
+    (
+        @collect_unary_variants $fixed:tt,
+        ($var_name:ident($var_ty:ty), $($tail:tt)*) -> ($($out:tt)*)
+    ) => {
+        enum_derive_util! {
+            @collect_unary_variants $fixed,
+            ($($tail)*) -> ($($out)* $var_name($var_ty),)
+        }
+    };
+
+    (
+        @collect_unary_variants $fixed:tt,
+        ($var_name:ident(pub $var_ty:ty), $($tail:tt)*) -> ($($out:tt)*)
+    ) => {
+        enum_derive_util! {
+            @collect_unary_variants $fixed,
+            ($($tail)*) -> ($($out)* $var_name($var_ty),)
+        }
+    };
+
+    (
+        @collect_unary_variants ($name:ident),
+        ($var:ident $_struct:tt, $($tail:tt)*) -> ($($_out:tt)*)
+    ) => {
+        const _error: () = "cannot parse unary variants from enum with non-unary tuple variants";
+    };
 }
 
 #[macro_export]
@@ -799,4 +846,27 @@ impl ::std::error::Error for ParseEnumError {
     fn description(&self) -> &str {
         "provided string did not match any enum variant"
     }
+}
+
+#[macro_export]
+macro_rules! EnumFromInner {
+    (
+        @expand $name:ident ($($var_names:ident($var_tys:ty),)*)
+    ) => {
+        $(
+            impl ::std::convert::From<$var_tys> for $name {
+                fn from(v: $var_tys) -> $name {
+                    $name::$var_names(v)
+                }
+            }
+        )*
+    };
+
+    (() $(pub)* enum $name:ident { $($body:tt)* }) => {
+        enum_derive_util! {
+            @collect_unary_variants
+            (EnumFromInner { @expand $name }),
+            ($($body)*,) -> ()
+        }
+    };
 }

@@ -870,3 +870,78 @@ macro_rules! EnumFromInner {
         }
     };
 }
+
+#[macro_export]
+macro_rules! EnumInnerAsTrait {
+    (
+        @expand (pub $fn_name:ident -> &mut $tr:ty), $($tail:tt)*
+    ) => {
+        EnumInnerAsTrait! { @expand_inner (pub), $fn_name, (mut), $tr, $($tail)* }
+    };
+
+    (
+        @expand (pub $fn_name:ident -> &$tr:ty), $($tail:tt)*
+    ) => {
+        EnumInnerAsTrait! { @expand_inner (pub), $fn_name, (), $tr, $($tail)* }
+    };
+
+    (
+        @expand ($fn_name:ident -> &mut $tr:ty), $($tail:tt)*
+    ) => {
+        EnumInnerAsTrait! { @expand_inner (), $fn_name, (mut), $tr, $($tail)* }
+    };
+
+    (
+        @expand ($fn_name:ident -> &$tr:ty), $($tail:tt)*
+    ) => {
+        EnumInnerAsTrait! { @expand_inner (), $fn_name, (), $tr, $($tail)* }
+    };
+
+    (
+        @expand_inner
+        ($($vis:tt)*), $fn_name:ident, (mut), $tr:ty,
+        $ty_name:ident,
+        ($($var_names:ident($_var_tys:ty),)*)
+    ) => {
+        enum_derive_util! {
+            @as_item
+            impl $ty_name {
+                $($vis)* fn $fn_name(&mut self) -> &mut $tr {
+                    match *self {
+                        $(
+                            $ty_name::$var_names(ref mut v) => v as &mut $tr,
+                        )*
+                    }
+                }
+            }
+        }
+    };
+
+    (
+        @expand_inner
+        ($($vis:tt)*), $fn_name:ident, (), $tr:ty,
+        $ty_name:ident,
+        ($($var_names:ident($_var_tys:ty),)*)
+    ) => {
+        enum_derive_util! {
+            @as_item
+            impl $ty_name {
+                $($vis)* fn $fn_name(&self) -> &$tr {
+                    match *self {
+                        $(
+                            $ty_name::$var_names(ref v) => v as &$tr,
+                        )*
+                    }
+                }
+            }
+        }
+    };
+
+    ($arg:tt $(pub)* enum $name:ident { $($body:tt)* }) => {
+        enum_derive_util! {
+            @collect_unary_variants
+            (EnumInnerAsTrait { @expand $arg, $name, }),
+            ($($body)*,) -> ()
+        }
+    };
+}

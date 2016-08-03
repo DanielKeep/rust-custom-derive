@@ -47,6 +47,7 @@ custom_derive! {
         Debug, PartialEq,
         EnumInnerAsTrait(pub as_size_of -> &SizeOf),
         EnumInnerAsTrait(as_replace -> &mut Replace<u32>),
+        EnumInnerAsTrait(pub as_display -> &std::fmt::Display),
     )]
     pub enum Value {
         U32(u32),
@@ -67,6 +68,8 @@ custom_derive! {
 fn test_inner_as_trait() {
     assert_eq!(Value::U32(42).as_size_of().size_of(), 4);
     assert_eq!(Value::U64(24).as_size_of().size_of(), 8);
+    assert_eq!(&*format!("{}", Value::U32(42).as_display()), "42");
+    assert_eq!(&*format!("{}", Value::U64(24).as_display()), "24");
     {
         let mut v = Value::U32(42);
         v.as_replace().replace(1701);

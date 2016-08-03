@@ -74,6 +74,8 @@ This crate provides macros to derive the following methods for unitary variant e
 - `IterVariantNames` derives `iter_variant_names()`, which returns an iterator over the string names of the variants of the enum in lexical order.
 - `NextVariant` derives `next_variant(&self)`, which returns the next variant, or `None` when called for the last.
 - `PrevVariant` derives `prev_variant(&self)`, which returns the previous variant, or `None` when called for the first.
+- `EnumFromInner` derives `From<T>` for each variant's payload, assuming all variants are unary.
+- `EnumInnerAsTrait` derives a method to return a borrowed pointer to the inner value, cast to a trait object.
 
 Both of the `IterVariant*` macros accept a single deriving form.  Taking `IterVariants` as an example, it must be invoked like so:
 
@@ -88,6 +90,25 @@ custom_derive! {
 ```
 
 The argument is the name of the iterator type that will be generated.  Neither macro imposes any naming requirements, save the obvious: the name must not conflict with any other types.
+
+`EnumInnerAsTrait` accepts a single deriving form that specifies the name of the method to be derived, whether the borrow should be mutable, and the trait of interest.  For example:
+
+```rust
+# #[macro_use] extern crate custom_derive;
+# #[macro_use] extern crate enum_derive;
+custom_derive! {
+    #[derive(EnumInnerAsTrait(pub as_display -> &std::fmt::Display))]
+    enum Value {
+        U32(u32),
+        U64(u64),
+    }
+}
+
+# fn main() {
+let s = format!("{}", Value::U64(42).as_display());
+assert_eq!(&s[..], "42");
+# }
+```
 
 The other macros take no arguments.
 

@@ -15,7 +15,7 @@ To use it, make sure you link to the crate like so:
 ```rust
 #[macro_use] extern crate custom_derive;
 # macro_rules! Dummy { (() struct $name:ident;) => {}; }
-# custom_derive! { #[derive(Clone, Dummy)] struct Foo; }
+# custom_derive! { #[custom_derive(Dummy)] struct Foo; }
 # fn main() { let _ = Foo; }
 ```
 
@@ -60,7 +60,8 @@ macro_rules! TryFrom {
 custom_derive! {
     #[allow(dead_code)]
     #[repr(u8)]
-    #[derive(Clone, Copy, Debug, TryFrom(u8), TypeName)]
+    #[custom_derive(TryFrom(u8), TypeName)]
+    #[derive(Clone, Copy, Debug)]
     enum Foo { A, B }
 }
 
@@ -133,10 +134,10 @@ macro_rules! custom_derive {
 
     This is responsible for dividing all attributes on an item into two groups:
 
-    - `#[derive(...)]`
+    - `#[custom_derive(...)]`
     - Everything else.
 
-    As part of this, it also explodes `#[derive(A, B(..), C, ...)]` into `A, B(..), C, ...`.  This is to simplify the next stage.
+    As part of this, it also explodes `#[custom_derive(A, B(..), C, ...)]` into `A, B(..), C, ...`.  This is to simplify the next stage.
 
     */
     (
@@ -157,7 +158,7 @@ macro_rules! custom_derive {
 
     (
         @split_attrs
-        (#[derive($($new_drv:ident $(($($new_drv_args:tt)*))*),* $(,)*)], $(#[$($attrs:tt)*],)*),
+        (#[custom_derive($($new_drv:ident $(($($new_drv_args:tt)*))*),* $(,)*)], $(#[$($attrs:tt)*],)*),
         $non_derives:tt,
         ($($derives:ident,)*),
         $it:tt
@@ -230,149 +231,6 @@ macro_rules! custom_derive {
         custom_derive! {
             @expand_user_drvs
             ($($user_drvs)*), ($($it)*)
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (Hash, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* Hash,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (Clone, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* Clone,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (RustcEncodable, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* RustcEncodable,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (RustcDecodable, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* RustcDecodable,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (PartialEq, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* PartialEq,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (Eq, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* Eq,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (PartialOrd, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* PartialOrd,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (Ord, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* Ord,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (Debug, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* Debug,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (Default, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* Default,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (Send ,$($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* Send,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (Sync, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* Sync,), $user_drvs
-        }
-    };
-
-    (@split_derive_attrs
-        $fixed:tt,
-        (Copy, $($tail:tt)*), ($($bi_drvs:ident,)*), $user_drvs:tt
-    ) => {
-        custom_derive! {
-            @split_derive_attrs
-            $fixed,
-            ($($tail)*), ($($bi_drvs,)* Copy,), $user_drvs
         }
     };
 

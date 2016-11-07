@@ -16,6 +16,12 @@ exclude = [
     "update-docs.py",
 ]
 
+[workspace]
+members = [
+    "enum_derive",
+    "newtype_derive",
+]
+
 [features]
 default = ["std"]
 std = []

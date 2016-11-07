@@ -20,4 +20,4 @@ std-unstable = []
 rustc_version = "0.1.7"
 
 [dev-dependencies]
-custom_derive = "0.1.1"
+custom_derive = { version = "0.2.0", path = ".." }

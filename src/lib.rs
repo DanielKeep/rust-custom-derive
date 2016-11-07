@@ -91,9 +91,20 @@ macro_rules! custom_derive {
 
     # Primary Invocation Forms
 
-    These need to catch any valid form of struct or enum.
+    These need to catch any valid form of item.
 
     */
+    (
+        $(#[$($attrs:tt)*])*
+        const $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*), (), (),
+            (const $($it)*)
+        }
+    };
+
     (
         $(#[$($attrs:tt)*])*
         enum $($it:tt)*
@@ -102,6 +113,50 @@ macro_rules! custom_derive {
             @split_attrs
             ($(#[$($attrs)*],)*), (), (),
             (enum $($it)*)
+        }
+    };
+
+    (
+        $(#[$($attrs:tt)*])*
+        extern $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*), (), (),
+            (extern $($it)*)
+        }
+    };
+
+    (
+        $(#[$($attrs:tt)*])*
+        fn $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*), (), (),
+            (fn $($it)*)
+        }
+    };
+
+    (
+        $(#[$($attrs:tt)*])*
+        impl $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*), (), (),
+            (impl $($it)*)
+        }
+    };
+
+    (
+        $(#[$($attrs:tt)*])*
+        mod $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*), (), (),
+            (mod $($it)*)
         }
     };
 
@@ -118,12 +173,56 @@ macro_rules! custom_derive {
 
     (
         $(#[$($attrs:tt)*])*
+        static $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*), (), (),
+            (static $($it)*)
+        }
+    };
+
+    (
+        $(#[$($attrs:tt)*])*
         struct $($it:tt)*
     ) => {
         custom_derive! {
             @split_attrs
             ($(#[$($attrs)*],)*), (), (),
             (struct $($it)*)
+        }
+    };
+
+    (
+        $(#[$($attrs:tt)*])*
+        trait $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*), (), (),
+            (trait $($it)*)
+        }
+    };
+
+    (
+        $(#[$($attrs:tt)*])*
+        type $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*), (), (),
+            (type $($it)*)
+        }
+    };
+
+    (
+        $(#[$($attrs:tt)*])*
+        use $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*), (), (),
+            (use $($it)*)
         }
     };
 

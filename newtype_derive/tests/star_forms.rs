@@ -12,18 +12,18 @@ or distributed except according to those terms.
 
 custom_derive! {
     #[derive(Copy, Clone, Eq, PartialEq, Debug,
-        NewtypeAdd(*),
-        NewtypeNeg(*),
-        NewtypeFrom
+        NewtypeAdd!(*),
+        NewtypeNeg!(*),
+        NewtypeFrom!
         )]
     pub struct Dummy(i32);
 }
 
 custom_derive! {
     #[derive(Copy, Clone, Eq, PartialEq, Debug,
-        NewtypeAdd(*),
-        NewtypeNeg(*),
-        NewtypeFrom
+        NewtypeAdd!(*),
+        NewtypeNeg!(*),
+        NewtypeFrom!
         )]
     pub struct DummyPub(pub i32);
 }

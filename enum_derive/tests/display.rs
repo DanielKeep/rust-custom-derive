@@ -11,7 +11,7 @@ or distributed except according to those terms.
 #[macro_use] extern crate enum_derive;
 
 custom_derive! {
-    #[derive(EnumDisplay)]
+    #[derive(EnumDisplay!)]
     pub enum Get {
         Up,
         /// And
@@ -22,7 +22,7 @@ custom_derive! {
 }
 
 custom_derive! {
-    #[derive(EnumDisplay)]
+    #[derive(EnumDisplay!)]
     pub enum Degenerate {}
 }
 

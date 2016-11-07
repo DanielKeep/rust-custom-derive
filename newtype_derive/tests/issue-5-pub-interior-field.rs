@@ -28,31 +28,31 @@ macro_rules! impl_fmt {
 
 custom_derive! {
     #[derive(Copy, Clone, Eq, PartialEq, Debug,
-        NewtypeAdd, NewtypeAdd(&self), NewtypeAdd(i32), NewtypeAdd(&self, i32),
-        NewtypeBitAnd, NewtypeBitAnd(&self),
-        NewtypeBitOr, NewtypeBitOr(&self),
-        NewtypeBitXor, NewtypeBitXor(&self),
-        NewtypeDiv, NewtypeDiv(&self),
-        NewtypeMul, NewtypeMul(&self),
-        NewtypeRem, NewtypeRem(&self),
-        NewtypeSub, NewtypeSub(&self),
+        NewtypeAdd!, NewtypeAdd!(&self), NewtypeAdd!(i32), NewtypeAdd!(&self, i32),
+        NewtypeBitAnd!, NewtypeBitAnd!(&self),
+        NewtypeBitOr!, NewtypeBitOr!(&self),
+        NewtypeBitXor!, NewtypeBitXor!(&self),
+        NewtypeDiv!, NewtypeDiv!(&self),
+        NewtypeMul!, NewtypeMul!(&self),
+        NewtypeRem!, NewtypeRem!(&self),
+        NewtypeSub!, NewtypeSub!(&self),
 
-        NewtypeShl(), NewtypeShl(&self), NewtypeShl(usize), NewtypeShl(&self, usize),
-        NewtypeShr(), NewtypeShr(&self), NewtypeShr(usize), NewtypeShr(&self, usize),
+        NewtypeShl!(), NewtypeShl!(&self), NewtypeShl!(usize), NewtypeShl!(&self, usize),
+        NewtypeShr!(), NewtypeShr!(&self), NewtypeShr!(usize), NewtypeShr!(&self, usize),
 
-        NewtypeNeg, NewtypeNeg(&self),
-        NewtypeNot, NewtypeNot(&self),
+        NewtypeNeg!, NewtypeNeg!(&self),
+        NewtypeNot!, NewtypeNot!(&self),
 
-        NewtypeFrom
+        NewtypeFrom!
         )]
     pub struct Dummy1(pub i32);
 }
 
 custom_derive! {
     #[derive(Clone, Eq, PartialEq, Debug,
-        NewtypeFrom,
-        NewtypeDeref, NewtypeDerefMut,
-        NewtypeIndex(usize), NewtypeIndexMut(usize)
+        NewtypeFrom!,
+        NewtypeDeref!, NewtypeDerefMut!,
+        NewtypeIndex!(usize), NewtypeIndexMut!(usize)
         )]
     pub struct Dummy2(Vec<i32>);
 }
@@ -71,15 +71,15 @@ impl_fmt!(impl UpperHex for Dummy3Inner: "upperhex");
 
 custom_derive! {
     #[derive(
-        NewtypeBinary,
-        NewtypeDebug,
-        NewtypeDisplay,
-        NewtypeLowerExp,
-        NewtypeLowerHex,
-        NewtypeOctal,
-        NewtypePointer,
-        NewtypeUpperExp,
-        NewtypeUpperHex
+        NewtypeBinary!,
+        NewtypeDebug!,
+        NewtypeDisplay!,
+        NewtypeLowerExp!,
+        NewtypeLowerHex!,
+        NewtypeOctal!,
+        NewtypePointer!,
+        NewtypeUpperExp!,
+        NewtypeUpperHex!
     )]
     struct Dummy3(Dummy3Inner);
 }
@@ -94,7 +94,7 @@ fn test_pub_interior_fields() {
 #[cfg(feature = "std-unstable")]
 mod std_unstable {
     custom_derive! {
-        #[derive(Eq, PartialEq, Debug, NewtypeOne, NewtypeZero)]
+        #[derive(Eq, PartialEq, Debug, NewtypeOne!, NewtypeZero!)]
         struct Dummy4(pub i32);
     }
 

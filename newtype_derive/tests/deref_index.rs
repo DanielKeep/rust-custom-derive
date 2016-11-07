@@ -12,9 +12,9 @@ or distributed except according to those terms.
 
 custom_derive! {
     #[derive(Clone, Eq, PartialEq, Debug,
-        NewtypeFrom,
-        NewtypeDeref, NewtypeDerefMut,
-        NewtypeIndex(usize), NewtypeIndexMut(usize)
+        NewtypeFrom!,
+        NewtypeDeref!, NewtypeDerefMut!,
+        NewtypeIndex!(usize), NewtypeIndexMut!(usize)
         )]
     pub struct Dummy(Vec<i32>);
 }

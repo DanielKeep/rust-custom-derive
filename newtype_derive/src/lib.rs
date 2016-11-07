@@ -21,7 +21,7 @@ Create a simple integer wrapper with some arithmetic operators:
 #[macro_use] extern crate newtype_derive;
 
 custom_derive! {
-    #[derive(NewtypeFrom, NewtypeAdd, NewtypeMul(i32))]
+    #[derive(NewtypeFrom!, NewtypeAdd!, NewtypeMul!(i32))]
     pub struct Happy(i32);
 }
 
@@ -42,9 +42,9 @@ Create a "deref-transparent" wrapper around a type:
 #[macro_use] extern crate newtype_derive;
 
 custom_derive! {
-    #[derive(NewtypeFrom,
-        NewtypeDeref, NewtypeDerefMut,
-        NewtypeIndex(usize), NewtypeIndexMut(usize)
+    #[derive(NewtypeFrom!,
+        NewtypeDeref!, NewtypeDerefMut!,
+        NewtypeIndex!(usize), NewtypeIndexMut!(usize)
         )]
     pub struct I32Array(Vec<i32>);
 }
@@ -128,7 +128,7 @@ Although designed to be used with `custom_derive!`, all of the macros in this cr
 # #[macro_use] extern crate custom_derive;
 # #[macro_use] extern crate newtype_derive;
 custom_derive! {
-    #[derive(Copy, Clone, Debug, NewtypeFrom, NewtypeAdd, NewtypeAdd(f32))]
+    #[derive(Copy, Clone, Debug, NewtypeFrom!, NewtypeAdd!, NewtypeAdd!(f32))]
     pub struct Meters(f32);
 }
 # fn main() {}

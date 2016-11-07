@@ -37,15 +37,15 @@ impl_fmt!(impl UpperHex for Dummy: "upperhex");
 
 custom_derive! {
     #[derive(
-        NewtypeBinary,
-        NewtypeDebug,
-        NewtypeDisplay,
-        NewtypeLowerExp,
-        NewtypeLowerHex,
-        NewtypeOctal,
-        NewtypePointer,
-        NewtypeUpperExp,
-        NewtypeUpperHex
+        NewtypeBinary!,
+        NewtypeDebug!,
+        NewtypeDisplay!,
+        NewtypeLowerExp!,
+        NewtypeLowerHex!,
+        NewtypeOctal!,
+        NewtypePointer!,
+        NewtypeUpperExp!,
+        NewtypeUpperHex!
     )]
     struct Wrapper(Dummy);
 }

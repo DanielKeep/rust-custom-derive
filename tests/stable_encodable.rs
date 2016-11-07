@@ -349,12 +349,12 @@ macro_rules! StableEncodable {
 }
 
 custom_derive! {
-    #[derive(Debug, StableEncodable)]
+    #[derive(Debug, StableEncodable!)]
     struct LazyEg<A> { a: A, b: i32, c: (u8, u8, u8) }
 }
 
 custom_derive! {
-    #[derive(Clone, StableEncodable)]
+    #[derive(Clone, StableEncodable!)]
     enum Wonky<S> { Flim, Flam, Flom(i32), Bees { say: S } }
 }
 

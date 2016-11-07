@@ -14,7 +14,7 @@ macro_rules! Dummy {
 }
 
 custom_derive! {
-    #[derive(Dummy)]
+    #[derive(Dummy!)]
     enum Foo { Bar }
 }
 

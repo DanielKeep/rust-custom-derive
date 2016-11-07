@@ -14,17 +14,17 @@ or distributed except according to those terms.
 
 custom_derive! {
     #[derive(Copy, Clone, Eq, PartialEq, Debug,
-        NewtypeAddAssign, NewtypeAddAssign(&Self), NewtypeAddAssign(i32),
-        NewtypeBitAndAssign, NewtypeBitAndAssign(&Self),
-        NewtypeBitOrAssign, NewtypeBitOrAssign(&Self),
-        NewtypeBitXorAssign, NewtypeBitXorAssign(&Self),
-        NewtypeDivAssign, NewtypeDivAssign(&Self),
-        NewtypeMulAssign, NewtypeMulAssign(&Self),
-        NewtypeRemAssign, NewtypeRemAssign(&Self),
-        NewtypeSubAssign, NewtypeSubAssign(&Self),
-        NewtypeShlAssign, NewtypeShlAssign(&Self), NewtypeShlAssign(i32),
-        NewtypeShrAssign, NewtypeShrAssign(&Self), NewtypeShrAssign(i32),
-        NewtypeFrom
+        NewtypeAddAssign!, NewtypeAddAssign!(&Self), NewtypeAddAssign!(i32),
+        NewtypeBitAndAssign!, NewtypeBitAndAssign!(&Self),
+        NewtypeBitOrAssign!, NewtypeBitOrAssign!(&Self),
+        NewtypeBitXorAssign!, NewtypeBitXorAssign!(&Self),
+        NewtypeDivAssign!, NewtypeDivAssign!(&Self),
+        NewtypeMulAssign!, NewtypeMulAssign!(&Self),
+        NewtypeRemAssign!, NewtypeRemAssign!(&Self),
+        NewtypeSubAssign!, NewtypeSubAssign!(&Self),
+        NewtypeShlAssign!, NewtypeShlAssign!(&Self), NewtypeShlAssign!(i32),
+        NewtypeShrAssign!, NewtypeShrAssign!(&Self), NewtypeShrAssign!(i32),
+        NewtypeFrom!
         )]
     pub struct Dummy(i32);
 }

@@ -62,7 +62,7 @@ macro_rules! EnumIterator {
 }
 
 custom_derive! {
-    #[derive(Debug, PartialEq, EnumIterator)]
+    #[derive(Debug, PartialEq, EnumIterator!)]
     enum Get { Up, Down, AllAround }
 }
 

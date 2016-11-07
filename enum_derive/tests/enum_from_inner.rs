@@ -11,7 +11,7 @@ or distributed except according to those terms.
 #[macro_use] extern crate enum_derive;
 
 custom_derive! {
-    #[derive(Debug, PartialEq, EnumFromInner)]
+    #[derive(Debug, PartialEq, EnumFromInner!)]
     pub enum Value {
         Unit(()),
         Int(i64),
@@ -20,7 +20,7 @@ custom_derive! {
 }
 
 custom_derive! {
-    #[derive(Debug, PartialEq, EnumFromInner)]
+    #[derive(Debug, PartialEq, EnumFromInner!)]
     pub enum Degenerate {}
 }
 

@@ -24,7 +24,7 @@ Derive iterators that yield all variants of an enum.
 
 custom_derive! {
     #[derive(Debug, PartialEq, Eq,
-        IterVariants(CandyVariants), IterVariantNames(CandyVariantNames))]
+        IterVariants!(CandyVariants), IterVariantNames!(CandyVariantNames))]
     pub enum Candy { Musk, FruitRock, BoPeeps, LemonSherbert }
 }
 
@@ -49,7 +49,7 @@ Alternately, derive `next_variant` and `prev_variant` methods.
 use Hanagami::*;
 
 custom_derive! {
-    #[derive(Debug, PartialEq, Eq, NextVariant, PrevVariant)]
+    #[derive(Debug, PartialEq, Eq, NextVariant!, PrevVariant!)]
     pub enum Hanagami { Sakigami, Hasugami, Tsutagami }
 }
 
@@ -68,22 +68,22 @@ assert_eq!(Tsutagami.prev_variant(), Some(Hasugami));
 
 This crate provides macros to derive the following methods for unitary variant enums:
 
-- `EnumDisplay` derives `Display`, which outputs the name of the variant.  Note that for unitary variants, this is identical to the behaviour of a derived `Debug` implementation.
-- `EnumFromStr` derives `FromStr`, allowing `str::parse` to be used.  It requires an exact match of the variant name.
-- `IterVariants` derives `iter_variants()`, which returns an iterator over the variants of the enum in lexical order.
-- `IterVariantNames` derives `iter_variant_names()`, which returns an iterator over the string names of the variants of the enum in lexical order.
-- `NextVariant` derives `next_variant(&self)`, which returns the next variant, or `None` when called for the last.
-- `PrevVariant` derives `prev_variant(&self)`, which returns the previous variant, or `None` when called for the first.
-- `EnumFromInner` derives `From<T>` for each variant's payload, assuming all variants are unary.
-- `EnumInnerAsTrait` derives a method to return a borrowed pointer to the inner value, cast to a trait object.
+- `EnumDisplay!` derives `Display`, which outputs the name of the variant.  Note that for unitary variants, this is identical to the behaviour of a derived `Debug` implementation.
+- `EnumFromStr!` derives `FromStr`, allowing `str::parse` to be used.  It requires an exact match of the variant name.
+- `IterVariants!` derives `iter_variants()`, which returns an iterator over the variants of the enum in lexical order.
+- `IterVariantNames!` derives `iter_variant_names()`, which returns an iterator over the string names of the variants of the enum in lexical order.
+- `NextVariant!` derives `next_variant(&self)`, which returns the next variant, or `None` when called for the last.
+- `PrevVariant!` derives `prev_variant(&self)`, which returns the previous variant, or `None` when called for the first.
+- `EnumFromInner!` derives `From<T>` for each variant's payload, assuming all variants are unary.
+- `EnumInnerAsTrait!` derives a method to return a borrowed pointer to the inner value, cast to a trait object.
 
-Both of the `IterVariant*` macros accept a single deriving form.  Taking `IterVariants` as an example, it must be invoked like so:
+Both of the `IterVariant*!` macros accept a single deriving form.  Taking `IterVariants!` as an example, it must be invoked like so:
 
 ```rust
 # #[macro_use] extern crate custom_derive;
 # #[macro_use] extern crate enum_derive;
 custom_derive! {
-    #[derive(IterVariants(GetVariants))]
+    #[derive(IterVariants!(GetVariants))]
     pub enum Get { Up, Down, AllAround }
 }
 # fn main() {}
@@ -91,13 +91,13 @@ custom_derive! {
 
 The argument is the name of the iterator type that will be generated.  Neither macro imposes any naming requirements, save the obvious: the name must not conflict with any other types.
 
-`EnumInnerAsTrait` accepts a single deriving form that specifies the name of the method to be derived, whether the borrow should be mutable, and the trait of interest.  For example:
+`EnumInnerAsTrait!` accepts a single deriving form that specifies the name of the method to be derived, whether the borrow should be mutable, and the trait of interest.  For example:
 
 ```rust
 # #[macro_use] extern crate custom_derive;
 # #[macro_use] extern crate enum_derive;
 custom_derive! {
-    #[derive(EnumInnerAsTrait(pub as_display -> &std::fmt::Display))]
+    #[derive(EnumInnerAsTrait!(pub as_display -> &std::fmt::Display))]
     enum Value {
         U32(u32),
         U64(u64),
@@ -122,7 +122,7 @@ Although designed to be used with `custom_derive!`, all of the macros in this cr
 # #[macro_use] extern crate custom_derive;
 # #[macro_use] extern crate enum_derive;
 custom_derive! {
-    #[derive(Copy, Clone, Debug, IterVariants(Vars))]
+    #[derive(Copy, Clone, Debug, IterVariants!(Vars))]
     enum ItAintRight { BabeNo, NoNo, BoyBoy }
 }
 # fn main() {}
@@ -149,7 +149,7 @@ This shows how to use `Display` and `FromStr` to perform string round-tripping o
 #[macro_use] extern crate enum_derive;
 
 custom_derive! {
-    #[derive(Debug, PartialEq, EnumDisplay, EnumFromStr)]
+    #[derive(Debug, PartialEq, EnumDisplay!, EnumFromStr!)]
     pub enum TrollDigit { One, Two, Three, Many, Lots }
 }
 

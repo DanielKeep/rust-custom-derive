@@ -20,9 +20,9 @@ use std::num::{One, Zero};
 custom_derive! {
     #[derive(
         Clone, Eq, PartialEq, Debug,
-        NewtypeOne, NewtypeZero,
-        NewtypeSum, NewtypeSum(&Self),
-        NewtypeProduct, NewtypeProduct(&Self),
+        NewtypeOne!, NewtypeZero!,
+        NewtypeSum!, NewtypeSum!(&Self),
+        NewtypeProduct!, NewtypeProduct!(&Self),
     )]
     struct Dummy(i32);
 }

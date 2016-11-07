@@ -45,9 +45,9 @@ impl Replace<u32> for u64 {
 custom_derive! {
     #[derive(
         Debug, PartialEq,
-        EnumInnerAsTrait(pub as_size_of -> &SizeOf),
-        EnumInnerAsTrait(as_replace -> &mut Replace<u32>),
-        EnumInnerAsTrait(pub as_display -> &std::fmt::Display),
+        EnumInnerAsTrait!(pub as_size_of -> &SizeOf),
+        EnumInnerAsTrait!(as_replace -> &mut Replace<u32>),
+        EnumInnerAsTrait!(pub as_display -> &std::fmt::Display),
     )]
     pub enum Value {
         U32(u32),
@@ -58,8 +58,8 @@ custom_derive! {
 custom_derive! {
     #[derive(
         Debug, PartialEq,
-        EnumInnerAsTrait(as_size_of -> &SizeOf),
-        EnumInnerAsTrait(pub as_replace -> &mut Replace<u32>),
+        EnumInnerAsTrait!(as_size_of -> &SizeOf),
+        EnumInnerAsTrait!(pub as_replace -> &mut Replace<u32>),
     )]
     pub enum Degenerate {}
 }

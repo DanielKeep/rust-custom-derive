@@ -11,7 +11,7 @@ or distributed except according to those terms.
 #[macro_use] extern crate enum_derive;
 
 custom_derive! {
-    #[derive(Debug, PartialEq, IterVariants(GetVariants), IterVariantNames(GetVariantNames))]
+    #[derive(Debug, PartialEq, IterVariants!(GetVariants), IterVariantNames!(GetVariantNames))]
     pub enum Get {
         Up,
         /// And
@@ -22,7 +22,7 @@ custom_derive! {
 }
 
 custom_derive! {
-    #[derive(IterVariants(NadaVariants), IterVariantNames(NadaVariantNames))]
+    #[derive(IterVariants!(NadaVariants), IterVariantNames!(NadaVariantNames))]
     enum Nada {}
 }
 

@@ -11,7 +11,7 @@ or distributed except according to those terms.
 #[macro_use] extern crate enum_derive;
 
 custom_derive! {
-    #[derive(Debug, PartialEq, NextVariant, PrevVariant)]
+    #[derive(Debug, PartialEq, NextVariant!, PrevVariant!)]
     pub enum Get {
         Up,
         /// And
@@ -23,7 +23,7 @@ custom_derive! {
 
 // We can't test this since it *literally* can't be called.
 custom_derive! {
-    #[derive(NextVariant, PrevVariant)]
+    #[derive(NextVariant!, PrevVariant!)]
     enum Nada {}
 }
 

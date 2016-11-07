@@ -64,7 +64,7 @@ macro_rules! TryFrom {
 }
 
 custom_derive! {
-    #[derive(Debug, PartialEq, TryFrom(u8))]
+    #[derive(Debug, PartialEq, TryFrom!(u8))]
     enum Get { Up, Down, AllAround }
 }
 

@@ -272,6 +272,44 @@ macro_rules! custom_derive {
 
     (
         @split_attrs
+        (#[$mac_attr:ident!], $(#[$($attrs:tt)*],)*),
+        $non_derives:tt,
+        $derives:tt,
+        ($($it:tt)*)
+    ) => {
+        $mac_attr! {
+            (),
+            then custom_derive! {
+                @split_attrs_resume
+                $non_derives,
+                $derives,
+            },
+            $(#[$($attrs)*])*
+            $($it)*
+        }
+    };
+
+    (
+        @split_attrs
+        (#[$mac_attr:ident!($($attr_args:tt)*)], $(#[($attrs:tt)*],)*),
+        $non_derives:tt,
+        $derives:tt,
+        ($($it:tt)*)
+    ) => {
+        $mac_attr! {
+            ($($attr_args)*),
+            then custom_derive! {
+                @split_attrs_resume
+                $non_derives,
+                $derives,
+            },
+            $(#[$($attrs)*])*
+            $($it)*
+        }
+    };
+
+    (
+        @split_attrs
         (#[$new_attr:meta], $(#[$($attrs:tt)*],)*),
         ($($non_derives:tt)*),
         $derives:tt,
@@ -285,6 +323,207 @@ macro_rules! custom_derive {
             $it
         }
     };
+
+    /*
+
+    # `@split_attrs_resume`
+
+    Callback used to re-enter this macro after running a macro attribute.
+
+    */
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        const $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (const $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        enum $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (enum $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        extern $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (extern $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        fn $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (fn $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        impl $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (impl $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        mod $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (mod $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        pub $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (pub $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        static $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (static $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        struct $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (struct $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        trait $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (trait $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        type $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (type $($it)*)
+        }
+    };
+
+    (
+        @split_attrs_resume
+        $non_derives:tt,
+        $derives:tt,
+        $(#[$($attrs:tt)*])*
+        use $($it:tt)*
+    ) => {
+        custom_derive! {
+            @split_attrs
+            ($(#[$($attrs)*],)*),
+            $non_derives,
+            $derives,
+            (use $($it)*)
+        }
+    };
+
 
     /*
 
@@ -424,4 +663,12 @@ macro_rules! custom_derive {
 
     */
     (@as_item $($i:item)*) => {$($i)*};
+
+    (
+        @callback
+        $cb:ident ! { $($cb_fixed:tt)* },
+        $($args:tt)*
+    ) => {
+        $cb! { $($cb_fixed)* $($args)* }
+    };
 }

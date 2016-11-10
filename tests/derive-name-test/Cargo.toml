@@ -1,0 +1,21 @@
+[package]
+name = "derive-name-test"
+version = "0.1.0"
+authors = ["Daniel Keep <daniel.keep@gmail.com>"]
+
+[features]
+std = ["custom_derive/std"]
+unstable-macros-1-1 = ["custom_derive/unstable-macros-1-1", "derive-name-proc"]
+
+[[bin]]
+name = "derive-name-test"
+path = "derive-name-test.rs"
+
+[dependencies]
+derive-name-macro = { version = "0.1.0", path = "../derive-name-macro" }
+derive-name-proc = { version = "0.1.0", path = "../derive-name-proc", optional = true }
+
+[dependencies.custom_derive]
+version = "0.2.0"
+path = "../.."
+default-features = false

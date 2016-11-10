@@ -289,9 +289,10 @@ macro_rules! custom_derive {
         }
     };
 
+
     (
         @split_attrs
-        (#[$mac_attr:ident!($($attr_args:tt)*)], $(#[($attrs:tt)*],)*),
+        (#[$mac_attr:ident!($($attr_args:tt)*)], $(#[$($attrs:tt)*],)*),
         $non_derives:tt,
         $derives:tt,
         ($($it:tt)*)
@@ -310,6 +311,70 @@ macro_rules! custom_derive {
 
     (
         @split_attrs
+        (#[$mac_attr:ident~!], $(#[$($attrs:tt)*],)*),
+        ($($non_derives:tt)*),
+        $derives:tt,
+        ($($it:tt)*)
+    ) => {
+        custom_derive_macros_1_1! {
+            macros_1_1: {
+                custom_derive! {
+                    @split_attrs
+                    ($(#[$($attrs)*],)*),
+                    ($($non_derives)* #[$mac_attr],),
+                    $derives,
+                    $($it)*
+                }
+            }
+            fallback: {
+                $mac_attr! {
+                    (),
+                    then custom_derive! {
+                        @split_attrs_resume
+                        ($($non_derives)*),
+                        $derives,
+                    },
+                    $(#[$($attrs)*])*
+                    $($it)*
+                }
+            }
+        }
+    };
+
+    (
+        @split_attrs
+        (#[$mac_attr:ident~!($($attr_args:tt)*)], $(#[$($attrs:tt)*],)*),
+        ($($non_derives:tt)*),
+        $derives:tt,
+        ($($it:tt)*)
+    ) => {
+        custom_derive_macros_1_1! {
+            macros_1_1: {
+                custom_derive! {
+                    @split_attrs
+                    ($(#[$($attrs)*],)*),
+                    ($($non_derives)* #[$mac_attr($($attr_args)*)],),
+                    $derives,
+                    $($it)*
+                }
+            }
+            fallback: {
+                $mac_attr! {
+                    ($($attr_args)*),
+                    then custom_derive! {
+                        @split_attrs_resume
+                        ($($non_derives)*),
+                        $derives,
+                    },
+                    $(#[$($attrs)*])*
+                    $($it)*
+                }
+            }
+        }
+    };
+
+    (
+        @split_attrs
         (#[$new_attr:meta], $(#[$($attrs:tt)*],)*),
         ($($non_derives:tt)*),
         $derives:tt,
@@ -323,6 +388,7 @@ macro_rules! custom_derive {
             $it
         }
     };
+
 
     /*
 
@@ -618,6 +684,39 @@ macro_rules! custom_derive {
 
     /*
 
+    ## Hybrid Derivations
+
+    These are derivations that use regular macros *or* procedural macros, depending on the version of Rust in use.
+
+    */
+    (@split_derive_attrs
+        $fixed:tt,
+        ($new_drv:ident ~!, $($tail:tt)*), ($($bi_drvs:ident,)*), ($($user_drvs:tt)*)
+    ) => {
+        custom_derive_macros_1_1! {
+            macros_1_1: {
+                custom_derive! {
+                    @split_derive_attrs
+                    $fixed,
+                    ($($tail)*),
+                    ($($bi_drvs,)* $new_drv,),
+                    ($($user_drvs)*)
+                }
+            }
+            fallback: {
+                custom_derive! {
+                    @split_derive_attrs
+                    $fixed,
+                    ($($tail)*),
+                    ($($bi_drvs,)*),
+                    ($($user_drvs)* $new_drv(),)
+                }
+            }
+        }
+    };
+
+    /*
+
     ## Non-Macro Derivations
 
     All the rest.
@@ -670,5 +769,29 @@ macro_rules! custom_derive {
         $($args:tt)*
     ) => {
         $cb! { $($cb_fixed)* $($args)* }
+    };
+}
+
+#[doc(hidden)]
+#[macro_export]
+#[cfg(feature="unstable-macros-1-1")]
+macro_rules! custom_derive_macros_1_1 {
+    (
+        macros_1_1: { $($items:item)* }
+        fallback: $_ignore:tt
+    ) => {
+        $($items)*
+    };
+}
+
+#[doc(hidden)]
+#[macro_export]
+#[cfg(not(feature="unstable-macros-1-1"))]
+macro_rules! custom_derive_macros_1_1 {
+    (
+        macros_1_1: $_ignore:tt
+        fallback: { $($items:item)* }
+    ) => {
+        $($items)*
     };
 }

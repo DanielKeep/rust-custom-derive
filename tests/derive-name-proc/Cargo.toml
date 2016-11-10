@@ -1,0 +1,13 @@
+[package]
+name = "derive-name-proc"
+version = "0.1.0"
+authors = ["Daniel Keep <daniel.keep@gmail.com>"]
+
+[lib]
+name = "derive_name_proc"
+path = "derive-name-proc.rs"
+proc-macro = true
+
+[dependencies]
+quote = "0.3.5"
+syn = "0.10.0"

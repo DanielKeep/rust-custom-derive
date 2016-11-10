@@ -7,20 +7,15 @@ Licensed under the MIT license (see LICENSE or <http://opensource.org
 files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
+#![cfg_attr(feature="unstable-macros-1-1", feature(proc_macro))]
+
 #[macro_use] extern crate custom_derive;
 
-macro_rules! Name {
-    (
-        ()
-        struct $name:ident $($_tail:tt)*
-    ) => {
-        impl $name {
-            pub fn name() -> &'static str {
-                stringify!($name)
-            }
-        }
-    };
-}
+#[cfg(not(feature="unstable-macros-1-1"))]
+#[macro_use] extern crate derive_name_macro;
+
+#[cfg(feature="unstable-macros-1-1")]
+#[macro_use] extern crate derive_name_proc;
 
 macro_rules! remove_body {
     (
@@ -55,16 +50,14 @@ macro_rules! use_secret_alias {
 }
 
 custom_derive! {
-    #[derive(Debug, Name!)]
+    #[derive(Debug, Name~!)]
     #[remove_body!]
     #[use_secret_alias!(Alucard)]
-    struct Dracula {
-        pub vulnerabilities: Vec<Vulnerability>,
-    }
+    struct Alucard;
 }
 
-#[test]
-fn test_mac_attrs() {
+fn main() {
     assert_eq!(format!("{:?}", Alucard), "Alucard");
     assert_eq!(Alucard::name(), "Alucard");
+    println!("derive-name-test: Ok ({}).", Alucard::derived_by());
 }

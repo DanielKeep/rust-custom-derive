@@ -20,11 +20,15 @@ exclude = [
 members = [
     "enum_derive",
     "newtype_derive",
+    "tests/derive-name-macro",
+    "tests/derive-name-proc",
+    "tests/derive-name-test",
 ]
 
 [features]
 default = ["std"]
 std = []
+unstable-macros-1-1 = []
 
 [dev-dependencies]
 rustc-serialize = "0.3.15"

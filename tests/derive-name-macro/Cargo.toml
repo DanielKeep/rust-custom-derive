@@ -1,0 +1,8 @@
+[package]
+name = "derive-name-macro"
+version = "0.1.0"
+authors = ["Daniel Keep <daniel.keep@gmail.com>"]
+
+[lib]
+name = "derive_name_macro"
+path = "derive-name-macro.rs"

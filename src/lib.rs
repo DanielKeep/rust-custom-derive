@@ -67,12 +67,12 @@ macro_rules! TryFrom {
 macro_rules! rename_to {
     (
         ($new_name:ident),
-        then $cb:ident!$cb_arg:tt,
+        then $cb:tt,
         $(#[$($attrs:tt)*])*
         enum $_old_name:ident $($tail:tt)*
     ) => {
         macro_attr_callback! {
-            $cb!$cb_arg,
+            $cb,
             $(#[$($attrs)*])*
             enum $new_name $($tail)*
         }
@@ -313,11 +313,11 @@ macro_rules! macro_attr_impl {
     ) => {
         $mac_attr! {
             (),
-            then macro_attr_impl! {
+            then (macro_attr_impl! {
                 @split_attrs_resume
                 $non_derives,
                 $derives,
-            },
+            }),
             $(#[$($attrs)*])*
             $($it)*
         }
@@ -333,11 +333,11 @@ macro_rules! macro_attr_impl {
     ) => {
         $mac_attr! {
             ($($attr_args)*),
-            then macro_attr_impl! {
+            then (macro_attr_impl! {
                 @split_attrs_resume
                 $non_derives,
                 $derives,
-            },
+            }),
             $(#[$($attrs)*])*
             $($it)*
         }
@@ -363,11 +363,11 @@ macro_rules! macro_attr_impl {
             fallback: {
                 $mac_attr! {
                     (),
-                    then macro_attr_impl! {
+                    then (macro_attr_impl! {
                         @split_attrs_resume
                         ($($non_derives)*),
                         $derives,
-                    },
+                    }),
                     $(#[$($attrs)*])*
                     $($it)*
                 }
@@ -395,11 +395,11 @@ macro_rules! macro_attr_impl {
             fallback: {
                 $mac_attr! {
                     ($($attr_args)*),
-                    then macro_attr_impl! {
+                    then (macro_attr_impl! {
                         @split_attrs_resume
                         ($($non_derives)*),
                         $derives,
-                    },
+                    }),
                     $(#[$($attrs)*])*
                     $($it)*
                 }
@@ -801,28 +801,28 @@ macro_rules! macro_attr_impl {
 /**
 This macro invokes a "callback" macro, merging arguments together.
 
-Essentially, it takes an arbitrary macro call `name!(args...)`, plus some sequence of `new_args...`, and expands `name!(args... new_args...)`.
+Essentially, it takes an arbitrary macro call `(name!(args...))`, plus some sequence of `new_args...`, and expands `name!(args... new_args...)`.
 
 Importantly, it works irrespective of the kind of grouping syntax used for the macro arguments, simplifying macros which need to *capture* callbacks.
 */
 #[macro_export]
 macro_rules! macro_attr_callback {
     (
-        $cb:ident ! { $($cb_fixed:tt)* },
+        ($cb:ident ! { $($cb_fixed:tt)* }),
         $($args:tt)*
     ) => {
         $cb! { $($cb_fixed)* $($args)* }
     };
 
     (
-        $cb:ident ! [ $($cb_fixed:tt)* ],
+        ($cb:ident ! [ $($cb_fixed:tt)* ]),
         $($args:tt)*
     ) => {
         $cb! [ $($cb_fixed)* $($args)* ]
     };
 
     (
-        $cb:ident ! ( $($cb_fixed:tt)* ),
+        ($cb:ident ! ( $($cb_fixed:tt)* )),
         $($args:tt)*
     ) => {
         $cb! ( $($cb_fixed)* $($args)* )

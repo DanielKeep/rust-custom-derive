@@ -25,12 +25,12 @@ macro_rules! Name {
 macro_rules! remove_body {
     (
         (),
-        then $cb:ident!$cb_arg:tt,
+        then $cb:tt,
         $(#[$($attrs:tt)*])*
         struct $name:ident $($_tail:tt)*
     ) => {
         macro_attr_callback! {
-            $cb!$cb_arg,
+            $cb,
             $(#[$($attrs)*])*
             struct $name;
         }
@@ -40,12 +40,12 @@ macro_rules! remove_body {
 macro_rules! use_secret_alias {
     (
         ($name:ident),
-        then $cb:ident!$cb_arg:tt,
+        then $cb:tt,
         $(#[$($attrs:tt)*])*
         struct $_old_name:ident $($tail:tt)*
     ) => {
         macro_attr_callback! {
-            $cb!$cb_arg,
+            $cb,
             $(#[$($attrs)*])*
             struct $name $($tail)*
         }

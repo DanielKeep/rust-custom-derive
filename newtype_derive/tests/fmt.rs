@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2015 rust-custom-derive contributors.
+Copyright ⓒ 2015 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -7,7 +7,7 @@ Licensed under the MIT license (see LICENSE or <http://opensource.org
 files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 #[macro_use] extern crate newtype_derive;
 
 use std::fmt::{self, Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer,
@@ -35,7 +35,7 @@ impl_fmt!(impl Pointer for Dummy: "pointer");
 impl_fmt!(impl UpperExp for Dummy: "upperexp");
 impl_fmt!(impl UpperHex for Dummy: "upperhex");
 
-custom_derive! {
+macro_attr! {
     #[derive(
         NewtypeBinary!,
         NewtypeDebug!,

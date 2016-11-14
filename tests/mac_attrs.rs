@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2016 rust-custom-derive contributors.
+Copyright ⓒ 2016 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -7,7 +7,7 @@ Licensed under the MIT license (see LICENSE or <http://opensource.org
 files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 
 macro_rules! Name {
     (
@@ -29,8 +29,7 @@ macro_rules! remove_body {
         $(#[$($attrs:tt)*])*
         struct $name:ident $($_tail:tt)*
     ) => {
-        custom_derive! {
-            @callback
+        macro_attr_callback! {
             $cb!$cb_arg,
             $(#[$($attrs)*])*
             struct $name;
@@ -45,8 +44,7 @@ macro_rules! use_secret_alias {
         $(#[$($attrs:tt)*])*
         struct $_old_name:ident $($tail:tt)*
     ) => {
-        custom_derive! {
-            @callback
+        macro_attr_callback! {
             $cb!$cb_arg,
             $(#[$($attrs)*])*
             struct $name $($tail)*
@@ -54,7 +52,7 @@ macro_rules! use_secret_alias {
     };
 }
 
-custom_derive! {
+macro_attr! {
     #[derive(Debug, Name!)]
     #[remove_body!]
     #[use_secret_alias!(Alucard)]

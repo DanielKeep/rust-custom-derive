@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2015 rust-custom-derive contributors.
+Copyright ⓒ 2015 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -12,12 +12,12 @@ or distributed except according to those terms.
 #![cfg_attr(feature="std-unstable", feature(zero_one))]
 #![cfg_attr(feature="std-unstable", feature(iter_arith_traits))]
 
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 #[macro_use] extern crate newtype_derive;
 
 use std::num::{One, Zero};
 
-custom_derive! {
+macro_attr! {
     #[derive(
         Clone, Eq, PartialEq, Debug,
         NewtypeOne!, NewtypeZero!,

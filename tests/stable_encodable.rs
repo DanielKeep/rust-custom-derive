@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2015 rust-custom-derive contributors.
+Copyright ⓒ 2015 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -7,7 +7,7 @@ Licensed under the MIT license (see LICENSE or <http://opensource.org
 files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 extern crate rustc_serialize;
 
 macro_rules! StableEncodable {
@@ -348,12 +348,12 @@ macro_rules! StableEncodable {
     (@count_tts $_tt:tt $($tail:tt)*) => {1usize + StableEncodable!(@count_tts $($tail)*)};
 }
 
-custom_derive! {
+macro_attr! {
     #[derive(Debug, StableEncodable!)]
     struct LazyEg<A> { a: A, b: i32, c: (u8, u8, u8) }
 }
 
-custom_derive! {
+macro_attr! {
     #[derive(Clone, StableEncodable!)]
     enum Wonky<S> { Flim, Flam, Flom(i32), Bees { say: S } }
 }

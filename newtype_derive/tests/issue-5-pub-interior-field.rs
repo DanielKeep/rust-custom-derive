@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2015 rust-custom-derive contributors.
+Copyright ⓒ 2015 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -10,7 +10,7 @@ or distributed except according to those terms.
 #![recursion_limit = "128"]
 #![cfg_attr(feature = "std-unstable", feature(zero_one))]
 #![allow(deprecated)]
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 #[macro_use] extern crate newtype_derive;
 
 use std::fmt::{self, Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer,
@@ -26,7 +26,7 @@ macro_rules! impl_fmt {
     };
 }
 
-custom_derive! {
+macro_attr! {
     #[derive(Copy, Clone, Eq, PartialEq, Debug,
         NewtypeAdd!, NewtypeAdd!(&self), NewtypeAdd!(i32), NewtypeAdd!(&self, i32),
         NewtypeBitAnd!, NewtypeBitAnd!(&self),
@@ -48,7 +48,7 @@ custom_derive! {
     pub struct Dummy1(pub i32);
 }
 
-custom_derive! {
+macro_attr! {
     #[derive(Clone, Eq, PartialEq, Debug,
         NewtypeFrom!,
         NewtypeDeref!, NewtypeDerefMut!,
@@ -69,7 +69,7 @@ impl_fmt!(impl Pointer for Dummy3Inner: "pointer");
 impl_fmt!(impl UpperExp for Dummy3Inner: "upperexp");
 impl_fmt!(impl UpperHex for Dummy3Inner: "upperhex");
 
-custom_derive! {
+macro_attr! {
     #[derive(
         NewtypeBinary!,
         NewtypeDebug!,
@@ -93,7 +93,7 @@ fn test_pub_interior_fields() {
 
 #[cfg(feature = "std-unstable")]
 mod std_unstable {
-    custom_derive! {
+    macro_attr! {
         #[derive(Eq, PartialEq, Debug, NewtypeOne!, NewtypeZero!)]
         struct Dummy4(pub i32);
     }

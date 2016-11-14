@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2015 rust-custom-derive contributors.
+Copyright ⓒ 2015 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -10,7 +10,7 @@ or distributed except according to those terms.
 /*!
 This crate provides several macros for deriving some useful methods for unitary enums (*i.e.* enums where variants do not have payloads).
 
-All of these macros are designed to be used with the [`custom_derive`](https://crates.io/crates/custom_derive) crate, though they can be used independent of it.
+All of these macros are designed to be used with the [`macro-attr`](https://crates.io/crates/macro-attr) crate, though they can be used independent of it.
 
 > **Note**: see also the `TryFrom!` macro provided by the [`conv`](https://crates.io/crates/conv) crate to derive a function for creating enum values from integer values.
 
@@ -19,10 +19,10 @@ All of these macros are designed to be used with the [`custom_derive`](https://c
 Derive iterators that yield all variants of an enum.
 
 ```rust
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 #[macro_use] extern crate enum_derive;
 
-custom_derive! {
+macro_attr! {
     #[derive(Debug, PartialEq, Eq,
         IterVariants!(CandyVariants), IterVariantNames!(CandyVariantNames))]
     pub enum Candy { Musk, FruitRock, BoPeeps, LemonSherbert }
@@ -43,12 +43,12 @@ assert_eq!(&*vars.zip(names).collect::<Vec<_>>(), &[
 Alternately, derive `next_variant` and `prev_variant` methods.
 
 ```rust
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 #[macro_use] extern crate enum_derive;
 
 use Hanagami::*;
 
-custom_derive! {
+macro_attr! {
     #[derive(Debug, PartialEq, Eq, NextVariant!, PrevVariant!)]
     pub enum Hanagami { Sakigami, Hasugami, Tsutagami }
 }
@@ -80,9 +80,9 @@ This crate provides macros to derive the following methods for unitary variant e
 Both of the `IterVariant*!` macros accept a single deriving form.  Taking `IterVariants!` as an example, it must be invoked like so:
 
 ```rust
-# #[macro_use] extern crate custom_derive;
+# #[macro_use] extern crate macro_attr;
 # #[macro_use] extern crate enum_derive;
-custom_derive! {
+macro_attr! {
     #[derive(IterVariants!(GetVariants))]
     pub enum Get { Up, Down, AllAround }
 }
@@ -94,9 +94,9 @@ The argument is the name of the iterator type that will be generated.  Neither m
 `EnumInnerAsTrait!` accepts a single deriving form that specifies the name of the method to be derived, whether the borrow should be mutable, and the trait of interest.  For example:
 
 ```rust
-# #[macro_use] extern crate custom_derive;
+# #[macro_use] extern crate macro_attr;
 # #[macro_use] extern crate enum_derive;
-custom_derive! {
+macro_attr! {
     #[derive(EnumInnerAsTrait!(pub as_display -> &std::fmt::Display))]
     enum Value {
         U32(u32),
@@ -114,14 +114,14 @@ The other macros take no arguments.
 
 The methods and iterator types generated will be public if the enum itself is public; otherwise, they will be private.
 
-## Using Without `custom_derive!`
+## Using Without `macro_attr!`
 
-Although designed to be used with `custom_derive!`, all of the macros in this crate can be used without it.  The following:
+Although designed to be used with `macro_attr!`, all of the macros in this crate can be used without it.  The following:
 
 ```rust
-# #[macro_use] extern crate custom_derive;
+# #[macro_use] extern crate macro_attr;
 # #[macro_use] extern crate enum_derive;
-custom_derive! {
+macro_attr! {
     #[derive(Copy, Clone, Debug, IterVariants!(Vars))]
     enum ItAintRight { BabeNo, NoNo, BoyBoy }
 }
@@ -131,7 +131,7 @@ custom_derive! {
 Can also be written as:
 
 ```rust
-# #[macro_use] extern crate custom_derive;
+# #[macro_use] extern crate macro_attr;
 # #[macro_use] extern crate enum_derive;
 #[derive(Copy, Clone, Debug)]
 enum ItAintRight { BabeNo, NoNo, BoyBoy }
@@ -145,10 +145,10 @@ IterVariants! { (Vars) enum ItAintRight { BabeNo, NoNo, BoyBoy } }
 This shows how to use `Display` and `FromStr` to perform string round-tripping of enums.
 
 ```rust
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 #[macro_use] extern crate enum_derive;
 
-custom_derive! {
+macro_attr! {
     #[derive(Debug, PartialEq, EnumDisplay!, EnumFromStr!)]
     pub enum TrollDigit { One, Two, Three, Many, Lots }
 }

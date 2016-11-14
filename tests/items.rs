@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2016 rust-custom-derive contributors.
+Copyright ⓒ 2016 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -7,59 +7,59 @@ Licensed under the MIT license (see LICENSE or <http://opensource.org
 files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 
-custom_derive! {
+macro_attr! {
     const DUMMY_CONST: () = ();
 }
 
-custom_derive! {
+macro_attr! {
     enum DummyEnum { V }
 }
 
-custom_derive! {
+macro_attr! {
     fn dummy_fn() {}
 }
 
-custom_derive! {
+macro_attr! {
     impl DummyStruct {
         fn f(self) {}
     }
 }
 
-custom_derive! {
+macro_attr! {
     mod dummy_mod {
         pub fn f() {}
     }
 }
 
-custom_derive! {
+macro_attr! {
     static DUMMY_STATIC: () = ();
 }
 
-custom_derive! {
+macro_attr! {
     struct DummyStruct;
 }
 
-custom_derive! {
+macro_attr! {
     trait DummyTrait {}
 }
 
-custom_derive! {
+macro_attr! {
     type DummyType = ();
 }
 
-custom_derive! {
+macro_attr! {
     use self::dummy_fn as dummy_use;
 }
 
 #[cfg(never)]
 mod super_dummy {
-    custom_derive! {
+    macro_attr! {
         extern crate dummy_crate;
     }
 
-    custom_derive! {
+    macro_attr! {
         extern "C" dummy_extern();
     }
 }

@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2015 rust-custom-derive contributors.
+Copyright ⓒ 2015 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -10,17 +10,17 @@ or distributed except according to those terms.
 /*!
 This crate provides several macros for deriving implementations of various traits for "newtype" wrappers (*i.e.* tuple structs with a single element).  That is, given a tuple struct with exactly one field (*e.g.* `struct Buckets(i32)`), these macros will derive "obvious" implementations of traits such as `Add`, `Neg`, `Index`, `Deref`, `From`, etc.
 
-All of these macros are designed to be used with the [`custom_derive`](https://crates.io/crates/custom_derive) crate, though they can be used independent of it.
+All of these macros are designed to be used with the [`macro-attr`](https://crates.io/crates/macro-attr) crate, though they can be used independent of it.
 
 # Example
 
 Create a simple integer wrapper with some arithmetic operators:
 
 ```rust
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 #[macro_use] extern crate newtype_derive;
 
-custom_derive! {
+macro_attr! {
     #[derive(NewtypeFrom!, NewtypeAdd!, NewtypeMul!(i32))]
     pub struct Happy(i32);
 }
@@ -38,10 +38,10 @@ assert_eq!(d, 39);
 Create a "deref-transparent" wrapper around a type:
 
 ```rust
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 #[macro_use] extern crate newtype_derive;
 
-custom_derive! {
+macro_attr! {
     #[derive(NewtypeFrom!,
         NewtypeDeref!, NewtypeDerefMut!,
         NewtypeIndex!(usize), NewtypeIndexMut!(usize)
@@ -120,14 +120,14 @@ The deriving macros for the formatting traits in [`std::fmt`][] forward to the w
 
 `NewtypeProduct` and `NewtypeSum` optionally support specifying `&Self` as an argument to generate an implementation that accepts an iterator of borrowed pointers (*e.g.* `NewtypeSum(&Self)`).
 
-## Using Without `custom_derive!`
+## Using Without `macro_attr!`
 
-Although designed to be used with `custom_derive!`, all of the macros in this crate can be used without it.  The following:
+Although designed to be used with `macro_attr!`, all of the macros in this crate can be used without it.  The following:
 
 ```rust
-# #[macro_use] extern crate custom_derive;
+# #[macro_use] extern crate macro_attr;
 # #[macro_use] extern crate newtype_derive;
-custom_derive! {
+macro_attr! {
     #[derive(Copy, Clone, Debug, NewtypeFrom!, NewtypeAdd!, NewtypeAdd!(f32))]
     pub struct Meters(f32);
 }

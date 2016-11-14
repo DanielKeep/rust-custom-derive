@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2015 rust-custom-derive contributors.
+Copyright ⓒ 2015 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -9,10 +9,10 @@ or distributed except according to those terms.
 */
 #![cfg(op_assign)]
 #![recursion_limit = "128"]
-#[macro_use] extern crate custom_derive;
+#[macro_use] extern crate macro_attr;
 #[macro_use] extern crate newtype_derive;
 
-custom_derive! {
+macro_attr! {
     #[derive(Copy, Clone, Eq, PartialEq, Debug,
         NewtypeAddAssign!, NewtypeAddAssign!(&Self), NewtypeAddAssign!(i32),
         NewtypeBitAndAssign!, NewtypeBitAndAssign!(&Self),

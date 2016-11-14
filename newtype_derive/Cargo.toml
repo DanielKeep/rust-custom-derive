@@ -5,9 +5,9 @@ authors = ["Daniel Keep <daniel.keep@gmail.com>"]
 
 description = "This crate provides macros for deriving common traits for newtype structures."
 repository = "https://github.com/DanielKeep/rust-custom-derive"
-documentation = "https://danielkeep.github.io/rust-custom-derive/doc/newtype_derive/index.html"
+documentation = "https://docs.rs/crate/newtype_derive/"
 license = "MIT/Apache-2.0"
-keywords = ["newtype", "derive", "wrapper", "custom_derive", "macro"]
+keywords = ["newtype", "derive", "wrapper", "custom_derive", "macro-attr", "macro"]
 
 build = "build.rs"
 
@@ -20,4 +20,4 @@ std-unstable = []
 rustc_version = "0.1.7"
 
 [dev-dependencies]
-custom_derive = { version = "0.2.0", path = ".." }
+macro-attr = { version = "0.2.0", path = ".." }

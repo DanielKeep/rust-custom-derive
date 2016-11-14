@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2016 rust-custom-derive contributors.
+Copyright ⓒ 2016 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -7,8 +7,8 @@ Licensed under the MIT license (see LICENSE or <http://opensource.org
 files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
-#[macro_use] extern crate custom_derive;
 #[macro_use] extern crate enum_derive;
+#[macro_use] extern crate macro_attr;
 
 pub trait SizeOf {
     fn size_of(&self) -> usize;
@@ -42,7 +42,7 @@ impl Replace<u32> for u64 {
     }
 }
 
-custom_derive! {
+macro_attr! {
     #[derive(
         Debug, PartialEq,
         EnumInnerAsTrait!(pub as_size_of -> &SizeOf),
@@ -55,7 +55,7 @@ custom_derive! {
     }
 }
 
-custom_derive! {
+macro_attr! {
     #[derive(
         Debug, PartialEq,
         EnumInnerAsTrait!(as_size_of -> &SizeOf),

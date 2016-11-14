@@ -8,7 +8,36 @@ files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
 /*!
-This crate provides a macro that enables the use of custom attributes backed by regular macros.
+This crate provides the `macro_attr!` macro that enables the use of custom, macro-based attributes and `derivations`.
+
+<style type="text/css">
+.link-block { font-family: "Fira Sans"; }
+.link-block > p { display: inline-block; }
+.link-block > p > strong { font-weight: 500; margin-right: 1em; }
+.link-block > ul { display: inline-block; padding: 0; list-style: none; }
+.link-block > ul > li {
+  font-size: 0.8em;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  padding: 0.3em;
+  display: inline-block;
+}
+</style>
+<span></span><div class="link-block">
+
+**Links**
+
+* [Latest Release](https://crates.io/crates/macro-attr/)
+* [Latest Docs](https://docs.rs/crate/macro-attr/)
+* [Repository](https://github.com/DanielKeep/rust-custom-derive)
+
+<span></span></div>
+
+## Compatibility
+
+`macro-attr` is compatible with Rust 1.2 and higher.
+
+## Quick Example
 
 To use it, make sure you link to the crate like so:
 
@@ -19,9 +48,7 @@ To use it, make sure you link to the crate like so:
 # fn main() { let _ = Foo; }
 ```
 
-# Example
-
-The `macro_attr!` macro should be used to wrap an entire *single* `enum` or `struct` declaration, including its attributes (both `derive` and others).  All attributes and derivations which whose names end with `!` will be assumed to be implemented by macros, and treated accordingly.
+The `macro_attr!` macro should be used to wrap an entire *single* item (`enum`, `struct`, *etc.*) declaration, including its attributes (both `derive` and others).  All attributes and derivations which whose names end with `!` will be assumed to be implemented by macros, and treated accordingly.
 
 For example:
 
@@ -53,7 +80,7 @@ macro_rules! TypeName {
     };
 }
 
-macro_rules! TryFrom {
+macro_rules! ReprType {
     // Note that we use a "derivation argument" here for the `$repr` type.
     (($repr:ty) $(pub)* enum $name:ident $($tail:tt)*) => {
         impl ReprType for $name {
@@ -81,7 +108,7 @@ macro_rules! rename_to {
 
 macro_attr! {
     #[allow(dead_code)]
-    #[derive(Clone, Copy, Debug, TryFrom!(u8), TypeName!)]
+    #[derive(Clone, Copy, Debug, ReprType!(u8), TypeName!)]
     #[rename_to!(Bar)]
     #[repr(u8)]
     enum Foo { A, B }
@@ -98,13 +125,118 @@ fn main() {
 #![cfg_attr(not(feature = "std"), no_std)]
 
 /**
-First, note that `macro_attr!` passes any arguments on the derivation attribute to the macro.  In the case of attributes *without* any arguments, `()` is passed instead.
+When given an item definition, including its attributes, this macro parses said attributes and dispatches any attributes or derivations suffixed with `!` to user-defined macros.  This allows multiple macros to process the same item.
 
-Secondly, the macro is passed the entire item, *sans* attributes.  It is the derivation macro's job to parse the item correctly.
+This is similar to, but distinct from, the function of "procedural" macros and compiler plugins.
 
-Third, each derivation macro is expected to result in zero or more items, not including the item itself.  As a result, it is *not* possible to mutate the item in any way, or attach additional attributes to it.
+# Supported Forms
 
-Finally, `@impl` is merely a trick to pack multiple, different functions into a single macro.  The sequence has no special meaning; it is simply *distinct* from the usual invocation syntax.
+In particular, this macro looks for two kinds of syntax:
+
+- Derivations such as the `Name` in `#[derive(Name!)]` or `#[derive(Name!(...))]`.
+- Top-level attributes written as `#[name!]` or `#![name!(...)]`.
+
+Unlike "real" attributes, optional parenthesised arguments after the `!` are allowed to be entirely arbitrary token trees, meaning they can effectively contain any token sequence.  These are supported to allow custom attribute macros to easily take arguments.
+
+Derivations parse the item and emit whatever additional definitions needed.  They *cannot* change the item itself, and do not receive any other attributes attached to the item.
+
+Attributes receive *everything* lexically *after* themselves, and must re-emit the item.  This allows attributes to make changes to the item, drop or alter other attributes, *etc.*.  This power makes writing attribute macros more difficult, however.
+
+# Macro Derivations
+
+Given the following input:
+
+```ignore
+#[derive(Copy, Clone, Name!(args...), Debug)]
+struct Foo;
+```
+
+`macro_attr!` will expand to the equivalent of:
+
+```ignore
+#[derive(Copy, Clone, Debug)]
+struct Foo;
+
+Name!((args...) struct Foo;);
+```
+
+Note that macro derives may be mixed with regular derives, or put in their own `#[derive(...)]` attribute.  Also note that macro derive invocations are *not* passed the other attributes on the item; input will consist of the arguments provided to the derivation (*i.e.* `(args...)` in this example), the item's visibility (if any), and the item definition itself.
+
+A macro derivation invoked *without* arguments will be treated as though it was invoked with empty parentheses.  *i.e.* `#[derive(Name!)]` is equivalent to `#[derive(Name!())]`.
+
+A derivation macro may expand to any number of new items derived from the provided input.  There is no way for a derivation macro to alter the item itself (for that, use a macro attribute).
+
+# Macro Attributes
+
+When `macro_attr!` encounters an attribute suffixed with a `!` (*e.g.* `#[name!(args...)]`), it invokes the macro `name!` with everything lexically *after* that attribute.  A macro attribute is free to add to, remove from, or alter the provided input as it sees fit, before instructing `macro_attr!` to resume parsing.
+
+For example, given the following input:
+
+```ignore
+#[make_unitary!]
+#[repr(C)]
+#[rename_to!(Quux)]
+#[doc="Test."]
+struct Bar { field: i32 }
+```
+
+`macro_attr!` will expand to:
+
+```ignore
+make_unitary! {
+    (), then $resume,
+    #[repr(C)]
+    #[rename_to!(Quux)]
+    #[doc="Test."]
+    struct Bar { field: i32 };
+}
+```
+
+Note that `$resume` is **not** literal.  When implementing an attribute macro, you should accept this part as `$resume:tt`, and not attempt to inspect or deconstruct the contents.
+
+Assuming `make_unitary!` removes the body of the `struct` it is attached to, `macro_attr!` *requires* that it expand to:
+
+```ignore
+macro_attr_callback! {
+    $resume,
+    #[repr(C)]
+    #[rename_to!(Quxx)]
+    #[doc="Test."]
+    struct Bar;
+}
+```
+
+`macro_attr!` will then resume parsing, and expand to:
+
+```ignore
+rename_to! {
+    (Quxx), then $resume,
+    #[doc="Test."]
+    struct Bar;
+}
+```
+
+Assuming `rename_to!` does the obvious thing and changes the name of the item it is attached to, it should expand to:
+
+```ignore
+macro_attr_callback! {
+    $resume,
+    #[doc="Test."]
+    struct Quxx;
+}
+```
+
+Once more, `macro_attr!` will resume, and produce the final expansion of:
+
+```ignore
+#[repr(C)]
+#[doc="Test."]
+struct Quxx;
+```
+
+Note that normal attributes are automatically carried through and re-attached to the item.
+
+Macro attributes should be used as sparingly as possible: due to the way Rust macros work, they must expand recursively in sequence, which can quickly consume the available macro recursion limit.  This limit can be raised, but it makes for a less-than-ideal user experience if you are authoring macros to be used by others.
 */
 #[macro_export]
 macro_rules! macro_attr {
@@ -801,7 +933,7 @@ macro_rules! macro_attr_impl {
 /**
 This macro invokes a "callback" macro, merging arguments together.
 
-Essentially, it takes an arbitrary macro call `(name!(args...))`, plus some sequence of `new_args...`, and expands `name!(args... new_args...)`.
+It takes an arbitrary macro call `(name!(args...))`, plus some sequence of `new_args...`, and expands `name!(args... new_args...)`.
 
 Importantly, it works irrespective of the kind of grouping syntax used for the macro arguments, simplifying macros which need to *capture* callbacks.
 */

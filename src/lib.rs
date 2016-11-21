@@ -8,7 +8,7 @@ files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
 /*!
-This crate provides the `macro_attr!` macro that enables the use of custom, macro-based attributes and `derivations`.
+This crate provides the `macro_attr!` macro that enables the use of custom, macro-based attributes and derivations.  Supercedes the `custom_derive` crate.
 
 <style type="text/css">
 .link-block { font-family: "Fira Sans"; }
@@ -147,7 +147,7 @@ Attributes receive *everything* lexically *after* themselves, and must re-emit t
 Given the following input:
 
 ```ignore
-#[derive(Copy, Clone, Name!(args...), Debug)]
+#[derive(Copy, Name!(args...), Clone, Another!, Debug)]
 struct Foo;
 ```
 
@@ -158,6 +158,7 @@ struct Foo;
 struct Foo;
 
 Name!((args...) struct Foo;);
+Another!(() struct Foo;);
 ```
 
 Note that macro derives may be mixed with regular derives, or put in their own `#[derive(...)]` attribute.  Also note that macro derive invocations are *not* passed the other attributes on the item; input will consist of the arguments provided to the derivation (*i.e.* `(args...)` in this example), the item's visibility (if any), and the item definition itself.
@@ -964,6 +965,7 @@ macro_rules! macro_attr_callback {
 /**
 This macro provides a simple way to select between two branches of code, depending on whether or not support for procedural macros is enabled or not.
 */
+#[doc(hidden)]
 #[macro_export]
 #[cfg(feature="unstable-macros-1-1")]
 macro_rules! macro_attr_if_proc_macros {
@@ -978,6 +980,7 @@ macro_rules! macro_attr_if_proc_macros {
 /**
 This macro provides a simple way to select between two branches of code, depending on whether or not support for procedural macros is enabled or not.
 */
+#[doc(hidden)]
 #[macro_export]
 #[cfg(not(feature="unstable-macros-1-1"))]
 macro_rules! macro_attr_if_proc_macros {

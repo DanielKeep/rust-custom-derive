@@ -1,6 +1,6 @@
 # `macro-attr`
 
-This crate provides the `macro_attr!` macro that enables the use of custom, macro-based attributes and `derivations`.
+This crate provides the `macro_attr!` macro that enables the use of custom, macro-based attributes and derivations.  Supercedes the `custom_derive` crate.
 
 **Links**
 

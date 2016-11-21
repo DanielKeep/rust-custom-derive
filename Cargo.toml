@@ -1,6 +1,6 @@
 [package]
 name = "macro-attr"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Daniel Keep <daniel.keep@gmail.com>"]
 
 description = "This crate provides the `macro_attr!` macro that enables the use of custom, macro-based attributes and derivations.  Supercedes the `custom_derive` crate."

@@ -16,6 +16,6 @@ derive-name-macro = { version = "0.1.0", path = "../derive-name-macro" }
 derive-name-proc = { version = "0.1.0", path = "../derive-name-proc", optional = true }
 
 [dependencies.macro-attr]
-version = "0.2.0"
+version = "0.2.1"
 path = "../.."
 default-features = false

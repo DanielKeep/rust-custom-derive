@@ -20,4 +20,4 @@ std-unstable = []
 rustc_version = "0.1.7"
 
 [dev-dependencies]
-macro-attr = { version = "0.2.0", path = ".." }
+macro-attr = { version = "0.2.1", path = ".." }

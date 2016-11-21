@@ -1,8 +1,14 @@
 # `custom_derive!`
 
+**Note**: This crate has been superseded by `macro-attr`.
+
 This crate provides a macro that enables the use of custom `derive` attributes.
 
-([Documentation for the master branch](https://danielkeep.github.io/rust-custom-derive/doc/custom_derive/index.html).)
+**Links**
+
+* [Latest Release](https://crates.io/crates/custom_derive/)
+* [Latest Docs](https://docs.rs/crate/custom_derive/)
+* [Repository](https://github.com/DanielKeep/rust-custom-derive/tree/custom_derive-master/)
 
 ## License
 

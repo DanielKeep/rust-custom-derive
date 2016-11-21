@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2015 rust-custom-derive contributors.
+Copyright ⓒ 2016 rust-custom-derive contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -8,6 +8,8 @@ files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
 /*!
+**Note**: This crate has been superseded by `macro-attr`.
+
 This crate provides a macro that enables the use of custom `derive` attributes.
 
 To use it, make sure you link to the crate like so:
@@ -20,6 +22,29 @@ To use it, make sure you link to the crate like so:
 ```
 
 > **Note**: the `custom_derive!` macro itself is not documented, as the automatic documentation for it would be uselessly huge and incomprehensible.
+
+<style type="text/css">
+.link-block { font-family: "Fira Sans"; }
+.link-block > p { display: inline-block; }
+.link-block > p > strong { font-weight: 500; margin-right: 1em; }
+.link-block > ul { display: inline-block; padding: 0; list-style: none; }
+.link-block > ul > li {
+  font-size: 0.8em;
+  background-color: #eee;
+  border: 1px solid #ccc;
+  padding: 0.3em;
+  display: inline-block;
+}
+</style>
+<span></span><div class="link-block">
+
+**Links**
+
+* [Latest Release](https://crates.io/crates/custom_derive/)
+* [Latest Docs](https://docs.rs/crate/custom_derive/)
+* [Repository](https://github.com/DanielKeep/rust-custom-derive/tree/custom_derive-master/)
+
+<span></span></div>
 
 # Usage
 

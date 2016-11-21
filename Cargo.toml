@@ -13,6 +13,9 @@ exclude = [
     ".cargo/*",
     "local/*",
     "doc-pkg/*",
+    "scripts/*",
+    ".gitmodules",
+    ".travis.yml",
     "update-docs.py",
 ]
 

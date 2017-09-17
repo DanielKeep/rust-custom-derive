@@ -10,6 +10,8 @@ or distributed except according to those terms.
 #[macro_use] extern crate enum_derive;
 #[macro_use] extern crate macro_attr;
 
+use enum_derive::IterVariantNames;
+
 macro_attr! {
     #[derive(Debug, PartialEq, IterVariants!(GetVariants), IterVariantNames!(GetVariantNames))]
     pub enum Get {

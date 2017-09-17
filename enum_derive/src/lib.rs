@@ -29,6 +29,7 @@ macro_attr! {
 }
 
 # fn main() {
+use enum_derive::IterVariantNames;
 let vars: CandyVariants = Candy::iter_variants();
 let names: CandyVariantNames = Candy::iter_variant_names();
 assert_eq!(&*vars.zip(names).collect::<Vec<_>>(), &[
@@ -453,9 +454,10 @@ macro_rules! IterVariantNames {
 
         enum_derive_util! {
             @as_item
-            impl $name {
-                #[allow(dead_code)]
-                $($pub_)* fn iter_variant_names() -> $itername {
+            impl ::enum_derive::IterVariantNames for $name {
+                type Iterator = $itername;
+
+                fn iter_variant_names() -> $itername {
                     $itername
                 }
             }
@@ -471,9 +473,10 @@ macro_rules! IterVariantNames {
 
         enum_derive_util! {
             @as_item
-            impl $name {
-                #[allow(dead_code)]
-                $($pub_)* fn iter_variant_names() -> $itername {
+            impl ::enum_derive::IterVariantNames for $name {
+                type Iterator = $itername;
+
+                fn iter_variant_names() -> $itername {
                     $itername(::std::option::Option::Some(enum_derive_util!(@first_expr $($name::$var_names),+)))
                 }
             }
@@ -965,4 +968,10 @@ macro_rules! EnumInnerAsTrait {
             ($($body)*,) -> ()
         }
     };
+}
+
+pub trait IterVariantNames {
+    type Iterator: Iterator<Item=&'static str>;
+
+    fn iter_variant_names() -> Self::Iterator;
 }

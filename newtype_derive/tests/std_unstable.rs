@@ -9,28 +9,18 @@ or distributed except according to those terms.
 */
 #![cfg(feature="std-unstable")]
 #![allow(deprecated)]
-#![cfg_attr(feature="std-unstable", feature(zero_one))]
 #![cfg_attr(feature="std-unstable", feature(iter_arith_traits))]
 
 #[macro_use] extern crate macro_attr;
 #[macro_use] extern crate newtype_derive;
 
-use std::num::{One, Zero};
-
 macro_attr! {
     #[derive(
         Clone, Eq, PartialEq, Debug,
-        NewtypeOne!, NewtypeZero!,
         NewtypeSum!, NewtypeSum!(&Self),
         NewtypeProduct!, NewtypeProduct!(&Self),
     )]
     struct Dummy(i32);
-}
-
-#[test]
-fn test_one_zero() {
-    assert_eq!(Dummy::zero(), Dummy(0));
-    assert_eq!(Dummy::one(), Dummy(1));
 }
 
 #[test]

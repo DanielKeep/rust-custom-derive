@@ -10,25 +10,6 @@ or distributed except according to those terms.
 #![cfg(feature = "std-unstable")]
 
 #[macro_export]
-macro_rules! NewtypeOne {
-    (() $(pub)* struct $name:ident(pub $_t0:ty);) => {
-        impl ::std::num::One for $name {
-            fn one() -> Self {
-                $name(::std::num::One::one())
-            }
-        }
-    };
-
-    (() $(pub)* struct $name:ident($_t0:ty);) => {
-        impl ::std::num::One for $name {
-            fn one() -> Self {
-                $name(::std::num::One::one())
-            }
-        }
-    };
-}
-
-#[macro_export]
 macro_rules! NewtypeProduct {
     ($arg:tt $(pub)* struct $name:ident(pub $t0:ty);) => {
         NewtypeProduct! { $arg struct $name($t0); }
@@ -73,25 +54,6 @@ macro_rules! NewtypeSum {
             fn sum<I>(iter: I) -> Self
             where I: Iterator<Item=&'a $name> {
                 $name(iter.map(|e| &e.0).sum::<$t0>())
-            }
-        }
-    };
-}
-
-#[macro_export]
-macro_rules! NewtypeZero {
-    (() $(pub)* struct $name:ident(pub $_t0:ty);) => {
-        impl ::std::num::Zero for $name {
-            fn zero() -> Self {
-                $name(::std::num::Zero::zero())
-            }
-        }
-    };
-
-    (() $(pub)* struct $name:ident($_t0:ty);) => {
-        impl ::std::num::Zero for $name {
-            fn zero() -> Self {
-                $name(::std::num::Zero::zero())
             }
         }
     };

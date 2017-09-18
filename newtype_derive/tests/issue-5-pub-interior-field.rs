@@ -8,7 +8,6 @@ files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
 #![recursion_limit = "128"]
-#![cfg_attr(feature = "std-unstable", feature(zero_one))]
 #![allow(deprecated)]
 #[macro_use] extern crate macro_attr;
 #[macro_use] extern crate newtype_derive;
@@ -89,17 +88,4 @@ fn test_pub_interior_fields() {
     let _ = Dummy1(0);
     let _ = Dummy2(vec![0]);
     let _ = Dummy3(Dummy3Inner);
-}
-
-#[cfg(feature = "std-unstable")]
-mod std_unstable {
-    macro_attr! {
-        #[derive(Eq, PartialEq, Debug, NewtypeOne!, NewtypeZero!)]
-        struct Dummy4(pub i32);
-    }
-
-    #[test]
-    fn test_pub_interior_fields_std_unstable() {
-        let _ = Dummy4(0);
-    }
 }

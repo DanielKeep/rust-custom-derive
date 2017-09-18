@@ -7,14 +7,12 @@ Licensed under the MIT license (see LICENSE or <http://opensource.org
 files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
-#![cfg_attr(feature="unstable-macros-1-1", feature(proc_macro))]
-
 #[macro_use] extern crate macro_attr;
 
-#[cfg(not(feature="unstable-macros-1-1"))]
+#[cfg(not(feature="use-proc-macros"))]
 #[macro_use] extern crate derive_name_macro;
 
-#[cfg(feature="unstable-macros-1-1")]
+#[cfg(feature="use-proc-macros")]
 #[macro_use] extern crate derive_name_proc;
 
 macro_rules! remove_body {

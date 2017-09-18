@@ -9,6 +9,8 @@ documentation = "https://docs.rs/crate/macro-attr/"
 license = "MIT/Apache-2.0"
 keywords = ["custom", "derive", "attribute", "macro"]
 
+build = "build.rs"
+
 exclude = [
     ".cargo/*",
     "local/*",
@@ -31,7 +33,10 @@ members = [
 [features]
 default = ["std"]
 std = []
-unstable-macros-1-1 = []
+use-proc-macros = []
+
+[build-dependencies]
+rustc_version = "0.1.4"
 
 [dev-dependencies]
 rustc-serialize = "0.3.15"

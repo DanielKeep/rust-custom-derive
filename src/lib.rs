@@ -967,7 +967,7 @@ This macro provides a simple way to select between two branches of code, dependi
 */
 #[doc(hidden)]
 #[macro_export]
-#[cfg(feature="unstable-macros-1-1")]
+#[cfg(use_proc_macros)]
 macro_rules! macro_attr_if_proc_macros {
     (
         proc_macros: { $($items:item)* }
@@ -982,7 +982,7 @@ This macro provides a simple way to select between two branches of code, dependi
 */
 #[doc(hidden)]
 #[macro_export]
-#[cfg(not(feature="unstable-macros-1-1"))]
+#[cfg(not(use_proc_macros))]
 macro_rules! macro_attr_if_proc_macros {
     (
         proc_macros: $_ignore:tt

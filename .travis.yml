@@ -1,9 +1,9 @@
 language: rust
 script: >
-  cargo build $CARGO_FLAGS --features "$CARGO_FEATURES"
+  cargo build $CARGO_FLAGS --features "$CARGO_FEATURES $CARGO_MACROATTR_FEATURES"
   && cargo build $CARGO_FLAGS --features "$CARGO_FEATURES" --manifest-path enum_derive/Cargo.toml
   && cargo build $CARGO_FLAGS --features "$CARGO_FEATURES $CARGO_NEWTYPE_FEATURES" --manifest-path newtype_derive/Cargo.toml
-  && cargo test $CARGO_FLAGS --features "$CARGO_FEATURES"
+  && cargo test $CARGO_FLAGS --features "$CARGO_FEATURES $CARGO_MACROATTR_FEATURES"
   && cargo test $CARGO_FLAGS --features "$CARGO_FEATURES" --manifest-path enum_derive/Cargo.toml
   && cargo test $CARGO_FLAGS --features "$CARGO_FEATURES $CARGO_NEWTYPE_FEATURES" --manifest-path newtype_derive/Cargo.toml
   && cargo run $CARGO_FLAGS --features "$CARGO_FEATURES $CARGO_DERIVE_NAME_TEST_FEATURES" --manifest-path tests/derive-name-test/Cargo.toml
@@ -18,6 +18,14 @@ rust:
   - 1.9.0
   - 1.10.0
   - 1.11.0
+  - 1.12.0
+  - 1.13.0
+  - 1.14.0
+  - 1.15.0 # use-proc-macros
+  - 1.16.0
+  - 1.17.0
+  - 1.18.0
+  - 1.19.0
   - stable
   - beta
   - nightly
@@ -25,17 +33,32 @@ env:
   - >
     CARGO_FLAGS="--verbose --no-default-features"
     CARGO_FEATURES=std
+    CARGO_MACROATTR_FEATURES=
     CARGO_NEWTYPE_FEATURES=
     CARGO_DERIVE_NAME_TEST_FEATURES=
 matrix:
   allow_failures:
     - rust: nightly
   include:
+    - rust: 1.15.0
+      env: CARGO_FEATURES=std CARGO_MACROATTR_FEATURES=use-proc-macros CARGO_DERIVE_NAME_TEST_FEATURES=use-proc-macros
+    - rust: 1.16.0
+      env: CARGO_FEATURES=std CARGO_MACROATTR_FEATURES=use-proc-macros CARGO_DERIVE_NAME_TEST_FEATURES=use-proc-macros
+    - rust: 1.17.0
+      env: CARGO_FEATURES=std CARGO_MACROATTR_FEATURES=use-proc-macros CARGO_DERIVE_NAME_TEST_FEATURES=use-proc-macros
+    - rust: 1.18.0
+      env: CARGO_FEATURES=std CARGO_MACROATTR_FEATURES=use-proc-macros CARGO_DERIVE_NAME_TEST_FEATURES=use-proc-macros
+    - rust: 1.19.0
+      env: CARGO_FEATURES=std CARGO_MACROATTR_FEATURES=use-proc-macros CARGO_DERIVE_NAME_TEST_FEATURES=use-proc-macros
     - rust: stable
       env: CARGO_FEATURES=
+    - rust: stable
+      env: CARGO_FEATURES=std CARGO_MACROATTR_FEATURES=use-proc-macros CARGO_DERIVE_NAME_TEST_FEATURES=use-proc-macros
     - rust: beta
       env: CARGO_FEATURES=
+    - rust: beta
+      env: CARGO_FEATURES=std CARGO_MACROATTR_FEATURES=use-proc-macros CARGO_DERIVE_NAME_TEST_FEATURES=use-proc-macros
     - rust: nightly
       env: CARGO_FEATURES=
     - rust: nightly
-      env: CARGO_FEATURES=std CARGO_NEWTYPE_FEATURES=std-unstable CARGO_DERIVE_NAME_TEST_FEATURES=unstable-macros-1-1
+      env: CARGO_FEATURES=std CARGO_MACROATTR_FEATURES=use-proc-macros CARGO_NEWTYPE_FEATURES=std-unstable CARGO_DERIVE_NAME_TEST_FEATURES=use-proc-macros

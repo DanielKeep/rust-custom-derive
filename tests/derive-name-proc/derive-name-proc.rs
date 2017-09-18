@@ -7,9 +7,6 @@ Licensed under the MIT license (see LICENSE or <http://opensource.org
 files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
-#![feature(proc_macro, proc_macro_lib)]
-#![crate_type="proc-macro"]
-
 #[macro_use] extern crate quote;
 
 extern crate proc_macro;

@@ -25,8 +25,6 @@ pub fn name(input: TokenStream) -> TokenStream {
     let name_str = name.to_string();
 
     let out = quote! {
-        #ast
-
         impl #name {
             pub fn name() -> &'static str {
                 #name_str

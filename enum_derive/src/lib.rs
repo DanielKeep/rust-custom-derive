@@ -251,7 +251,10 @@ macro_rules! enum_derive_util {
         @collect_unitary_variants ($name:ident),
         ($var:ident $_struct:tt, $($tail:tt)*) -> ($($var_names:tt)*)
     ) => {
-        const _error: () = "cannot parse unitary variants from enum with non-unitary variants";
+        enum_derive_util! {
+            @error item
+            "enum_derive: cannot parse unitary variants from enum with non-unitary variants."
+        }
     };
 
     (
@@ -298,7 +301,14 @@ macro_rules! enum_derive_util {
         @collect_unary_variants ($name:ident),
         ($var:ident $_struct:tt, $($tail:tt)*) -> ($($_out:tt)*)
     ) => {
-        const _error: () = "cannot parse unary variants from enum with non-unary tuple variants";
+        enum_derive_util! {
+            @error item
+            "enum_derive: cannot parse unary variants from enum with non-unary tuple variants."
+        }
+    };
+
+    (@error item $msg:tt) => {
+        const $msg: () = ();
     };
 }
 

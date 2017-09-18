@@ -51,7 +51,7 @@ macro_attr! {
     #[derive(Debug, Name~!)]
     #[remove_body!]
     #[use_secret_alias!(Alucard)]
-    struct Alucard;
+    struct Dracula { no_of_stakes: u32 }
 }
 
 fn main() {

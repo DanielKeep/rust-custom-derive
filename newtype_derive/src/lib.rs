@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2015 macro-attr contributors.
+Copyright ⓒ 2015-2017 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -118,7 +118,7 @@ The deriving macros for the formatting traits in [`std::fmt`][] forward to the w
 
 `NewtypeFrom` implements `std::convert::From` twice: once for converting from the wrapped type to the newtype, and once for converting from the newtype to the wrapped type.
 
-`NewtypeProduct` and `NewtypeSum` optionally support specifying `&Self` as an argument to generate an implementation that accepts an iterator of borrowed pointers (*e.g.* `NewtypeSum(&Self)`).
+`NewtypeProduct` and `NewtypeSum` optionally support specifying `&Self` as an argument to generate an implementation that accepts an iterator of borrowed pointers (*e.g.* `NewtypeSum(&Self)`).  These require Rust 1.12 or higher.
 
 ## Using Without `macro_attr!`
 
@@ -221,8 +221,6 @@ macro_rules! Newtype\2 {
 ```
 */
 #![cfg_attr(not(feature = "std"), no_std)]
-
-mod std_unstable;
 
 #[doc(hidden)]
 #[macro_export]
@@ -1170,6 +1168,7 @@ macro_rules! NewtypeUpperHex {
     };
 }
 
+#[cfg(iter_sum_product)]
 #[macro_export]
 macro_rules! NewtypeProduct {
     ($arg:tt $(pub)* struct $name:ident(pub $t0:ty);) => {
@@ -1195,6 +1194,7 @@ macro_rules! NewtypeProduct {
     };
 }
 
+#[cfg(iter_sum_product)]
 #[macro_export]
 macro_rules! NewtypeSum {
     ($arg:tt $(pub)* struct $name:ident(pub $t0:ty);) => {

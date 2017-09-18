@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2015 macro-attr contributors.
+Copyright ⓒ 2015-2017 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -7,10 +7,7 @@ Licensed under the MIT license (see LICENSE or <http://opensource.org
 files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
-#![cfg(feature="std-unstable")]
-#![allow(deprecated)]
-#![cfg_attr(feature="std-unstable", feature(iter_arith_traits))]
-
+#![cfg(iter_sum_product)]
 #[macro_use] extern crate macro_attr;
 #[macro_use] extern crate newtype_derive;
 

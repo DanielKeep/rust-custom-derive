@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2016 Daniel Keep.
+Copyright ⓒ 2016-2017 Daniel Keep.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -15,5 +15,9 @@ fn main() {
 
     if version_matches("1.8.0") {
         println!("cargo:rustc-cfg=op_assign");
+    }
+
+    if version_matches("1.12.0") {
+        println!("cargo:rustc-cfg=iter_sum_product");
     }
 }

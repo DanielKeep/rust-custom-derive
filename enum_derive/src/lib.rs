@@ -321,10 +321,13 @@ macro_rules! IterVariants {
 
         impl ::std::iter::Iterator for $itername {
             type Item = $name;
+
+            #[inline]
             fn next(&mut self) -> ::std::option::Option<Self::Item> {
                 None
             }
 
+            #[inline]
             fn size_hint(&self) -> (usize, ::std::option::Option<usize>) {
                 (0, Some(0))
             }
@@ -336,6 +339,7 @@ macro_rules! IterVariants {
             @as_item
             impl $name {
                 #[allow(dead_code)]
+                #[inline]
                 $($pub_)* fn iter_variants() -> $itername {
                     $itername
                 }
@@ -354,6 +358,7 @@ macro_rules! IterVariants {
             @as_item
             impl $name {
                 #[allow(dead_code)]
+                #[inline]
                 $($pub_)* fn iter_variants() -> $itername {
                     $itername(::std::option::Option::Some(enum_derive_util!(@first_expr $($name::$var_names),+)))
                 }
@@ -368,6 +373,8 @@ macro_rules! IterVariants {
             @as_item
             impl ::std::iter::Iterator for $itername {
                 type Item = $name;
+
+                #[inline]
                 fn next(&mut self) -> ::std::option::Option<Self::Item> {
                     let next_item = match self.0 {
                         $($next_body)*
@@ -376,6 +383,7 @@ macro_rules! IterVariants {
                     ::std::mem::replace(&mut self.0, next_item)
                 }
 
+                #[inline]
                 fn size_hint(&self) -> (usize, ::std::option::Option<usize>) {
                     let variants = $($count)*;
                     let progress = match self.0 {
@@ -450,10 +458,13 @@ macro_rules! IterVariantNames {
 
         impl ::std::iter::Iterator for $itername {
             type Item = &'static str;
+
+            #[inline]
             fn next(&mut self) -> ::std::option::Option<Self::Item> {
                 None
             }
 
+            #[inline]
             fn size_hint(&self) -> (usize, ::std::option::Option<usize>) {
                 (0, Some(0))
             }
@@ -465,6 +476,7 @@ macro_rules! IterVariantNames {
             @as_item
             impl $name {
                 #[allow(dead_code)]
+                #[inline]
                 $($pub_)* fn iter_variant_names() -> $itername {
                     $itername
                 }
@@ -483,6 +495,7 @@ macro_rules! IterVariantNames {
             @as_item
             impl $name {
                 #[allow(dead_code)]
+                #[inline]
                 $($pub_)* fn iter_variant_names() -> $itername {
                     $itername(::std::option::Option::Some(enum_derive_util!(@first_expr $($name::$var_names),+)))
                 }
@@ -497,6 +510,8 @@ macro_rules! IterVariantNames {
             @as_item
             impl ::std::iter::Iterator for $itername {
                 type Item = &'static str;
+
+                #[inline]
                 fn next(&mut self) -> ::std::option::Option<Self::Item> {
                     let (next_state, result) = match self.0 {
                         $($next_body)*
@@ -506,6 +521,7 @@ macro_rules! IterVariantNames {
                     result
                 }
 
+                #[inline]
                 fn size_hint(&self) -> (usize, ::std::option::Option<usize>) {
                     let variants = $($count)*;
                     let progress = match self.0 {
@@ -582,6 +598,7 @@ macro_rules! NextVariant {
             @as_item
             impl $name {
                 #[allow(dead_code)]
+                #[inline]
                 $($pub_)* fn next_variant(&self) -> ::std::option::Option<$name> {
                     loop {} // unreachable
                 }
@@ -596,6 +613,7 @@ macro_rules! NextVariant {
             @as_item
             impl $name {
                 #[allow(dead_code)]
+                #[inline]
                 $($pub_)* fn next_variant(&self) -> ::std::option::Option<$name> {
                     NextVariant!(@arms ($name, self), ($($var_names)*) -> ())
                 }
@@ -653,6 +671,7 @@ macro_rules! PrevVariant {
             @as_item
             impl $name {
                 #[allow(dead_code)]
+                #[inline]
                 $($pub_)* fn prev_variant(&self) -> ::std::option::Option<$name> {
                     loop {} // unreachable
                 }
@@ -667,6 +686,7 @@ macro_rules! PrevVariant {
             @as_item
             impl $name {
                 #[allow(dead_code)]
+                #[inline]
                 $($pub_)* fn prev_variant(&self) -> ::std::option::Option<$name> {
                     PrevVariant!(@arms ($name, self), (::std::option::Option::None, $($var_names)*) -> ())
                 }
@@ -809,6 +829,7 @@ macro_rules! EnumFromStr {
             impl ::std::str::FromStr for $name {
                 type Err = $crate::ParseEnumError;
 
+                #[inline]
                 fn from_str(s: &str) -> Result<Self, Self::Err> {
                     EnumFromStr!(@arms ($name, s), ($($var_names)*) -> ())
                 }
@@ -886,6 +907,7 @@ macro_rules! EnumFromInner {
     ) => {
         $(
             impl ::std::convert::From<$var_tys> for $name {
+                #[inline]
                 fn from(v: $var_tys) -> $name {
                     $name::$var_names(v)
                 }
@@ -937,6 +959,7 @@ macro_rules! EnumInnerAsTrait {
         enum_derive_util! {
             @as_item
             impl $ty_name {
+                #[inline]
                 $($vis)* fn $fn_name(&mut self) -> &mut $tr {
                     match *self {
                         $(
@@ -957,6 +980,7 @@ macro_rules! EnumInnerAsTrait {
         enum_derive_util! {
             @as_item
             impl $ty_name {
+                #[inline]
                 $($vis)* fn $fn_name(&self) -> &$tr {
                     match *self {
                         $(

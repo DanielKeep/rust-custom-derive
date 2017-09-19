@@ -239,6 +239,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl $($tr)*<$name> for $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: Self) -> $name {
                     $name((self.0).$meth(rhs.0))
                 }
@@ -254,6 +256,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl $($tr)*<$name> for $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: Self) -> $name {
                     $name((self.0).$meth(rhs.0))
                 }
@@ -269,6 +273,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl<'a> $($tr)*<&'a $name> for &'a $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: Self) -> $name {
                     $name((self.0).$meth(rhs.0))
                 }
@@ -284,6 +290,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl<'a> $($tr)*<&'a $name> for &'a $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: Self) -> $name {
                     $name((self.0).$meth(rhs.0))
                 }
@@ -299,6 +307,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl<'a> $($tr)*<&'a $name> for $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: &'a $name) -> $name {
                     $name((self.0).$meth(&rhs.0))
                 }
@@ -314,6 +324,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl<'a> $($tr)*<&'a $name> for $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: &'a $name) -> $name {
                     $name((self.0).$meth(&rhs.0))
                 }
@@ -329,6 +341,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl $($tr)*<$rhs> for $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: $rhs) -> $name {
                     $name((self.0).$meth(rhs))
                 }
@@ -344,6 +358,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl $($tr)*<$rhs> for $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: $rhs) -> $name {
                     $name((self.0).$meth(rhs))
                 }
@@ -359,6 +375,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl<'a> $($tr)*<$name> for &'a $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: $name) -> $name {
                     $name((self.0).$meth(rhs.0))
                 }
@@ -374,6 +392,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl<'a> $($tr)*<$name> for &'a $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: $name) -> $name {
                     $name((self.0).$meth(rhs.0))
                 }
@@ -389,6 +409,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl<'a> $($tr)*<$rhs> for &'a $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: $rhs) -> $name {
                     $name((self.0).$meth(rhs))
                 }
@@ -404,6 +426,8 @@ macro_rules! newtype_wrap_bin_op {
         newtype_as_item! {
             impl<'a> $($tr)*<$rhs> for &'a $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self, rhs: $rhs) -> $name {
                     $name((self.0).$meth(rhs))
                 }
@@ -422,6 +446,7 @@ macro_rules! newtype_wrap_bin_op_assign {
     ) => {
         newtype_as_item! {
             impl $($tr)*<$name> for $name {
+                #[inline]
                 fn $meth(&mut self, rhs: Self) {
                     (self.0).$meth(rhs.0)
                 }
@@ -436,6 +461,7 @@ macro_rules! newtype_wrap_bin_op_assign {
     ) => {
         newtype_as_item! {
             impl $($tr)*<$name> for $name {
+                #[inline]
                 fn $meth(&mut self, rhs: Self) {
                     (self.0).$meth(rhs.0)
                 }
@@ -450,6 +476,7 @@ macro_rules! newtype_wrap_bin_op_assign {
     ) => {
         newtype_as_item! {
             impl<'a> $($tr)*<&'a $name> for $name {
+                #[inline]
                 fn $meth(&mut self, rhs: &'a $name) {
                     (self.0).$meth(rhs.0)
                 }
@@ -464,6 +491,7 @@ macro_rules! newtype_wrap_bin_op_assign {
     ) => {
         newtype_as_item! {
             impl<'a> $($tr)*<&'a $name> for $name {
+                #[inline]
                 fn $meth(&mut self, rhs: &'a $name) {
                     (self.0).$meth(rhs.0)
                 }
@@ -478,6 +506,7 @@ macro_rules! newtype_wrap_bin_op_assign {
     ) => {
         newtype_as_item! {
             impl $($tr)*<$rhs> for $name {
+                #[inline]
                 fn $meth(&mut self, rhs: $rhs) {
                     (self.0).$meth(rhs)
                 }
@@ -492,6 +521,7 @@ macro_rules! newtype_wrap_bin_op_assign {
     ) => {
         newtype_as_item! {
             impl $($tr)*<$rhs> for $name {
+                #[inline]
                 fn $meth(&mut self, rhs: $rhs) {
                     (self.0).$meth(rhs)
                 }
@@ -511,6 +541,8 @@ macro_rules! newtype_wrap_un_op {
         newtype_as_item! {
             impl $($tr)* for $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self) -> $name {
                     $name((self.0).$meth())
                 }
@@ -526,6 +558,8 @@ macro_rules! newtype_wrap_un_op {
         newtype_as_item! {
             impl $($tr)* for $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self) -> $name {
                     $name((self.0).$meth())
                 }
@@ -541,6 +575,8 @@ macro_rules! newtype_wrap_un_op {
         newtype_as_item! {
             impl<'a> $($tr)* for &'a $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self) -> $name {
                     $name((self.0).$meth())
                 }
@@ -556,6 +592,8 @@ macro_rules! newtype_wrap_un_op {
         newtype_as_item! {
             impl<'a> $($tr)* for &'a $name {
                 type Output = $name;
+
+                #[inline]
                 fn $meth(self) -> $name {
                     $name((self.0).$meth())
                 }
@@ -989,6 +1027,8 @@ macro_rules! NewtypeDeref {
     (() $(pub)* struct $name:ident(pub $t0:ty);) => {
         impl ::std::ops::Deref for $name {
             type Target = $t0;
+
+            #[inline]
             fn deref(&self) -> &Self::Target {
                 &self.0
             }
@@ -998,6 +1038,8 @@ macro_rules! NewtypeDeref {
     (() $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::ops::Deref for $name {
             type Target = $t0;
+
+            #[inline]
             fn deref(&self) -> &Self::Target {
                 &self.0
             }
@@ -1009,6 +1051,7 @@ macro_rules! NewtypeDeref {
 macro_rules! NewtypeDerefMut {
     (() $(pub)* struct $name:ident(pub $t0:ty);) => {
         impl ::std::ops::DerefMut for $name {
+            #[inline]
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.0
             }
@@ -1017,6 +1060,7 @@ macro_rules! NewtypeDerefMut {
 
     (() $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::ops::DerefMut for $name {
+            #[inline]
             fn deref_mut(&mut self) -> &mut Self::Target {
                 &mut self.0
             }
@@ -1029,6 +1073,8 @@ macro_rules! NewtypeIndex {
     (($index_ty:ty) $(pub)* struct $name:ident(pub $t0:ty);) => {
         impl ::std::ops::Index<$index_ty> for $name {
             type Output = <$t0 as ::std::ops::Index<$index_ty>>::Output;
+
+            #[inline]
             fn index(&self, index: $index_ty) -> &Self::Output {
                 (&self.0).index(index)
             }
@@ -1038,6 +1084,8 @@ macro_rules! NewtypeIndex {
     (($index_ty:ty) $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::ops::Index<$index_ty> for $name {
             type Output = <$t0 as ::std::ops::Index<$index_ty>>::Output;
+
+            #[inline]
             fn index(&self, index: $index_ty) -> &Self::Output {
                 (&self.0).index(index)
             }
@@ -1049,6 +1097,7 @@ macro_rules! NewtypeIndex {
 macro_rules! NewtypeIndexMut {
     (($index_ty:ty) $(pub)* struct $name:ident(pub $t0:ty);) => {
         impl ::std::ops::IndexMut<$index_ty> for $name {
+            #[inline]
             fn index_mut(&mut self, index: $index_ty) -> &mut Self::Output {
                 (&mut self.0).index_mut(index)
             }
@@ -1057,6 +1106,7 @@ macro_rules! NewtypeIndexMut {
 
     (($index_ty:ty) $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::ops::IndexMut<$index_ty> for $name {
+            #[inline]
             fn index_mut(&mut self, index: $index_ty) -> &mut Self::Output {
                 (&mut self.0).index_mut(index)
             }
@@ -1068,11 +1118,13 @@ macro_rules! NewtypeIndexMut {
 macro_rules! NewtypeFrom {
     (() $(pub)* struct $name:ident(pub $t0:ty);) => {
         impl ::std::convert::From<$t0> for $name {
+            #[inline]
             fn from(v: $t0) -> Self {
                 $name(v)
             }
         }
         impl ::std::convert::From<$name> for $t0 {
+            #[inline]
             fn from(v: $name) -> Self {
                 v.0
             }
@@ -1081,11 +1133,13 @@ macro_rules! NewtypeFrom {
 
     (() $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::convert::From<$t0> for $name {
+            #[inline]
             fn from(v: $t0) -> Self {
                 $name(v)
             }
         }
         impl ::std::convert::From<$name> for $t0 {
+            #[inline]
             fn from(v: $name) -> Self {
                 v.0
             }
@@ -1177,6 +1231,7 @@ macro_rules! NewtypeProduct {
 
     (() $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::iter::Product<$name> for $name {
+            #[inline]
             fn product<I>(iter: I) -> Self
             where I: Iterator<Item=$name> {
                 $name(iter.map(|e| e.0).product::<$t0>())
@@ -1186,6 +1241,7 @@ macro_rules! NewtypeProduct {
 
     ((&Self) $(pub)* struct $name:ident($t0:ty);) => {
         impl<'a> ::std::iter::Product<&'a $name> for $name {
+            #[inline]
             fn product<I>(iter: I) -> Self
             where I: Iterator<Item=&'a $name> {
                 $name(iter.map(|e| &e.0).product::<$t0>())
@@ -1203,6 +1259,7 @@ macro_rules! NewtypeSum {
 
     (() $(pub)* struct $name:ident($t0:ty);) => {
         impl ::std::iter::Sum<$name> for $name {
+            #[inline]
             fn sum<I>(iter: I) -> Self
             where I: Iterator<Item=$name> {
                 $name(iter.map(|e| e.0).sum::<$t0>())
@@ -1212,6 +1269,7 @@ macro_rules! NewtypeSum {
 
     ((&Self) $(pub)* struct $name:ident($t0:ty);) => {
         impl<'a> ::std::iter::Sum<&'a $name> for $name {
+            #[inline]
             fn sum<I>(iter: I) -> Self
             where I: Iterator<Item=&'a $name> {
                 $name(iter.map(|e| &e.0).sum::<$t0>())

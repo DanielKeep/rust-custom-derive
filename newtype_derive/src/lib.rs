@@ -12,115 +12,7 @@ This crate provides several macros for deriving implementations of various trait
 
 All of these macros are designed to be used with the [`macro-attr`](https://crates.io/crates/macro-attr) crate, though they can be used independent of it.
 
-# Example
-
-Create a simple integer wrapper with some arithmetic operators:
-
-```rust
-#[macro_use] extern crate macro_attr;
-#[macro_use] extern crate newtype_derive;
-
-macro_attr! {
-    #[derive(NewtypeFrom!, NewtypeAdd!, NewtypeMul!(i32))]
-    pub struct Happy(i32);
-}
-
-# fn main() {
-// Let's add some happy little ints.
-let a = Happy::from(6);
-let b = Happy::from(7);
-let c = (a + b) * 3;
-let d: i32 = c.into();
-assert_eq!(d, 39);
-# }
-```
-
-Create a "deref-transparent" wrapper around a type:
-
-```rust
-#[macro_use] extern crate macro_attr;
-#[macro_use] extern crate newtype_derive;
-
-macro_attr! {
-    #[derive(NewtypeFrom!,
-        NewtypeDeref!, NewtypeDerefMut!,
-        NewtypeIndex!(usize), NewtypeIndexMut!(usize)
-        )]
-    pub struct I32Array(Vec<i32>);
-}
-
-# fn main() {
-let mut arr = I32Array::from(vec![1, 2, 3]);
-arr.push(4);
-arr[2] = 5;
-assert_eq!(&**arr, &[1, 2, 5, 4]);
-assert_eq!(arr.len(), 4);
-# }
-```
-
-# Overview
-
-This crate provides macros to derive implementations of the following traits for newtype structs:
-
-- Binary Arithmetic Operators: Add, BitAnd, BitOr, BitXor, Div, Mul, Rem, Sub, Shl, Shr, plus the corresponding *Assign traits.
-- Unary Arithmetic Operators: Neg, Not.
-- Other Operators: Deref, DerefMut, Index, IndexMut.
-- Formatting: Binary, Debug, Display, LowerExp, LowerHex, Octal, Pointer, UpperExp, UpperHex.
-- Miscellaneous: From.
-- Unstable: One, Product, Sum, Zero (requires the `std-unstable` feature).
-
-All of these macros are named `Newtype$Trait`.
-
-None of these macros currently support generic newtype structs.
-
-## Binary Arithmetic Operators
-
-Each of the binary arithmetic operators accept several deriving forms.  To use `Add` on a struct `T` as an example:
-
-- `NewtypeAdd`: `impl Add<T, Output=T> for T`
-- `NewtypeAdd(&self)`: `impl<'a> Add<&'a T, Output=T> for &'a T`
-- `NewtypeAdd(U)`: `impl Add<U, Output=T> for T`
-- `NewtypeAdd(&self, U)`: `impl<'a> Add<U, Output=T> for &'a T`
-- `NewtypeAdd(*)`: All four combinations of `T` and `&T`
-
-The `*Assign` variants accept zero or one argument only.  For example:
-
-- `NewtypeAddAssign`: `impl AddAssign<T> for T`
-- `NewtypeAddAssign(&Self)`: `impl<'a> Add<&'a T> for &'a T`
-- `NewtypeAddAssign(U)`: `impl Add<U> for T`
-- `NewtypeAddAssign(*)`: Implements for `T` and `&T`.
-
-In all cases, the implementation unwraps the newtype (where necessary), forwards to the wrapped value's implementation, then re-wraps the result in the newtype.
-
-## Unary Arithmetic Operators
-
-Each of the binary arithmetic operators accept several deriving forms.  To use `Neg` on a struct `T` as an example:
-
-- `NewtypeNeg`: `impl Neg<Output=T> for T`
-- `NewtypeNeg(&self)`: `impl<'a> Neg<Output=T> for &'a T`
-- `NewtypeNeg(*)`: both of the above
-
-In all cases, the implementation unwraps the newtype, forwards to the wrapped value's implementation, then re-wraps the result in the newtype.
-
-## Other Operators
-
-`NewtypeDeref` and `NewtypeDerefMut` only support the argument-less form, and implements the corresponding trait such that the newtype structure derefs to a pointer to the wrapped value.
-
-`NewtypeIndex` and `NewtypeIndexMut` must be used as `NewtypeIndex(usize)`, where the argument is the type to use for indexing.  The call is forwarded to the wrapped value's implementation.
-
-## Formatting
-
-The deriving macros for the formatting traits in [`std::fmt`][] forward to the wrapped value's implementation.
-
-[`std::fmt`]: http://doc.rust-lang.org/std/fmt/index.html
-
-## Miscellaneous
-
-`NewtypeFrom` implements `std::convert::From` twice: once for converting from the wrapped type to the newtype, and once for converting from the newtype to the wrapped type.
-
-`NewtypeProduct` and `NewtypeSum` optionally support specifying `&Self` as an argument to generate an implementation that accepts an iterator of borrowed pointers (*e.g.* `NewtypeSum(&Self)`).  These require Rust 1.12 or higher.
-
-## Using Without `macro_attr!`
+# Using Without `macro_attr!`
 
 Although designed to be used with `macro_attr!`, all of the macros in this crate can be used without it.  The following:
 
@@ -147,6 +39,7 @@ NewtypeAdd! { (f32) pub struct Meters(f32); }
 # fn main() {}
 ```
 */
+
 /*
 # `Newtype$binop` Template
 
@@ -602,6 +495,31 @@ macro_rules! newtype_wrap_un_op {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeAdd!)]
+    #[derive(NewtypeAdd!($rhs_ty))]
+    #[derive(NewtypeAdd!(&self))]
+    #[derive(NewtypeAdd!(&self, $rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeAdd!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Add` trait by deferring to the implementation of the inner type.  The first four invocation forms shown above correspond to the following implementations:
+
+- `impl Add<$name, Output=$name> for $name`
+- `impl Add<$rhs_ty, Output=$name> for $name`
+- `impl<'a> Add<&'a $name, Output=$name> for &'a $name`
+- `impl<'a> Add<$rhs_ty, Output=$name> for &'a $name`
+
+The last form expands to all combinations of `$name` and `&$name` as the arguments.
+*/
 // ntbop Add,      add
 #[macro_export]
 macro_rules! NewtypeAdd {
@@ -625,6 +543,29 @@ macro_rules! NewtypeAdd {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeAddAssign!)]
+    #[derive(NewtypeAddAssign!(&Self))]
+    #[derive(NewtypeAddAssign!($rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeAddAssign!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `AddAssign` trait by deferring to the implementation of the inner type.  The first three invocation forms shown above correspond to the following implementations:
+
+- `impl AddAssign<$name> for $name`
+- `impl<'a> AddAssign<&'a $name> for $name`
+- `impl AddAssign<$rhs_ty> for $name`
+
+The last form expands to the first two forms.
+*/
 // ntbopass AddAssign, add_assign
 #[macro_export]
 #[cfg(op_assign)]
@@ -641,6 +582,31 @@ macro_rules! NewtypeAddAssign {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeBitAnd!)]
+    #[derive(NewtypeBitAnd!($rhs_ty))]
+    #[derive(NewtypeBitAnd!(&self))]
+    #[derive(NewtypeBitAnd!(&self, $rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeBitAnd!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `BitAnd` trait by deferring to the implementation of the inner type.  The first four invocation forms shown above correspond to the following implementations:
+
+- `impl BitAnd<$name, Output=$name> for $name`
+- `impl BitAnd<$rhs_ty, Output=$name> for $name`
+- `impl<'a> BitAnd<&'a $name, Output=$name> for &'a $name`
+- `impl<'a> BitAnd<$rhs_ty, Output=$name> for &'a $name`
+
+The last form expands to all combinations of `$name` and `&$name` as the arguments.
+*/
 // ntbop BitAnd,   bitand
 #[macro_export]
 macro_rules! NewtypeBitAnd {
@@ -664,6 +630,29 @@ macro_rules! NewtypeBitAnd {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeBitAndAssign!)]
+    #[derive(NewtypeBitAndAssign!(&Self))]
+    #[derive(NewtypeBitAndAssign!($rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeBitAndAssign!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `BitAndAssign` trait by deferring to the implementation of the inner type.  The first three invocation forms shown above correspond to the following implementations:
+
+- `impl BitAndAssign<$name> for $name`
+- `impl<'a> BitAndAssign<&'a $name> for $name`
+- `impl BitAndAssign<$rhs_ty> for $name`
+
+The last form expands to the first two forms.
+*/
 // ntbopass BitAndAssign, bitand_assign
 #[macro_export]
 #[cfg(op_assign)]
@@ -680,6 +669,31 @@ macro_rules! NewtypeBitAndAssign {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeBitOr!)]
+    #[derive(NewtypeBitOr!($rhs_ty))]
+    #[derive(NewtypeBitOr!(&self))]
+    #[derive(NewtypeBitOr!(&self, $rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeBitOr!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `BitOr` trait by deferring to the implementation of the inner type.  The first four invocation forms shown above correspond to the following implementations:
+
+- `impl BitOr<$name, Output=$name> for $name`
+- `impl BitOr<$rhs_ty, Output=$name> for $name`
+- `impl<'a> BitOr<&'a $name, Output=$name> for &'a $name`
+- `impl<'a> BitOr<$rhs_ty, Output=$name> for &'a $name`
+
+The last form expands to all combinations of `$name` and `&$name` as the arguments.
+*/
 // ntbop BitOr,    bitor
 #[macro_export]
 macro_rules! NewtypeBitOr {
@@ -703,6 +717,29 @@ macro_rules! NewtypeBitOr {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeBitOrAssign!)]
+    #[derive(NewtypeBitOrAssign!(&Self))]
+    #[derive(NewtypeBitOrAssign!($rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeBitOrAssign!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `BitOrAssign` trait by deferring to the implementation of the inner type.  The first three invocation forms shown above correspond to the following implementations:
+
+- `impl BitOrAssign<$name> for $name`
+- `impl<'a> BitOrAssign<&'a $name> for $name`
+- `impl BitOrAssign<$rhs_ty> for $name`
+
+The last form expands to the first two forms.
+*/
 // ntbopass BitOrAssign, bitor_assign
 #[macro_export]
 #[cfg(op_assign)]
@@ -719,6 +756,31 @@ macro_rules! NewtypeBitOrAssign {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeBitXor!)]
+    #[derive(NewtypeBitXor!($rhs_ty))]
+    #[derive(NewtypeBitXor!(&self))]
+    #[derive(NewtypeBitXor!(&self, $rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeBitXor!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `BitXor` trait by deferring to the implementation of the inner type.  The first four invocation forms shown above correspond to the following implementations:
+
+- `impl BitXor<$name, Output=$name> for $name`
+- `impl BitXor<$rhs_ty, Output=$name> for $name`
+- `impl<'a> BitXor<&'a $name, Output=$name> for &'a $name`
+- `impl<'a> BitXor<$rhs_ty, Output=$name> for &'a $name`
+
+The last form expands to all combinations of `$name` and `&$name` as the arguments.
+*/
 // ntbop BitXor,   bitxor
 #[macro_export]
 macro_rules! NewtypeBitXor {
@@ -742,6 +804,29 @@ macro_rules! NewtypeBitXor {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeBitXorAssign!)]
+    #[derive(NewtypeBitXorAssign!(&Self))]
+    #[derive(NewtypeBitXorAssign!($rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeBitXorAssign!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `BitXorAssign` trait by deferring to the implementation of the inner type.  The first three invocation forms shown above correspond to the following implementations:
+
+- `impl BitXorAssign<$name> for $name`
+- `impl<'a> BitXorAssign<&'a $name> for $name`
+- `impl BitXorAssign<$rhs_ty> for $name`
+
+The last form expands to the first two forms.
+*/
 // ntbopass BitXorAssign, bitxor_assign
 #[macro_export]
 #[cfg(op_assign)]
@@ -758,6 +843,31 @@ macro_rules! NewtypeBitXorAssign {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeDiv!)]
+    #[derive(NewtypeDiv!($rhs_ty))]
+    #[derive(NewtypeDiv!(&self))]
+    #[derive(NewtypeDiv!(&self, $rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeDiv!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Div` trait by deferring to the implementation of the inner type.  The first four invocation forms shown above correspond to the following implementations:
+
+- `impl Div<$name, Output=$name> for $name`
+- `impl Div<$rhs_ty, Output=$name> for $name`
+- `impl<'a> Div<&'a $name, Output=$name> for &'a $name`
+- `impl<'a> Div<$rhs_ty, Output=$name> for &'a $name`
+
+The last form expands to all combinations of `$name` and `&$name` as the arguments.
+*/
 // ntbop Div,      div
 #[macro_export]
 macro_rules! NewtypeDiv {
@@ -781,6 +891,29 @@ macro_rules! NewtypeDiv {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeDivAssign!)]
+    #[derive(NewtypeDivAssign!(&Self))]
+    #[derive(NewtypeDivAssign!($rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeDivAssign!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `DivAssign` trait by deferring to the implementation of the inner type.  The first three invocation forms shown above correspond to the following implementations:
+
+- `impl DivAssign<$name> for $name`
+- `impl<'a> DivAssign<&'a $name> for $name`
+- `impl DivAssign<$rhs_ty> for $name`
+
+The last form expands to the first two forms.
+*/
 // ntbopass DivAssign, div_assign
 #[macro_export]
 #[cfg(op_assign)]
@@ -797,6 +930,31 @@ macro_rules! NewtypeDivAssign {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeMul!)]
+    #[derive(NewtypeMul!($rhs_ty))]
+    #[derive(NewtypeMul!(&self))]
+    #[derive(NewtypeMul!(&self, $rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeMul!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Mul` trait by deferring to the implementation of the inner type.  The first four invocation forms shown above correspond to the following implementations:
+
+- `impl Mul<$name, Output=$name> for $name`
+- `impl Mul<$rhs_ty, Output=$name> for $name`
+- `impl<'a> Mul<&'a $name, Output=$name> for &'a $name`
+- `impl<'a> Mul<$rhs_ty, Output=$name> for &'a $name`
+
+The last form expands to all combinations of `$name` and `&$name` as the arguments.
+*/
 // ntbop Mul,      mul
 #[macro_export]
 macro_rules! NewtypeMul {
@@ -820,6 +978,29 @@ macro_rules! NewtypeMul {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeMulAssign!)]
+    #[derive(NewtypeMulAssign!(&Self))]
+    #[derive(NewtypeMulAssign!($rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeMulAssign!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `MulAssign` trait by deferring to the implementation of the inner type.  The first three invocation forms shown above correspond to the following implementations:
+
+- `impl MulAssign<$name> for $name`
+- `impl<'a> MulAssign<&'a $name> for $name`
+- `impl MulAssign<$rhs_ty> for $name`
+
+The last form expands to the first two forms.
+*/
 // ntbopass MulAssign, mul_assign
 #[macro_export]
 #[cfg(op_assign)]
@@ -836,6 +1017,31 @@ macro_rules! NewtypeMulAssign {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeRem!)]
+    #[derive(NewtypeRem!($rhs_ty))]
+    #[derive(NewtypeRem!(&self))]
+    #[derive(NewtypeRem!(&self, $rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeRem!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Rem` trait by deferring to the implementation of the inner type.  The first four invocation forms shown above correspond to the following implementations:
+
+- `impl Rem<$name, Output=$name> for $name`
+- `impl Rem<$rhs_ty, Output=$name> for $name`
+- `impl<'a> Rem<&'a $name, Output=$name> for &'a $name`
+- `impl<'a> Rem<$rhs_ty, Output=$name> for &'a $name`
+
+The last form expands to all combinations of `$name` and `&$name` as the arguments.
+*/
 // ntbop Rem,      rem
 #[macro_export]
 macro_rules! NewtypeRem {
@@ -859,6 +1065,29 @@ macro_rules! NewtypeRem {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeRemAssign!)]
+    #[derive(NewtypeRemAssign!(&Self))]
+    #[derive(NewtypeRemAssign!($rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeRemAssign!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `RemAssign` trait by deferring to the implementation of the inner type.  The first three invocation forms shown above correspond to the following implementations:
+
+- `impl RemAssign<$name> for $name`
+- `impl<'a> RemAssign<&'a $name> for $name`
+- `impl RemAssign<$rhs_ty> for $name`
+
+The last form expands to the first two forms.
+*/
 // ntbopass RemAssign, rem_assign
 #[macro_export]
 #[cfg(op_assign)]
@@ -875,6 +1104,31 @@ macro_rules! NewtypeRemAssign {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeSub!)]
+    #[derive(NewtypeSub!($rhs_ty))]
+    #[derive(NewtypeSub!(&self))]
+    #[derive(NewtypeSub!(&self, $rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeSub!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Sub` trait by deferring to the implementation of the inner type.  The first four invocation forms shown above correspond to the following implementations:
+
+- `impl Sub<$name, Output=$name> for $name`
+- `impl Sub<$rhs_ty, Output=$name> for $name`
+- `impl<'a> Sub<&'a $name, Output=$name> for &'a $name`
+- `impl<'a> Sub<$rhs_ty, Output=$name> for &'a $name`
+
+The last form expands to all combinations of `$name` and `&$name` as the arguments.
+*/
 // ntbop Sub,      sub
 #[macro_export]
 macro_rules! NewtypeSub {
@@ -898,6 +1152,29 @@ macro_rules! NewtypeSub {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeSubAssign!)]
+    #[derive(NewtypeSubAssign!(&Self))]
+    #[derive(NewtypeSubAssign!($rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeSubAssign!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `SubAssign` trait by deferring to the implementation of the inner type.  The first three invocation forms shown above correspond to the following implementations:
+
+- `impl SubAssign<$name> for $name`
+- `impl<'a> SubAssign<&'a $name> for $name`
+- `impl SubAssign<$rhs_ty> for $name`
+
+The last form expands to the first two forms.
+*/
 // ntbopass SubAssign, sub_assign
 #[macro_export]
 #[cfg(op_assign)]
@@ -914,6 +1191,31 @@ macro_rules! NewtypeSubAssign {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeShl!)]
+    #[derive(NewtypeShl!($rhs_ty))]
+    #[derive(NewtypeShl!(&self))]
+    #[derive(NewtypeShl!(&self, $rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeShl!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Shl` trait by deferring to the implementation of the inner type.  The first four invocation forms shown above correspond to the following implementations:
+
+- `impl Shl<$name, Output=$name> for $name`
+- `impl Shl<$rhs_ty, Output=$name> for $name`
+- `impl<'a> Shl<&'a $name, Output=$name> for &'a $name`
+- `impl<'a> Shl<$rhs_ty, Output=$name> for &'a $name`
+
+The last form expands to all combinations of `$name` and `&$name` as the arguments.
+*/
 // ntbop Shl,      shl
 #[macro_export]
 macro_rules! NewtypeShl {
@@ -937,6 +1239,29 @@ macro_rules! NewtypeShl {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeShlAssign!)]
+    #[derive(NewtypeShlAssign!(&Self))]
+    #[derive(NewtypeShlAssign!($rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeShlAssign!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `ShlAssign` trait by deferring to the implementation of the inner type.  The first three invocation forms shown above correspond to the following implementations:
+
+- `impl ShlAssign<$name> for $name`
+- `impl<'a> ShlAssign<&'a $name> for $name`
+- `impl ShlAssign<$rhs_ty> for $name`
+
+The last form expands to the first two forms.
+*/
 // ntbopass ShlAssign, shl_assign
 #[macro_export]
 #[cfg(op_assign)]
@@ -953,6 +1278,31 @@ macro_rules! NewtypeShlAssign {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeShr!)]
+    #[derive(NewtypeShr!($rhs_ty))]
+    #[derive(NewtypeShr!(&self))]
+    #[derive(NewtypeShr!(&self, $rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeShr!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Shr` trait by deferring to the implementation of the inner type.  The first four invocation forms shown above correspond to the following implementations:
+
+- `impl Shr<$name, Output=$name> for $name`
+- `impl Shr<$rhs_ty, Output=$name> for $name`
+- `impl<'a> Shr<&'a $name, Output=$name> for &'a $name`
+- `impl<'a> Shr<$rhs_ty, Output=$name> for &'a $name`
+
+The last form expands to all combinations of `$name` and `&$name` as the arguments.
+*/
 // ntbop Shr,      shr
 #[macro_export]
 macro_rules! NewtypeShr {
@@ -976,6 +1326,29 @@ macro_rules! NewtypeShr {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeShrAssign!)]
+    #[derive(NewtypeShrAssign!(&Self))]
+    #[derive(NewtypeShrAssign!($rhs_ty))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeShrAssign!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `ShrAssign` trait by deferring to the implementation of the inner type.  The first three invocation forms shown above correspond to the following implementations:
+
+- `impl ShrAssign<$name> for $name`
+- `impl<'a> ShrAssign<&'a $name> for $name`
+- `impl ShrAssign<$rhs_ty> for $name`
+
+The last form expands to the first two forms.
+*/
 // ntbopass ShrAssign, shr_assign
 #[macro_export]
 #[cfg(op_assign)]
@@ -992,6 +1365,27 @@ macro_rules! NewtypeShrAssign {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeNeg!)]
+    #[derive(NewtypeNeg!(&self))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeNeg!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Neg` trait by deferring to the implementation of the inner type.  The first two invocation forms shown above correspond to the following implementations:
+
+- `impl Neg<Output=$name> for $name`
+- `impl<'a> Neg<Output=$name> for &'a $name`
+
+The last form expands to the first two forms.
+*/
 // ntuop Neg,      neg
 #[macro_export]
 macro_rules! NewtypeNeg {
@@ -1007,6 +1401,27 @@ macro_rules! NewtypeNeg {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeNot!)]
+    #[derive(NewtypeNot!(&self))]
+    struct $name($inner_ty);
+}
+// or:
+macro_attr! {
+    #[derive(NewtypeNot!(*))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Not` trait by deferring to the implementation of the inner type.  The first two invocation forms shown above correspond to the following implementations:
+
+- `impl Not<Output=$name> for $name`
+- `impl<'a> Not<Output=$name> for &'a $name`
+
+The last form expands to the first two forms.
+*/
 // ntuop Not,      not
 #[macro_export]
 macro_rules! NewtypeNot {
@@ -1022,6 +1437,17 @@ macro_rules! NewtypeNot {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeDeref!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Deref` trait by deferring to the implementation of the inner type.
+*/
+// ntf Deref
 #[macro_export]
 macro_rules! NewtypeDeref {
     (() $(pub)* struct $name:ident(pub $t0:ty);) => {
@@ -1047,6 +1473,17 @@ macro_rules! NewtypeDeref {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeDerefMut!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `DerefMut` trait by deferring to the implementation of the inner type.
+*/
+// ntf DerefMut
 #[macro_export]
 macro_rules! NewtypeDerefMut {
     (() $(pub)* struct $name:ident(pub $t0:ty);) => {
@@ -1068,6 +1505,17 @@ macro_rules! NewtypeDerefMut {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeIndex!($index_ty))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Index<$index_ty>` trait by deferring to the implementation of the inner type.
+*/
+// nti Index
 #[macro_export]
 macro_rules! NewtypeIndex {
     (($index_ty:ty) $(pub)* struct $name:ident(pub $t0:ty);) => {
@@ -1093,6 +1541,17 @@ macro_rules! NewtypeIndex {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeIndexMut!($index_ty))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `IndexMut<$index_ty>` trait by deferring to the implementation of the inner type.
+*/
+// nti IndexMut
 #[macro_export]
 macro_rules! NewtypeIndexMut {
     (($index_ty:ty) $(pub)* struct $name:ident(pub $t0:ty);) => {
@@ -1114,6 +1573,22 @@ macro_rules! NewtypeIndexMut {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeFrom!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives two implementations of the `From` trait.  Specifically, it derives:
+
+- `impl From<$inner_ty> for $name`
+- `impl From<$name> for $inner_ty`
+
+This enables packing/unpacking the newtype structure with `From` and `Into`.
+*/
+// ntX From
 #[macro_export]
 macro_rules! NewtypeFrom {
     (() $(pub)* struct $name:ident(pub $t0:ty);) => {
@@ -1159,6 +1634,17 @@ macro_rules! newtype_fmt {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeBinary!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Binary` trait by deferring to the implementation of the inner type.
+*/
+// ntf Binary
 #[macro_export]
 macro_rules! NewtypeBinary {
     (() $(pub)* struct $name:ident $_field:tt;) => {
@@ -1166,6 +1652,17 @@ macro_rules! NewtypeBinary {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeDebug!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Debug` trait by deferring to the implementation of the inner type.
+*/
+// ntf Debug
 #[macro_export]
 macro_rules! NewtypeDebug {
     (() $(pub)* struct $name:ident $_field:tt;) => {
@@ -1173,6 +1670,17 @@ macro_rules! NewtypeDebug {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeDisplay!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Display` trait by deferring to the implementation of the inner type.
+*/
+// ntf Display
 #[macro_export]
 macro_rules! NewtypeDisplay {
     (() $(pub)* struct $name:ident $_field:tt;) => {
@@ -1180,6 +1688,17 @@ macro_rules! NewtypeDisplay {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeLowerExp!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `LowerExp` trait by deferring to the implementation of the inner type.
+*/
+// ntf LowerExp
 #[macro_export]
 macro_rules! NewtypeLowerExp {
     (() $(pub)* struct $name:ident $_field:tt;) => {
@@ -1187,6 +1706,17 @@ macro_rules! NewtypeLowerExp {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeLowerHex!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `LowerHex` trait by deferring to the implementation of the inner type.
+*/
+// ntf LowerHex
 #[macro_export]
 macro_rules! NewtypeLowerHex {
     (() $(pub)* struct $name:ident $_field:tt;) => {
@@ -1194,6 +1724,17 @@ macro_rules! NewtypeLowerHex {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeOctal!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Octal` trait by deferring to the implementation of the inner type.
+*/
+// ntf Octal
 #[macro_export]
 macro_rules! NewtypeOctal {
     (() $(pub)* struct $name:ident $_field:tt;) => {
@@ -1201,6 +1742,17 @@ macro_rules! NewtypeOctal {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypePointer!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Pointer` trait by deferring to the implementation of the inner type.
+*/
+// ntf Pointer
 #[macro_export]
 macro_rules! NewtypePointer {
     (() $(pub)* struct $name:ident $_field:tt;) => {
@@ -1208,6 +1760,17 @@ macro_rules! NewtypePointer {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeUpperExp!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `UpperExp` trait by deferring to the implementation of the inner type.
+*/
+// ntf UpperExp
 #[macro_export]
 macro_rules! NewtypeUpperExp {
     (() $(pub)* struct $name:ident $_field:tt;) => {
@@ -1215,6 +1778,17 @@ macro_rules! NewtypeUpperExp {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeUpperHex!)]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `UpperHex` trait by deferring to the implementation of the inner type.
+*/
+// ntf UpperHex
 #[macro_export]
 macro_rules! NewtypeUpperHex {
     (() $(pub)* struct $name:ident $_field:tt;) => {
@@ -1222,6 +1796,21 @@ macro_rules! NewtypeUpperHex {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeProduct!)]
+    #[derive(NewtypeProduct!(&Self))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Product` trait by deferring to the implementation of the inner type.  The two invocation forms shown above correspond to the following implementations:
+
+- `impl Product<$name> for $name`
+- `impl<'a> Product<&'a $name> for $name`
+*/
+// ntiter (w+)
 #[cfg(iter_sum_product)]
 #[macro_export]
 macro_rules! NewtypeProduct {
@@ -1250,6 +1839,21 @@ macro_rules! NewtypeProduct {
     };
 }
 
+/**
+```ignore
+macro_attr! {
+    #[derive(NewtypeSum!)]
+    #[derive(NewtypeSum!(&Self))]
+    struct $name($inner_ty);
+}
+```
+
+Derives an implementation of the `Sum` trait by deferring to the implementation of the inner type.  The two invocation forms shown above correspond to the following implementations:
+
+- `impl Sum<$name> for $name`
+- `impl<'a> Sum<&'a $name> for $name`
+*/
+// ntiter (w+)
 #[cfg(iter_sum_product)]
 #[macro_export]
 macro_rules! NewtypeSum {

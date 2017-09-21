@@ -1,5 +1,5 @@
 /*
-Copyright ⓒ 2016 macro-attr contributors.
+Copyright ⓒ 2016, 2017 macro-attr contributors.
 
 Licensed under the MIT license (see LICENSE or <http://opensource.org
 /licenses/MIT>) or the Apache License, Version 2.0 (see LICENSE of
@@ -8,7 +8,9 @@ files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
 /*!
-This crate provides the `macro_attr!` macro that enables the use of custom, macro-based attributes and derivations.  Supercedes the `custom_derive` crate.
+This crate provides the `macro_attr!` macro that enables the use of custom, macro-based attributes and derivations.  `macro_attr!` can be used even on very old versions of Rust (making code more compatible), and supports features still missing from procedural macros (such as arguments to derivations, and mutating attributes).
+
+Supersedes the `custom_derive` crate.
 
 <style type="text/css">
 .link-block { font-family: "Fira Sans"; }
@@ -36,6 +38,13 @@ This crate provides the `macro_attr!` macro that enables the use of custom, macr
 ## Compatibility
 
 `macro-attr` is compatible with Rust 1.2 and higher.
+
+## Features
+
+This crate supports the following Cargo features:
+
+- `std` (default) - if disabled, removes dependency on the standard library.
+- `use-proc-macros` - see the section in the [`guide`](guide/index.html#the-use-proc-macros-feature).
 
 ## Quick Example
 
@@ -121,123 +130,43 @@ fn main() {
     assert_eq!(msg, "Bar: B (1)");
 }
 ```
+
+For more information, see the documentation of the [`guide`](guide/index.html) module.
 */
 #![cfg_attr(not(feature = "std"), no_std)]
 
+pub mod guide;
+
 /**
-When given an item definition, including its attributes, this macro parses said attributes and dispatches any attributes or derivations suffixed with `!` to user-defined macros.  This allows multiple macros to process the same item.
+Parses an item definition, stripping and interpreting macro-backed attributes.
 
-This is similar to, but distinct from, the function of "procedural" macros and compiler plugins.
+For a more in-depth guide to using this macro, and how to write compatible macros, see the documentation of the [`guide`](guide/index.html) module.
 
-# Supported Forms
-
-In particular, this macro looks for two kinds of syntax:
-
-- Derivations such as the `Name` in `#[derive(Name!)]` or `#[derive(Name!(...))]`.
-- Top-level attributes written as `#[name!]` or `#![name!(...)]`.
-
-Unlike "real" attributes, optional parenthesised arguments after the `!` are allowed to be entirely arbitrary token trees, meaning they can effectively contain any token sequence.  These are supported to allow custom attribute macros to easily take arguments.
-
-Derivations parse the item and emit whatever additional definitions needed.  They *cannot* change the item itself, and do not receive any other attributes attached to the item.
-
-Attributes receive *everything* lexically *after* themselves, and must re-emit the item.  This allows attributes to make changes to the item, drop or alter other attributes, *etc.*.  This power makes writing attribute macros more difficult, however.
-
-# Macro Derivations
-
-Given the following input:
+# Invocation
 
 ```ignore
-#[derive(Copy, Name!(args...), Clone, Another!, Debug)]
-struct Foo;
-```
-
-`macro_attr!` will expand to the equivalent of:
-
-```ignore
-#[derive(Copy, Clone, Debug)]
-struct Foo;
-
-Name!((args...) struct Foo;);
-Another!(() struct Foo;);
-```
-
-Note that macro derives may be mixed with regular derives, or put in their own `#[derive(...)]` attribute.  Also note that macro derive invocations are *not* passed the other attributes on the item; input will consist of the arguments provided to the derivation (*i.e.* `(args...)` in this example), the item's visibility (if any), and the item definition itself.
-
-A macro derivation invoked *without* arguments will be treated as though it was invoked with empty parentheses.  *i.e.* `#[derive(Name!)]` is equivalent to `#[derive(Name!())]`.
-
-A derivation macro may expand to any number of new items derived from the provided input.  There is no way for a derivation macro to alter the item itself (for that, use a macro attribute).
-
-# Macro Attributes
-
-When `macro_attr!` encounters an attribute suffixed with a `!` (*e.g.* `#[name!(args...)]`), it invokes the macro `name!` with everything lexically *after* that attribute.  A macro attribute is free to add to, remove from, or alter the provided input as it sees fit, before instructing `macro_attr!` to resume parsing.
-
-For example, given the following input:
-
-```ignore
-#[make_unitary!]
-#[repr(C)]
-#[rename_to!(Quux)]
-#[doc="Test."]
-struct Bar { field: i32 }
-```
-
-`macro_attr!` will expand to:
-
-```ignore
-make_unitary! {
-    (), then $resume,
-    #[repr(C)]
-    #[rename_to!(Quux)]
-    #[doc="Test."]
-    struct Bar { field: i32 };
+macro_attr! {
+    $attributes
+    $item
 }
 ```
 
-Note that `$resume` is **not** literal.  When implementing an attribute macro, you should accept this part as `$resume:tt`, and not attempt to inspect or deconstruct the contents.
+Note: only a single item is supported per invocation.
 
-Assuming `make_unitary!` removes the body of the `struct` it is attached to, `macro_attr!` *requires* that it expand to:
+`macro_attr!` recognises and will process the following non-standard attribute forms:
 
-```ignore
-macro_attr_callback! {
-    $resume,
-    #[repr(C)]
-    #[rename_to!(Quxx)]
-    #[doc="Test."]
-    struct Bar;
-}
-```
+- `#[derive(Name!)]`
+- `#[derive(Name!(...))]`
+- `#[name!]`
+- `#[name!(...)]`
 
-`macro_attr!` will then resume parsing, and expand to:
+The following are for `macro_rules!`/procedural macros compatibility (see the [`guide`](guide/index.html#the-use-proc-macros-feature)):
 
-```ignore
-rename_to! {
-    (Quxx), then $resume,
-    #[doc="Test."]
-    struct Bar;
-}
-```
+- `#[derive(Name~!)]`
+- `#[name~!]`
+- `#[name~!(...)]`
 
-Assuming `rename_to!` does the obvious thing and changes the name of the item it is attached to, it should expand to:
-
-```ignore
-macro_attr_callback! {
-    $resume,
-    #[doc="Test."]
-    struct Quxx;
-}
-```
-
-Once more, `macro_attr!` will resume, and produce the final expansion of:
-
-```ignore
-#[repr(C)]
-#[doc="Test."]
-struct Quxx;
-```
-
-Note that normal attributes are automatically carried through and re-attached to the item.
-
-Macro attributes should be used as sparingly as possible: due to the way Rust macros work, they must expand recursively in sequence, which can quickly consume the available macro recursion limit.  This limit can be raised, but it makes for a less-than-ideal user experience if you are authoring macros to be used by others.
+Note that macro derivations may be mixed with non-macro derivations freely.
 */
 #[macro_export]
 macro_rules! macro_attr {
@@ -934,31 +863,35 @@ macro_rules! macro_attr_impl {
 /**
 This macro invokes a "callback" macro, merging arguments together.
 
-It takes an arbitrary macro call `(name!(args...))`, plus some sequence of `new_args...`, and expands `name!(args... new_args...)`.
+Given an invocation of:
+
+It takes an arbitrary macro call `(cb!(cb_args...))`, plus some sequence of `args...`, and expands `cb!(cb_args... args...)`.
 
 Importantly, it works irrespective of the kind of grouping syntax used for the macro arguments, simplifying macros which need to *capture* callbacks.
+
+This is also the supported mechanism for continuing a `macro_attr!` expansion from a macro attribute implementation (see the [`guide`](guide/index.html#the-use-proc-macros-feature)).
 */
 #[macro_export]
 macro_rules! macro_attr_callback {
     (
-        ($cb:ident ! { $($cb_fixed:tt)* }),
+        ($cb:ident ! { $($cb_args:tt)* }),
         $($args:tt)*
     ) => {
-        $cb! { $($cb_fixed)* $($args)* }
+        $cb! { $($cb_args)* $($args)* }
     };
 
     (
-        ($cb:ident ! [ $($cb_fixed:tt)* ]),
+        ($cb:ident ! [ $($cb_args:tt)* ]),
         $($args:tt)*
     ) => {
-        $cb! [ $($cb_fixed)* $($args)* ]
+        $cb! [ $($cb_args)* $($args)* ]
     };
 
     (
-        ($cb:ident ! ( $($cb_fixed:tt)* )),
+        ($cb:ident ! ( $($cb_args:tt)* )),
         $($args:tt)*
     ) => {
-        $cb! ( $($cb_fixed)* $($args)* )
+        $cb! ( $($cb_args)* $($args)* )
     };
 }
 

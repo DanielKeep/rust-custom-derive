@@ -1,6 +1,8 @@
 # `macro-attr`
 
-This crate provides the `macro_attr!` macro that enables the use of custom, macro-based attributes and derivations.  Supercedes the `custom_derive` crate.
+This crate provides the `macro_attr!` macro that enables the use of custom, macro-based attributes and derivations.  `macro_attr!` can be used even on very old versions of Rust (making code more compatible), and supports features still missing from procedural macros (such as arguments to derivations, and mutating attributes).
+
+Supersedes the `custom_derive` crate.
 
 **Links**
 

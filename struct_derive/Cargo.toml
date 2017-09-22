@@ -1,0 +1,20 @@
+[package]
+name = "struct-derive"
+version = "0.1.8"
+authors = ["Daniel Keep <daniel.keep@gmail.com>"]
+
+description = "This crate provides macros for deriving common traits for structures."
+repository = "https://github.com/DanielKeep/rust-custom-derive"
+documentation = "https://docs.rs/crate/struct-derive/"
+license = "MIT/Apache-2.0"
+keywords = ["struct", "derive", "wrapper", "custom_derive", "macro-attr", "macro"]
+
+[features]
+default = ["std"]
+std = ["macro-attr/std"]
+
+[build-dependencies]
+rustc_version = "0.1.7"
+
+[dev-dependencies]
+macro-attr = { version = "0.2.1", path = ".." }

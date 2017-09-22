@@ -25,6 +25,7 @@ exclude = [
 members = [
     "enum_derive",
     "newtype_derive",
+    "struct_derive",
     "tests/derive-name-macro",
     "tests/derive-name-proc",
     "tests/derive-name-test",

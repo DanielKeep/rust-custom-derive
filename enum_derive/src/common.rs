@@ -7,7 +7,7 @@ Licensed under the MIT license (see LICENSE or <http://opensource.org
 files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
-#[doc(hidden)
+#[doc(hidden)]
 #[macro_export]
 macro_rules! enum_derive_util {
     (@as_expr $e:expr) => {$e};

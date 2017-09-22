@@ -10,8 +10,8 @@ or distributed except according to those terms.
 /**
 ```ignore
 macro_attr! {
-    #[derive(EnumTag!($fn_name -> #[derive(Debug)] $kind_ty))]
-    #[derive(EnumTag!(pub $fn_name -> $kind_ty))]
+    #[derive(EnumTag!(fn $fn_name -> #[derive(Debug)] enum $kind_ty))]
+    #[derive(EnumTag!(pub fn $fn_name -> enum $kind_ty))]
     enum $name { ... }
 }
 ```
@@ -24,7 +24,7 @@ Note that macro attributes are not supported on the tag enumeration.
 # #[macro_use] extern crate macro_attr;
 # #[macro_use] extern crate enum_derive;
 macro_attr! {
-    #[derive(EnumTag!(pub tag -> #[derive(Debug, PartialEq)] ComestiblesTag))]
+    #[derive(EnumTag!(pub fn tag -> #[derive(Debug, PartialEq)] enum ComestiblesTag))]
     enum Comestibles { Egg(i32), Sausage(i32), Bacon(i32), Spam(i32) }
 }
 
@@ -63,7 +63,7 @@ macro_rules! EnumTag {
     };
 
     (
-        (pub $fn_name:ident -> $(#[$($attrs:tt)*])* $tag_ty:ident)
+        (pub fn $fn_name:ident -> $(#[$($attrs:tt)*])* enum $tag_ty:ident)
         $(pub)* enum $name:ident { $($body:tt)* }
     ) => {
         enum_derive_util! {
@@ -74,12 +74,12 @@ macro_rules! EnumTag {
     };
 
     (
-        ($fn_name:ident -> $tag_ty:ident)
+        (fn $fn_name:ident -> $(#[$($attrs:tt)*])* enum $tag_ty:ident)
         $(pub)* enum $name:ident { $($body:tt)* }
     ) => {
         enum_derive_util! {
             @collect_variant_names
-            (EnumTag { @expand (), $name, $fn_name, {}, $tag_ty, }),
+            (EnumTag { @expand (), $name, $fn_name, {$(#[$($attrs)*])*}, $tag_ty, }),
             ($($body)*,) -> ()
         }
     };

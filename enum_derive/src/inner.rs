@@ -80,6 +80,7 @@ Derives a method to return a borrowed pointer to the payload value, cast to a tr
 ```rust
 # #[macro_use] extern crate macro_attr;
 # #[macro_use] extern crate enum_derive;
+# #[cfg(op_assign)] mod test {
 use std::fmt::Display;
 use std::ops::AddAssign;
 macro_attr! {
@@ -88,11 +89,14 @@ macro_attr! {
     enum Comestibles { Egg(i32), Sausage(i32), Bacon(i32), Spam(i32) }
 }
 
-# fn main() {
+# pub fn run_test() {
 let mut breakfast = Comestibles::Spam(109);
 breakfast.as_add_assign().add_assign(23);
 assert_eq!(format!("{}", breakfast.as_display()), "132");
 # }
+# }
+# #[cfg(not(op_assign))] mod test { pub fn run_test() {} }
+# fn main() { test::run_test() }
 ```
 */
 #[macro_export]

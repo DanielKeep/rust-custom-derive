@@ -20,6 +20,8 @@ macro_attr! {
 
 Derives a `$name::iter_variants() -> $itername` method.  The generated `$itername` type implements `Iterator<Item=$name>`, and yields each of the enumeration's variants.  This can only be used on an enum comprised on unitary variants.
 
+It also derives an implementation of the `IterVariants` trait.
+
 # Example
 
 ```rust
@@ -32,8 +34,11 @@ macro_attr! {
 }
 
 # fn main() {
+use enum_derive::iter_variants::IterVariants;
+
 let names: Vec<Cheese> = Cheese::iter_variants().collect();
 assert_eq!(names, vec![Cheese::RedLeicester, Cheese::Tilsit, Cheese::Stilton]);
+assert_eq!(<Cheese as IterVariants>::variants().next(), Some(Cheese::RedLeicester));
 # }
 ```
 */
@@ -70,6 +75,15 @@ macro_rules! IterVariants {
                 }
             }
         }
+
+        impl $crate::iter_variants::IterVariants for $name {
+            type Iter = $itername;
+
+            #[inline]
+            fn variants() -> Self::Iter {
+                $name::iter_variants()
+            }
+        }
     };
 
     (
@@ -87,6 +101,15 @@ macro_rules! IterVariants {
                 $($pub_)* fn iter_variants() -> $itername {
                     $itername(::std::option::Option::Some(enum_derive_util!(@first_expr $($name::$var_names),+)))
                 }
+            }
+        }
+
+        impl $crate::iter_variants::IterVariants for $name {
+            type Iter = $itername;
+
+            #[inline]
+            fn variants() -> Self::Iter {
+                $name::iter_variants()
             }
         }
     };
@@ -187,6 +210,8 @@ macro_attr! {
 
 Derives a `$name::iter_variant_names() -> $itername` method.  The generated `$itername` type implements `Iterator<Item=&'static str>`, and yields the name of each of the enumeration's variants.  This can only be used on an enum comprised on unitary variants.
 
+It also derives an implementation of the `IterVariantNames` trait.
+
 # Example
 
 ```rust
@@ -198,8 +223,11 @@ macro_attr! {
 }
 
 # fn main() {
+use enum_derive::iter_variants::IterVariantNames;
+
 let names: Vec<&str> = Currency::iter_variant_names().collect();
 assert_eq!(names, vec!["Pounds", "FrenchFranks", "Lira", "DeutscheMark"]);
+assert_eq!(<Currency as IterVariantNames>::variant_names().next(), Some("Pounds"));
 # }
 ```
 */
@@ -236,6 +264,15 @@ macro_rules! IterVariantNames {
                 }
             }
         }
+
+        impl $crate::iter_variants::IterVariantNames for $name {
+            type Iter = $itername;
+
+            #[inline]
+            fn variant_names() -> Self::Iter {
+                $name::iter_variant_names()
+            }
+        }
     };
 
     (
@@ -253,6 +290,15 @@ macro_rules! IterVariantNames {
                 $($pub_)* fn iter_variant_names() -> $itername {
                     $itername(::std::option::Option::Some(enum_derive_util!(@first_expr $($name::$var_names),+)))
                 }
+            }
+        }
+
+        impl $crate::iter_variants::IterVariantNames for $name {
+            type Iter = $itername;
+
+            #[inline]
+            fn variant_names() -> Self::Iter {
+                $name::iter_variant_names()
             }
         }
     };
@@ -341,4 +387,14 @@ macro_rules! IterVariantNames {
             ($($body)*,) -> ()
         }
     };
+}
+
+pub trait IterVariants: Sized {
+    type Iter: Iterator<Item=Self>;
+    fn variants() -> Self::Iter;
+}
+
+pub trait IterVariantNames {
+    type Iter: Iterator<Item=&'static str>;
+    fn variant_names() -> Self::Iter;
 }

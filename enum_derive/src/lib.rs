@@ -48,7 +48,7 @@ IterVariants! { (Vars) enum ItAintRight { BabeNo, NoNo, BoyBoy } }
 #[macro_use] mod fmt;
 #[macro_use] mod from_str;
 #[macro_use] mod inner;
-#[macro_use] mod iter_variants;
+#[macro_use] pub mod iter_variants;
 #[macro_use] mod step_variants;
 #[macro_use] mod tag;
 

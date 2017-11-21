@@ -116,7 +116,7 @@ macro_rules! StableEncodable {
 
     (
         @extract_gen_args $fixed:tt,
-        ($ty_name:ident: $($tail)*)
+        ($ty_name:ident: $($tail:tt)*)
         -> bounds($($bounds:tt)*), ty_clss($($ty_clss:tt)*)
     ) => {
         StableEncodable! {

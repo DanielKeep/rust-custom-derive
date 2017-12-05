@@ -8,12 +8,12 @@ files in the project carrying such notice may not be copied, modified,
 or distributed except according to those terms.
 */
 extern crate rustc_version;
-use rustc_version::{version_matches};
+use rustc_version::{version, Version};
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
 
-    if version_matches("1.8.0") {
+    if version().unwrap() >= Version::parse("1.8.0").unwrap() {
         println!("cargo:rustc-cfg=op_assign");
     }
 }
